@@ -1,3 +1,4 @@
+import { exp } from "three/tsl";
 import {
   mobile,
   backend,
@@ -25,22 +26,56 @@ import {
   threejs,
 } from "../assets";
 
-export const navLinks = [
-  {
+export type NavLink = {
+  id: string,
+  title: string,
+  showInNavbar : boolean,
+}
+
+export const navLinks : Record<string, NavLink> = {
+  hero : {
+    id : "hero",
+    title : "Hero",
+    showInNavbar : false,
+  },
+  about : {
     id: "about",
     title: "About",
+    showInNavbar : true,
   },
-  {
-    id: "work",
-    title: "Work",
+  experience : {
+    id: "experience",
+    title: "Experience",
+    showInNavbar : true,
   },
-  {
+  technologies : {
+    id : "technologies",
+    title: "Technologies",
+    showInNavbar : true,
+  },
+  projects : {
+    id: "projects",
+    title: "Projects",
+    showInNavbar : true,
+  },
+  feedbacks : {
+    id : "feedbacks",
+    title : "Feedbacks",
+    showInNavbar : true,
+  },
+  contact : {
     id: "contact",
     title: "Contact",
+    showInNavbar : true,
   },
-];
+};
 
-const services = [
+export type Service = {
+  title : string,
+  icon : string,
+}
+
+const services : Service[] = [
   {
     title: "Web Developer",
     icon: web,
@@ -59,7 +94,12 @@ const services = [
   },
 ];
 
-const technologies = [
+export type Technology = {
+  name : string,
+  icon : string,
+}
+
+const technologies : Technology[] = [
   {
     name: "HTML 5",
     icon: html,
@@ -114,10 +154,19 @@ const technologies = [
   },
 ];
 
-const experiences = [
+export type Experience = {
+  title: string,
+  companyName : String,
+  icon: string,
+  iconBg : string,
+  date : string,
+  points : string[]
+}
+
+const experiences : Experience[] = [
   {
     title: "React.js Developer",
-    company_name: "Starbucks",
+    companyName: "Starbucks",
     icon: starbucks,
     iconBg: "#383E56",
     date: "March 2020 - April 2021",
@@ -130,7 +179,7 @@ const experiences = [
   },
   {
     title: "React Native Developer",
-    company_name: "Tesla",
+    companyName: "Tesla",
     icon: tesla,
     iconBg: "#E6DEDD",
     date: "Jan 2021 - Feb 2022",
@@ -143,7 +192,7 @@ const experiences = [
   },
   {
     title: "Web Developer",
-    company_name: "Shopify",
+    companyName: "Shopify",
     icon: shopify,
     iconBg: "#383E56",
     date: "Jan 2022 - Jan 2023",
@@ -156,7 +205,7 @@ const experiences = [
   },
   {
     title: "Full stack Developer",
-    company_name: "Meta",
+    companyName: "Meta",
     icon: meta,
     iconBg: "#E6DEDD",
     date: "Jan 2023 - Present",
@@ -169,34 +218,38 @@ const experiences = [
   },
 ];
 
-const testimonials = [
+export type Testimonial = {
+  testimonial : string,
+  name : string,
+  designation : string,
+  image : string,
+}
+
+const testimonials : Testimonial[] = [
   {
     testimonial:
-      "I thought it was impossible to make a website as beautiful as our product, but Rick proved me wrong.",
-    name: "Sara Lee",
-    designation: "CFO",
-    company: "Acme Co",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
+      "Oh yea. I know him he's a pretty chill guy.",
+    name: "Alex",
+    designation: "Waterloo student",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s",
   },
-  {
-    testimonial:
-      "I've never met a web developer who truly cares about their clients' success like Rick does.",
-    name: "Chris Brown",
-    designation: "COO",
-    company: "DEF Corp",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
-  },
-  {
-    testimonial:
-      "After Rick optimized our website, our traffic increased by 50%. We can't thank them enough!",
-    name: "Lisa Wang",
-    designation: "CTO",
-    company: "456 Enterprises",
-    image: "https://randomuser.me/api/portraits/women/6.jpg",
-  },
+
 ];
 
-const projects = [
+export type Tag = {
+  name : string,
+  color : string,
+}
+
+export type Project = {
+  name : string,
+  description: string,
+  tags: Tag[],
+  image : string,
+  link : string,
+}
+
+const projects : Project[] = [
   {
     name: "Car Rent",
     description:
@@ -216,7 +269,7 @@ const projects = [
       },
     ],
     image: carrent,
-    source_code_link: "https://github.com/",
+    link: "https://github.com/",
   },
   {
     name: "Job IT",
@@ -237,7 +290,7 @@ const projects = [
       },
     ],
     image: jobit,
-    source_code_link: "https://github.com/",
+    link: "https://github.com/",
   },
   {
     name: "Trip Guide",
@@ -258,7 +311,7 @@ const projects = [
       },
     ],
     image: tripguide,
-    source_code_link: "https://github.com/",
+    link: "https://github.com/",
   },
 ];
 
