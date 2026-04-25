@@ -18,7 +18,11 @@ export type Technology = {
 export const title : string = "\u00A0" //"\u00A0" is an invisible character
 export const subDescription : string = "Match 2?"
 export const solvedSubDescription : string = "WP"
+export const abortedSubDescription : string = "..."
 export const solvedtitle : string = "GG"
+export const abortingButtonText : string = "I'm not playing"  
+export const abortedButtonText : string = "NO FUN! >:("
+export const solvedButtonText : string = "AGAIN! :)"
 
 export const technologies : Technology[] = [
   {

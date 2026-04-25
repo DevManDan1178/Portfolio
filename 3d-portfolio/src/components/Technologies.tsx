@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BallCanvas } from './canvas'
 import { SectionWrapper } from '../hoc'
-import { technologies, title, subDescription, type Technology, solvedtitle, solvedSubDescription } from '../constants/technologies'
+import { technologies, title, subDescription, type Technology, solvedtitle, solvedSubDescription, abortedSubDescription, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../style'
 
@@ -14,15 +14,20 @@ export type TechnologyNode = {
   status : NodeStatus
 }
 
-const PAIR_SELECTED_HIDE_DELAY : number = 1 * 1000;
+const PAIR_SELECTED_HIDE_DELAY : number = 1 * 1000
+const SOLVED_DISPLAY_DELAY : number = 0.5 * 1000
 
 const Technologies = () => {
-  const [solved, setSolved] = useState(false)
-  const [inputDisabled, setInputDisabled] = useState(false)
-  const [technologyNodes, setTechnologyNodes] = useState<TechnologyNode[]>([...technologies, ...technologies].map((technology : Technology) => (
+  const getRandomizedTechnologyNodes = () => ([...technologies, ...technologies].map((technology : Technology) => (
     {technology : technology, status : {solved : false, selected : false}}
   )).sort(() => Math.random() - 0.5))
 
+  const [solved, setSolved] = useState(false)
+  const [aborted, setAborted] = useState(false)
+  const [inputDisabled, setInputDisabled] = useState(false)
+  const [technologyNodes, setTechnologyNodes] = useState<TechnologyNode[]>(getRandomizedTechnologyNodes())
+
+  
 
   const onCorrectPairSelected = (index1 : number, index2 : number) => {
     var solved = true;
@@ -36,13 +41,14 @@ const Technologies = () => {
       return technologyNode
     }))
     if (solved) {
-      setSolved(true)
+      setTimeout(() => {
+        setSolved(true), SOLVED_DISPLAY_DELAY
+      })
     }
   }
 
   const onWrongPairSelected = (index1 : number, index2 : number) => {
     setInputDisabled(true)
-    console.log("wrong pair")
     const onTimeout = () => {
       setTechnologyNodes(technologyNodes.map((technologyNode : TechnologyNode, _index : number) => {
         if (_index == index1 || _index == index2) {
@@ -51,7 +57,6 @@ const Technologies = () => {
           return technologyNode
       }))
       setInputDisabled(false)
-      console.log("timeout")
     }
 
     setTimeout(onTimeout, PAIR_SELECTED_HIDE_DELAY)
@@ -85,8 +90,6 @@ const Technologies = () => {
 
   }
 
-
-
   const getOnClick = (index : number) => () => {
     if (inputDisabled) {
       return
@@ -96,6 +99,21 @@ const Technologies = () => {
       return
     }
     onSelected(index)
+  }
+
+  const reset = () => {
+    setSolved(false)
+    setInputDisabled(false)
+    setTechnologyNodes(getRandomizedTechnologyNodes())
+  }
+  
+  const abort = () => {
+    setAborted(true)
+    setInputDisabled(true)
+    const newTechnologyNodes = Array.from(new Map(technologyNodes.map((technologyNode : TechnologyNode) => 
+        [technologyNode.technology.name, {technology:technologyNode.technology, status: {solved : false, selected: true}}])).values())
+    console.log(newTechnologyNodes)
+    setTechnologyNodes(newTechnologyNodes)
   }
 
   return (
@@ -108,13 +126,19 @@ const Technologies = () => {
             {solved ? solvedtitle : title}
           </h2>  
           <p className={styles.subDescriptionText + " text-center"}>
-            {solved ? solvedSubDescription : subDescription}
+            {solved ? solvedSubDescription : (aborted ? abortedSubDescription : subDescription)}
           </p> 
       </motion.div>
-      
       <div className='flex flex-row flex-wrap justify-center gap-10 h-[350px]'>
           <BallCanvas technologies={technologyNodes} getOnClick={getOnClick} />
       </div>
+      <div className='w-full flex items-center justify-center'>
+        <button className={`gap-10 h-[25px] p-[20px] self-center hover:${aborted ?"cursor-default" : "cursor-pointer"}`} onClick={solved ? reset : (aborted ? () => {} : abort)} >
+          <p className="text-[25px] text-secondary tracking-wider text-center">
+             {solved ? solvedButtonText : (aborted ? abortedButtonText : abortingButtonText)}
+          </p>
+        </button>
+      </div>   
     </div>
   )
 }

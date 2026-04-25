@@ -87,20 +87,29 @@ const getBallPositions : (totalIndices : number) => Vector3[] = (totalIndices : 
   const ballPositions : Vector3[] = []
   const sideRowCount = 2 * BALL_SIDE_ROWS
   const sideRowBallCount = Math.round(totalIndices / (sideRowCount + 1) + (totalIndices % sideRowCount == 0 ? 0 : 1))
-
+  const middleRowBallCount = totalIndices - sideRowCount * sideRowBallCount
   const midPointX = (sideRowBallCount - 1) * 0.5
   const midPointY = BALL_SIDE_ROWS
-  for (var rowIdx = 0; rowIdx < sideRowCount; rowIdx++) {  
-    const rowY = (rowIdx == BALL_SIDE_ROWS ? sideRowCount : rowIdx) - midPointY
+  //Top
+  for (var rowIdx = 0; rowIdx < BALL_SIDE_ROWS; rowIdx++) {  
+    const rowY = rowIdx - midPointY
     for (var ballIdx = 0; ballIdx < sideRowBallCount; ballIdx++) {
       const ballX = ballIdx - midPointX
       ballPositions[rowIdx * sideRowBallCount + ballIdx] = getPosition(ballX, rowY)
     }
   }
-  const leftoverCount = totalIndices - ballPositions.length
-  const leftoverMidpointX = (leftoverCount - 1) * 0.5
-  for (var ballIdx = 0; ballIdx < leftoverCount; ballIdx++) {
-    ballPositions[totalIndices - leftoverCount + ballIdx] = getPosition(ballIdx - leftoverMidpointX, 0)
+  //Middle
+  const leftoverMidpointX = (middleRowBallCount - 1) * 0.5
+  for (var ballIdx = 0; ballIdx < middleRowBallCount; ballIdx++) {
+    ballPositions[BALL_SIDE_ROWS * sideRowBallCount + ballIdx] = getPosition(ballIdx - leftoverMidpointX, 0)
+  }
+  //Bottom
+  for (var rowIdx = BALL_SIDE_ROWS; rowIdx < sideRowCount; rowIdx++) {  
+    const rowY = rowIdx + 1 - midPointY
+    for (var ballIdx = 0; ballIdx < sideRowBallCount; ballIdx++) {
+      const ballX = ballIdx - midPointX
+      ballPositions[middleRowBallCount + rowIdx * sideRowBallCount + ballIdx] = getPosition(ballX, rowY)
+    }
   }
   return ballPositions
 }
