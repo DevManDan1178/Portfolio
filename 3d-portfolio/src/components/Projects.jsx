@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { styles } from '../style'
 import { github } from '../assets'
 import { SectionWrapper } from '../hoc'
-import { projects } from '../constants'
+import { preTitle, title, subDescription, projects } from '../constants/projects'
 import { fadeIn, textVariant } from '../utils/motion'
 
 const ProjectCard = ({index, name, description, tags, image, link}) => (
@@ -66,18 +66,18 @@ const Projects = () => {
     <>
     <motion.div variants={textVariant()}>
         <p className={styles.sectionSubText}>
-          Some stuff I made
+          {preTitle}
         </p>
         <h2 className={styles.sectionHeadText}>
-           Projects
+           {title}
         </h2>   
     </motion.div>
     <div className='w-full flex'>
       <motion.p
         variants={fadeIn("", "", 0.1, 1)}
-        className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
+        className={styles.subDescriptionText}
       >
-        Making stuff is fun when you make fun stuff.
+        {subDescription}
       </motion.p>
     </div>
     <div className='mt-20 flex flex-wrap gap-7'>

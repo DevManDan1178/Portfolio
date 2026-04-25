@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Preload, useGLTF } from '@react-three/drei'
+import {MOUSE} from 'three'
 import CanvasLoader from '../Loader'
 
 
@@ -9,17 +10,17 @@ const Computers = ({isMobile}) => {
   return (
     <mesh>
       <hemisphereLight 
-      intensity={0.5} 
-      groundColor='black'
+        intensity={1.5} 
+        groundColor='black'
       />
-      <pointLight intensity={15}/>
+      <pointLight intensity={5}/>
       <spotLight
-      position={[-20, 50, 10]}
-      angle = {0.12}
-      penumbra={1}
-      intensity={1}
-      castShadow
-      shadow-mapSize={1024}
+        position={[-20, 50, 10]}
+        angle = {0.12}
+        penumbra={1}
+        intensity={1}
+        castShadow
+        shadow-mapSize={1024}
       />
       <primitive 
       object={computer.scene} 
@@ -58,7 +59,11 @@ const ComputerCanvas = () => {
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls 
-          enableZoom={false}
+          mouseButtons={{RIGHT: MOUSE.ROTATE}}
+          enableZoom={true}
+          enablePan={false}
+          maxDistance={25}
+          minDistance={10}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2} 
         />
