@@ -26,52 +26,64 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
     const raycaster = new Raycaster();
     const mouse = new Vector2();
 
-   const onClick = (event: MouseEvent) => {
-    if (!unityCanvas || event.button !== 0) return;
+  const getInputFunction = (messageFunction: string) => (event: MouseEvent) => {
+      if (!unityCanvas || event.button !== 0) return;
 
-    const rect = gl.domElement.getBoundingClientRect();
-    const mouse = new Vector2(
-      ((event.clientX - rect.left) / rect.width) * 2 - 1,
-      -((event.clientY - rect.top) / rect.height) * 2 + 1
-    );
+      console.log("[EVENT]", messageFunction);
 
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(scene.children, true);
-    console.log("clicked")
-    for (const intersect of intersects) {
-      // Match the mesh by name
-      if (intersect.object.name === screenMeshName) {
-        // Compute relative coordinates inside the Unity canvas
-        const canvasRect = unityCanvas.getBoundingClientRect();
-        const canvasX = event.clientX - canvasRect.left;
-        const canvasY = event.clientY - canvasRect.top;
+      const rect = gl.domElement.getBoundingClientRect();
 
-        // Forward actual mouse event with correct coordinates
-        const unityEvent = new MouseEvent("mousedown", {
-          bubbles: true,
-          cancelable: true,
-          button: 0,
-          clientX: canvasX,
-          clientY: canvasY,
-        });
-        console.log("event", canvasX, " ", canvasY)
-        unityCanvas.dispatchEvent(unityEvent);
-        unityCanvas.focus();
-        break;
+      const mouse = new Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      if (!intersects.length) {
+        console.log("[RAYCAST] no hits");
+        return;
       }
-    }
-  };
 
-    gl.domElement.addEventListener("mousedown", onClick);
-    return () => gl.domElement.removeEventListener("mousedown", onClick);
+      const hit = intersects.find(
+        (i) => i.object.name === screenMeshName && i.uv
+      );
+
+      if (!hit || !hit.uv) {
+        return;
+      }
+
+      const uv = hit.uv;
+
+      const canvasXRelative = uv.x;
+      const canvasYRelative = uv.y;
+
+      console.log("[UV]", canvasXRelative, canvasYRelative);
+
+      window.__unityInstance?.SendMessage("InputBridge", messageFunction,`${canvasXRelative},${canvasYRelative}`
+      );
+    };
+    //const onClick = (event: MouseEvent) => {
+    const pointerUpLambda = getInputFunction("OnPointerUp")
+    const pointerDownLambda = getInputFunction("OnPointerDown")
+    const mouseMoveLambda = getInputFunction("OnMouseMove")
+    //gl.domElement.addEventListener("mouseup", pointerUpLambda)
+    gl.domElement.addEventListener("mousedown", pointerDownLambda);
+    //gl.domElement.addEventListener("mousemove", mouseMoveLambda);
+    return () => {
+      //gl.domElement.removeEventListener("mouseup", pointerUpLambda);
+      gl.domElement.removeEventListener("mousedown", pointerDownLambda);
+      //gl.domElement.removeEventListener("mousemove", mouseMoveLambda);
+    }
+
+    
   }, [camera, scene, gl, screenMeshName, unityCanvas]);
 
   return null;
 };
 
-// ----------------------
-// Computers mesh
-// ----------------------
 const Computers = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: HTMLCanvasElement | null }) => {
   const computer = useGLTF("/desktop_pc/scene.gltf");
   const [unityTexture, setUnityTexture] = useState<CanvasTexture | null>(null);
@@ -124,7 +136,7 @@ const ComputerCanvas = () => {
   }, []);
 
   return (
-    <Canvas frameloop="demand" shadows camera={{ position: [20, 3, 5], fov: 25 }} gl={{ preserveDrawingBuffer: true }}>
+    <Canvas shadows camera={{ position: [20, 3, 5], fov: 25 }} gl={{ preserveDrawingBuffer: true }}>
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           mouseButtons={{ RIGHT: MOUSE.ROTATE, LEFT: undefined, MIDDLE: MOUSE.DOLLY }}
