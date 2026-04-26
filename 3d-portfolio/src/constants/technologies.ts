@@ -20,7 +20,7 @@ export const subDescription : string = "Match 2?"
 export const solvedSubDescription : string = "WP"
 export const abortedSubDescription : string = "..."
 export const solvedtitle : string = "GG"
-export const abortingButtonText : string = "I'm not playing"  
+export const abortingButtonText : string = "Stop playing"  
 export const abortedButtonText : string = "NO FUN! >:("
 export const solvedButtonText : string = "AGAIN! :)"
 

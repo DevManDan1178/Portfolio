@@ -1,5 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { About, Contact, Experience, Testimonials, Hero, Navbar, Technologies, Projects, StarsCanvas } from "./components";
+import PolygonTD  from './components/canvas/PolygonTD'
 import { navLinks } from "./constants";
 
 function App() {

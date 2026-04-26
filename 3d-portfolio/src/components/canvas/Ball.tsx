@@ -13,6 +13,7 @@ const BALL_ANGLE_STEP : number = 3.5 * Math.PI/180
 const SOLVED_BALL_SPIN_SPEED : number = 0.5
 const DEFAULT_BALL_SCALE = 2.75
 const SOLVED_BALL_SCALE = 2.25
+const DEFAULT_BALL_DECAL_SCALE = 1.15
 const SOLVED_BALL_DECAL_SCALE = 1.5
 
 const Ball = ({ icon, position, rotationY, status, onClick } : {icon : string, position : Vector3, rotationY : number, status : NodeStatus, onClick : () => (void)}) => {
@@ -58,7 +59,7 @@ const Ball = ({ icon, position, rotationY, status, onClick } : {icon : string, p
         />
         <Decal 
           depthTest
-          scale={status.solved ? SOLVED_BALL_DECAL_SCALE : 1}
+          scale={status.solved ? SOLVED_BALL_DECAL_SCALE : DEFAULT_BALL_DECAL_SCALE}
           position = {[0, 0, 1]}
           rotation = {[0, 0, 0]}
           map = {decal}
@@ -114,7 +115,10 @@ const getBallPositions : (totalIndices : number) => Vector3[] = (totalIndices : 
   return ballPositions
 }
 
-const getDecalRotationYForBallAtPosition = (ballPosition: Vector3) => {
+const getDecalRotationYForBallAtPosition : (ballPosition : Vector3) => (number) = (ballPosition: Vector3) => {
+  if (!ballPosition) {
+    return 0
+  }
   const target = new Vector3(0, 0, -CAMERA_TARGET_DISTANCE);
 
   const dir = new Vector3()
@@ -128,6 +132,9 @@ const BallCanvas = ({ technologies, getOnClick } : {technologies : TechnologyNod
   const [ballPositions, setBallPositions] = useState<Vector3[]>(getBallPositions(technologies.length))
   const maxCameraAngleX = Math.round(ballPositions.length / (2 * BALL_SIDE_ROWS + 1)) * BALL_ANGLE_STEP * 0.5
   const maxCameraAngleY = BALL_SIDE_ROWS * BALL_ANGLE_STEP
+  if (technologies.length != ballPositions.length) {
+    setBallPositions(getBallPositions(technologies.length))
+  }
   return (<Canvas
       gl={{ preserveDrawingBuffer: true }}
     >
