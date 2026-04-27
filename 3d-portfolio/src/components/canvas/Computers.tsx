@@ -8,15 +8,13 @@ import PolygonTD from "./PolygonTD";
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
 const SCREEN_MESH_SIZE = { x: 4.7397, y: 2.6041 };
-const PIXELS_PER_UNIT = 1080;
+const PIXELS_PER_UNIT = 1440;
 const CANVAS_DIMENSIONS = {
   x: Math.min(Math.round(SCREEN_MESH_SIZE.x * PIXELS_PER_UNIT), 16384),
   y: Math.min(Math.round(SCREEN_MESH_SIZE.y * PIXELS_PER_UNIT), 16384),
 };
 
-// ----------------------
-// Forward LMB to Unity
-// ----------------------
+
 const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: string; unityCanvas: HTMLCanvasElement | null }) => {
   const { camera, scene, gl } = useThree();
 
@@ -106,7 +104,7 @@ const Computers = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: 
     if (unityTexture) unityTexture.needsUpdate = true;
   });
 
-  return <primitive object={computer.scene} scale={isMobile ? 0.65 : 0.75} position={[0, -3.25, -1.5]} />;
+  return <primitive object={computer.scene} scale={isMobile ? 0.65 : 0.75} position={[0, -2.75, -1.5]} />;
 };
 
 // ----------------------
@@ -139,7 +137,7 @@ const ComputerCanvas = () => {
           enableZoom
           enablePan={false}
           maxDistance={25}
-          minDistance={10}
+          minDistance={7.5}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
         />
@@ -148,7 +146,7 @@ const ComputerCanvas = () => {
       </Suspense>
       <Preload all />
     </Canvas>
-  );
+  )
 };
 
 export default ComputerCanvas;

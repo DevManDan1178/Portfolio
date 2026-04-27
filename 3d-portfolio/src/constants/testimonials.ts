@@ -23,6 +23,12 @@ export const testimonials : Testimonial[] = [
     designation: "McGill student",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s",
   },
-
+  {
+    testimonial:
+    "His pseudoenergy is very condusive.",
+    name: "Cristian",
+    designation: "Vanier student",
+    image : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s"
+  }
 ];
 

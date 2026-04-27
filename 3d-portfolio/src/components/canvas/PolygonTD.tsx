@@ -8,7 +8,7 @@ declare global {
 
 const CONTAINER_ID = "unity-canvas";
 const GAME_PATH = "/unity/PolygonTD";
-const BUILD_NAME = "WebBuild_1.2.2";
+const BUILD_NAME = "WebBuild_1.2.3";
 
 // Pure function that creates Unity canvas and returns a lambda to get it
 export default function PolygonTD(width: number, height: number): () => HTMLCanvasElement {
@@ -23,6 +23,11 @@ export default function PolygonTD(width: number, height: number): () => HTMLCanv
   canvas.style.height = "100%";
   canvas.style.visibility = "visible";
   canvas.style.pointerEvents = "auto";
+  canvas.style.position = "absolute";
+  canvas.style.left = "-10000px";
+  canvas.style.top = "0";
+  canvas.style.pointerEvents = "none";
+  canvas.style.opacity = "0"; // or visibility: hidden
   canvas.tabIndex = 1;
   canvas.addEventListener("pointerdown", (e) => {
     // Only left click

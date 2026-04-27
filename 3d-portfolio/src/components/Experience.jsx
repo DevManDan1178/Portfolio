@@ -3,9 +3,9 @@ import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeli
 import { motion } from 'framer-motion'
 import 'react-vertical-timeline-component/style.min.css'
 import {styles} from '../style'
-import { experiences, preTitle, title } from '../constants/experiences'
+import { experiences, preTitle, title, subDescription } from '../constants/experiences'
 import { SectionWrapper } from '../hoc'
-import { textVariant } from '../utils/motion'
+import { textVariant, fadeIn } from '../utils/motion'
 import { exp } from 'three/tsl'
 
 const ExperienceCard = ({experience}) => ( 
@@ -59,7 +59,14 @@ const Experience = () => {
           {title}
         </h2>   
       </motion.div>
-
+        <div className='w-full flex'>
+          <motion.p
+            variants={fadeIn("", "", 0.1, 1)}
+            className={styles.subDescriptionText}
+          >
+            {subDescription}
+          </motion.p>
+        </div>
       <div className="mt-20 flex-col">
         <VerticalTimeline>
           {experiences.map((experience, index) => (

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { styles } from '../style'
 import { logo, menu, close } from '../assets'
 import { navLinks, type NavLink } from '../constants'
+import { portfolioHandle } from '../constants/hero'
 
 const SURFING_THRESHOLD : number = .75;
 
@@ -82,7 +83,7 @@ const Navbar = () => {
           className="w-9 h-9 object-contain"
           />
           <p className='text-white text-[18px] font-bold cursor-pointer flex'> 
-            DevManDan
+            {portfolioHandle}
           </p>
 
         </Link>
