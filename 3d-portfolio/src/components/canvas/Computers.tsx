@@ -2,7 +2,7 @@ import { CanvasTexture, LinearFilter, Object3D, Mesh, MeshBasicMaterial, Box3, V
 import { Suspense, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
-import { MOUSE } from "three";
+import { MOUSE, SRGBColorSpace } from "three";
 import CanvasLoader from "../Loader";
 import PolygonTD from "./PolygonTD";
 
@@ -26,10 +26,8 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
     const raycaster = new Raycaster();
     const mouse = new Vector2();
 
-  const getInputFunction = (messageFunction: string) => (event: MouseEvent) => {
+    const getInputFunction = (messageFunction: string) => (event: MouseEvent) => {
       if (!unityCanvas || event.button !== 0) return;
-
-      console.log("[EVENT]", messageFunction);
 
       const rect = gl.domElement.getBoundingClientRect();
 
@@ -43,7 +41,6 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
       const intersects = raycaster.intersectObjects(scene.children, true);
 
       if (!intersects.length) {
-        console.log("[RAYCAST] no hits");
         return;
       }
 
@@ -59,23 +56,20 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
 
       const canvasXRelative = uv.x;
       const canvasYRelative = uv.y;
-
-      console.log("[UV]", canvasXRelative, canvasYRelative);
-
+    
       window.__unityInstance?.SendMessage("InputBridge", messageFunction,`${canvasXRelative},${canvasYRelative}`
       );
     };
-    //const onClick = (event: MouseEvent) => {
-    const pointerUpLambda = getInputFunction("OnPointerUp")
+    //TODO add keybinds for towers in the game, add a static parameter to prevent quitting like for muting audio
+
+    
     const pointerDownLambda = getInputFunction("OnPointerDown")
     const mouseMoveLambda = getInputFunction("OnMouseMove")
-    //gl.domElement.addEventListener("mouseup", pointerUpLambda)
-    gl.domElement.addEventListener("mousedown", pointerDownLambda);
-    //gl.domElement.addEventListener("mousemove", mouseMoveLambda);
-    return () => {
-      //gl.domElement.removeEventListener("mouseup", pointerUpLambda);
+    gl.domElement.addEventListener("mousemove", mouseMoveLambda);
+    gl.domElement.addEventListener("mousedown", pointerDownLambda); 
+    return () => { 
+      gl.domElement.removeEventListener("mousemove", mouseMoveLambda);
       gl.domElement.removeEventListener("mousedown", pointerDownLambda);
-      //gl.domElement.removeEventListener("mousemove", mouseMoveLambda);
     }
 
     
@@ -91,6 +85,8 @@ const Computers = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: 
   useEffect(() => {
     if (!unityCanvas) return;
     const texture = new CanvasTexture(unityCanvas);
+    texture.colorSpace = SRGBColorSpace
+    texture.generateMipmaps = false
     texture.minFilter = LinearFilter;
     texture.magFilter = LinearFilter;
     texture.needsUpdate = true;

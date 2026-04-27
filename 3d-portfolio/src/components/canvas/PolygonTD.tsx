@@ -8,7 +8,7 @@ declare global {
 
 const CONTAINER_ID = "unity-canvas";
 const GAME_PATH = "/unity/PolygonTD";
-const BUILD_NAME = "WebInputsBuild";
+const BUILD_NAME = "WebBuild_1.2.2";
 
 // Pure function that creates Unity canvas and returns a lambda to get it
 export default function PolygonTD(width: number, height: number): () => HTMLCanvasElement {
@@ -52,7 +52,9 @@ export default function PolygonTD(width: number, height: number): () => HTMLCanv
     }).then((unityInstance: any) => {
       window.__unityInstance = unityInstance;
       // Mute audio
-      unityInstance.SendMessage("AudioManager", "SetMuteAllSounds", "true");
+      unityInstance.SendMessage("AudioManager", "SetMuteAllSounds", "true") 
+      unityInstance.SendMessage("InputBridge", "SetRealInputReaderDisabled", "true")
+      unityInstance.SendMessage("InputBridge", "SetCanQuit", "false")
     });
   };
 
