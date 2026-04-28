@@ -3,6 +3,22 @@ import { motion } from 'framer-motion'
 import { styles } from '../style' 
 import ComputerCanvas from './canvas/Computers'
 import { headerIntro, description, portfolioName } from '../constants/hero'
+import type { GameEventHandlers } from './canvas/PolygonTD'
+
+const gameEventHandlers : GameEventHandlers = {
+  OnLevelCleared(levelNumber) {
+    console.log("level cleared: ", levelNumber)
+  },
+  OnLevelLost(levelNumber) {
+    console.log("level lost: ", levelNumber)
+  },
+  OnLevelStarted(levelNumber) {
+    console.log("level started: ", levelNumber)
+  },
+  OnPauseToggled(paused) {
+    console.log("pause toggled to", paused)
+  },
+}
 
 const Hero = () => {
   return (
@@ -21,7 +37,7 @@ const Hero = () => {
           </p>
         </div>
       </div>
-        <ComputerCanvas/>
+        <ComputerCanvas gameEventHandlers={gameEventHandlers}/>
       <div className='absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center'>
         <a href='#about'>
           <div className='w-[35px] h-[64px] rounded-3xl 

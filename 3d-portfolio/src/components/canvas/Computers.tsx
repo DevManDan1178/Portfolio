@@ -4,16 +4,16 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import { MOUSE, SRGBColorSpace } from "three";
 import CanvasLoader from "../Loader";
-import PolygonTD from "./PolygonTD";
+import PolygonTD, { type GameEventHandlers } from "./PolygonTD";
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
-const SCREEN_MESH_SIZE = { x: 4.7397, y: 2.6041 };
-const PIXELS_PER_UNIT = 1440;
-const CANVAS_DIMENSIONS = {
-  x: Math.min(Math.round(SCREEN_MESH_SIZE.x * PIXELS_PER_UNIT), 16384),
-  y: Math.min(Math.round(SCREEN_MESH_SIZE.y * PIXELS_PER_UNIT), 16384),
-};
+//const SCREEN_MESH_SIZE = { x: 4.7397, y: 2.6041 };
 
+const RESOLUTION = {
+  width : 1280,
+  height: 720,
+}
+const RESOLUTION_SCALE : number = 0.5
 
 const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: string; unityCanvas: HTMLCanvasElement | null }) => {
   const { camera, scene, gl } = useThree();
@@ -54,8 +54,7 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
 
       const canvasXRelative = uv.x;
       const canvasYRelative = uv.y;
-    
-      window.__unityInstance?.SendMessage("InputBridge", messageFunction,`${canvasXRelative},${canvasYRelative}`
+      window.__PolygonTD?.unityInstance?.SendMessage("InputBridge", messageFunction,`${canvasXRelative},${canvasYRelative}`
       );
     };
     //TODO add keybinds for towers in the game, add a static parameter to prevent quitting like for muting audio
@@ -100,6 +99,8 @@ const Computers = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: 
     });
   }, [unityTexture, computer]);
 
+  
+
   useFrame(() => {
     if (unityTexture) unityTexture.needsUpdate = true;
   });
@@ -110,12 +111,12 @@ const Computers = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: 
 // ----------------------
 // Main Canvas
 // ----------------------
-const ComputerCanvas = () => {
+const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : GameEventHandlers}) => {
   const [isMobile, setIsMobile] = useState(false);
   const [unityCanvas, setUnityCanvas] = useState<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const getCanvas = PolygonTD(CANVAS_DIMENSIONS.x, CANVAS_DIMENSIONS.y);
+    const getCanvas = PolygonTD(RESOLUTION.width * RESOLUTION_SCALE, RESOLUTION.height * RESOLUTION_SCALE, gameEventHandlers); //CANVAS_DIMENSIONS.x, CANVAS_DIMENSIONS.y
     const canvas = getCanvas();
     document.body.appendChild(canvas);
     setUnityCanvas(canvas);
@@ -130,7 +131,7 @@ const ComputerCanvas = () => {
   }, []);
 
   return (
-    <Canvas shadows camera={{ position: [20, 3, 5], fov: 25 }} gl={{ preserveDrawingBuffer: true }}>
+    <Canvas shadows camera={{ position: [20, 3, 5], fov: 25 }} gl={{ preserveDrawingBuffer: false }}>
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           mouseButtons={{ RIGHT: MOUSE.ROTATE, LEFT: undefined, MIDDLE: MOUSE.DOLLY }}
