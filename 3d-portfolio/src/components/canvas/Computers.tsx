@@ -13,10 +13,36 @@ const RESOLUTION = {
   width : 1280,
   height: 720,
 }
-const RESOLUTION_SCALE : number = 0.5
+const RESOLUTION_SCALE : number = 0.5 //Keep as a a multiple of 2 or of 1/2
+
+function blockkeys(e : KeyboardEvent) {
+  e.stopPropagation()
+  e.preventDefault()
+}
 
 const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: string; unityCanvas: HTMLCanvasElement | null }) => {
   const { camera, scene, gl } = useThree();
+
+    useEffect(() => {
+      const handleGlobalClick = (event: MouseEvent) => {
+        const canvasEl = gl.domElement;
+
+        // If click is NOT inside the Three.js canvas
+        if (!canvasEl.contains(event.target as Node)) {
+          console.log("Clicked outside WebGL canvas");
+
+          window.__PolygonTD?.unityInstance?.SendMessage("GameMaster", "SetPaused");
+          window.addEventListener("keydown", blockkeys, true)
+          window.__PolygonTD.unityCanvas.blur();
+        }
+      };
+
+      document.addEventListener("mousedown", handleGlobalClick);
+
+      return () => {
+        document.removeEventListener("mousedown", handleGlobalClick);
+      };
+    }, [gl]);
 
   useEffect(() => {
     if (!unityCanvas) return;
@@ -24,9 +50,10 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
     const raycaster = new Raycaster();
     const mouse = new Vector2();
 
-    const getInputFunction = (messageFunction: string) => (event: MouseEvent) => {
+    const getInputFunction = (messageFunction: string, pauseGameIfOutside : boolean) => (event: MouseEvent) => {
       if (!unityCanvas || event.button !== 0) return;
-
+      window.removeEventListener("keydown", blockkeys, true)
+      window.__PolygonTD.unityCanvas.focus()
       const rect = gl.domElement.getBoundingClientRect();
 
       const mouse = new Vector2(
@@ -38,10 +65,13 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
 
       const intersects = raycaster.intersectObjects(scene.children, true);
 
-      if (!intersects.length) {
+      if (!intersects.length) { 
+        if (pauseGameIfOutside) {
+            window.__PolygonTD?.unityInstance?.SendMessage("GameMaster", "SetPaused")
+        }
         return;
       }
-
+      
       const hit = intersects.find(
         (i) => i.object.name === screenMeshName && i.uv
       );
@@ -57,11 +87,12 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
       window.__PolygonTD?.unityInstance?.SendMessage("InputBridge", messageFunction,`${canvasXRelative},${canvasYRelative}`
       );
     };
+  
     //TODO add keybinds for towers in the game, add a static parameter to prevent quitting like for muting audio
 
     
-    const pointerDownLambda = getInputFunction("OnPointerDown")
-    const mouseMoveLambda = getInputFunction("OnMouseMove")
+    const pointerDownLambda = getInputFunction("OnPointerDown", true)
+    const mouseMoveLambda = getInputFunction("OnMouseMove", false)
     gl.domElement.addEventListener("mousemove", mouseMoveLambda);
     gl.domElement.addEventListener("mousedown", pointerDownLambda); 
     return () => { 
@@ -129,6 +160,7 @@ const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : GameEventHand
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+  
 
   return (
     <Canvas shadows camera={{ position: [20, 3, 5], fov: 25 }} gl={{ preserveDrawingBuffer: false }}>

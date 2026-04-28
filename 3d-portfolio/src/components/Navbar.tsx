@@ -5,7 +5,6 @@ import { logo, menu, close } from '../assets'
 import { navLinks, type NavLink } from '../constants'
 import { portfolioHandle } from '../constants/hero'
 
-const SURFING_THRESHOLD : number = .75;
 
 const Navbar = () => {
   const [toggle, setToggle] = useState<boolean>(false)

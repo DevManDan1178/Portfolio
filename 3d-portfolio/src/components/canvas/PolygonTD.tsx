@@ -30,9 +30,8 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
   canvas.height = height;
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  console.log(width, height);
   canvas.style.visibility = "visible";
-  canvas.style.pointerEvents = "none";
+  canvas.style.pointerEvents = "auto";
   canvas.style.position = "absolute";
   //canvas.style.display = "none"
   canvas.style.left = "-10000px";
@@ -75,11 +74,11 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
       unityInstance.SendMessage("AudioManager", "SetMuteAllSounds", "true") 
       unityInstance.SendMessage("InputBridge", "SetRealInputReaderDisabled", "true")
       unityInstance.SendMessage("InputBridge", "SetCanQuit", "false")
+      
       window.addEventListener("unity-pause-toggled", (e : any) => {
         const paused = e.detail
         gameEventHandlers.OnPauseToggled(paused)
       })
-
       window.addEventListener("unity-level-starting", (e : any) => {
         const levelNumber = e.detail
         gameEventHandlers.OnLevelStarted(levelNumber)
