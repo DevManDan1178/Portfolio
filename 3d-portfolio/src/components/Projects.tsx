@@ -5,11 +5,14 @@ import { motion } from 'framer-motion'
 import { styles } from '../style'
 import { github } from '../assets'
 import { SectionWrapper } from '../hoc'
-import { preTitle, title, subDescription, projects } from '../constants/projects'
+import { preTitle, title, subDescription, projects, type Tag } from '../constants/projects'
 import { fadeIn, textVariant } from '../utils/motion'
 
-const ProjectCard = ({index, name, description, tags, image, link}) => (
-  <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
+const TITLE_TRANSITION_DELAY = 0.35
+
+const ProjectCard = ({name, description, tags, image, link, index} : {name : string, description : string, tags : Tag[], image : string, link: string, index : number}) => (
+  <motion.div variants={{hidden: {y: 100,}, show: { transition: { type: "spring", delay: index * 0.5, duration: 0.75, },},
+  }}> 
     <Tilt
       tiltMaxAngleX={5}
       tiltMaxAngleY={5}
@@ -64,17 +67,17 @@ const ProjectCard = ({index, name, description, tags, image, link}) => (
 const Projects = () => {
   return (
     <>
-    <motion.div variants={textVariant()}>
+    <motion.div variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}>
         <p className={styles.sectionSubText}>
           {preTitle}
         </p>
         <h2 className={styles.sectionHeadText}>
            {title}
         </h2>   
-    </motion.div>
+    </motion.div> 
     <div className='w-full flex'>
       <motion.p
-        variants={fadeIn("", "", 0.1, 1)}
+        variants={{show: {y: 0, opacity: 1, transition : {delay: 0.1, duration: 1}},}} 
         className={styles.subDescriptionText}
       >
         {subDescription}

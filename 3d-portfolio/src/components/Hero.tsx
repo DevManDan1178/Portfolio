@@ -1,28 +1,45 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { styles } from '../style' 
 import ComputerCanvas from './canvas/Computers'
-import { headerIntro, description, portfolioName } from '../constants/hero'
-import type { GameEventHandlers } from './canvas/PolygonTD'
+import { headerIntro, description, portfolioName, TerminalTexts } from '../constants/hero'
+import { MENU_SCENES, type GameEventHandlers } from './canvas/PolygonTD'
+import { INFINITY } from 'three/tsl'
 
-const gameEventHandlers : GameEventHandlers = {
-  OnLevelCleared(levelNumber) {
-    console.log("level cleared: ", levelNumber)
-  },
-  OnLevelLost(levelNumber) {
-    console.log("level lost: ", levelNumber)
-  },
-  OnLevelStarted(levelNumber) {
-    console.log("level started: ", levelNumber)
-  },
-  OnPauseToggled(paused) {
-    console.log("pause toggled to", paused)
-  },
-}
+type GameState = "Idle" | "Menu" | "LevelSelect" | "Playing" | "Lost" | "Cleared"
 
 const Hero = () => {
+  const [levelProgress, setLevelProgress] = useState<number>(0)
+  const [terminalText, setTerminalText] = useState<string>(TerminalTexts.TerminalIntroduction)
+
+  const gameEventHandlers : GameEventHandlers = {
+    OnLevelCleared(levelNumber) {
+      setTerminalText(levelNumber >= 5 ? TerminalTexts.LastLevelClear : TerminalTexts.LevelCleared)
+    },
+    OnLevelLost(levelNumber) {
+      setTerminalText(TerminalTexts.LevelLost)
+    },
+    OnLevelStarted(levelNumber) {
+      setTerminalText(TerminalTexts.LevelStarted)
+    },
+    OnPauseToggled(paused) {
+      setTerminalText(paused ? TerminalTexts.Paused : TerminalTexts.Unpaused)
+    },
+    OnLevelProgressChanged(levelNumber) {
+      setLevelProgress(levelNumber)
+    },
+    OnSceneChanged(sceneName) {
+      if (sceneName === MENU_SCENES.levelSelect) {
+        setTerminalText(TerminalTexts.LevelSelect)
+      } else if (sceneName === MENU_SCENES.mainMenu) {
+        setTerminalText(TerminalTexts.Menu)
+      }
+    },
+  }
+
+  
   return (
-    <section className='relative w-full h-screen mx-auto z-10'>
+    <div className='relative w-full h-screen mx-auto z-10 overflow-hidden items-center'>
       <div className={`${styles.paddingX} absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row items-start gap-5`}>
          <div className='flex flex-col justify-center items-center mt-5'>
           <div className='w-5 h-5 rounded-full bg-[#915eff]'/>
@@ -37,27 +54,30 @@ const Hero = () => {
           </p>
         </div>
       </div>
-        <ComputerCanvas gameEventHandlers={gameEventHandlers}/>
-      <div className='absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center'>
-        <a href='#about'>
-          <div className='w-[35px] h-[64px] rounded-3xl 
-          border-4 border-secondary flex justify-center 
-          items-start p-2'>
+      
+      <ComputerCanvas gameEventHandlers={gameEventHandlers}/>
+
+      <div className=' absolute h-[7.5%] bottom-0 w-[75%] justify-center items-center flex left-1/2 -translate-x-1/2'>
+        <a href='#about' className='w-[100%] items-center justify-center flex  bg-gray-950/50 rounded-3xl'>
+          <div className='h-full w-[100%] rounded-2xl border-4 border-secondary flex justify-center p-2 items-center overflow-hidden'>
             <motion.div
-              animate={{
-                y: [0, 24, 0]
+              animate={{  
+                y: ["-300%", "0%"]
               }}
               transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: 'loop'
+                duration: 2.5,
+                ease: "backInOut",
               }}
-              className='w-3 h-3 rounded-full bg-secondary mb-1'
-            />
+              className='w-full h-full rounded-full items-center'
+            >
+              <p className='text-center w-auto'>
+                {terminalText}
+              </p>
+            </motion.div>
           </div>
         </a>
       </div>
-    </section>
+    </div>
   )
 }
 

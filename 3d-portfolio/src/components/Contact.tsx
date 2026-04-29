@@ -1,4 +1,4 @@
-import React from 'react'
+import { useEffect } from 'react'
 import {useState, useRef} from 'react'
 import { motion } from 'framer-motion'
 import emailjs from '@emailjs/browser'
@@ -11,13 +11,13 @@ import { portfolioName, portfolioEmail } from '../constants/hero'
 const SERVICE_ID = ""
 const TEMPLATE_ID = ""
 const PUBLIC_KEY = ""
-const RECIEVER_EMAIL = portfolioEmail
-const RECIEVER_NAME = portfolioName
+const RECEIVER_EMAIL = portfolioEmail
+const RECEIVER_NAME = portfolioName
 
 
 
-async function SendEmail(form) {
-  if (SERVICE_ID.length == 0 || TEMPLATE_ID_ID.length == 0 || PUBLIC_KEY.length == 0 || RECIEVER_EMAIL == 0) {
+async function SendEmail(form : any) {
+  if (SERVICE_ID.length == 0 || TEMPLATE_ID.length == 0 || PUBLIC_KEY.length == 0 || RECEIVER_EMAIL.length == 0) {
     console.log("Email was not send because the API was not configured properly")
     return
   }
@@ -26,25 +26,26 @@ async function SendEmail(form) {
     TEMPLATE_ID, 
     {
       from_name: form.name,
-      to_name: RECIEVER_NAME,
+      to_name: RECEIVER_NAME,
       from_email: form.email,
-      to_email: RECIEVER_EMAIL,
+      to_email: RECEIVER_EMAIL,
     },
     PUBLIC_KEY
   )
 }
 
 const Contact = () => {
-  const formRef = useRef()
+  const formRef = useRef<HTMLFormElement | null>(null)
   const [form, setForm] = useState({name: '', email: '', message: ''})
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm({...form, [name]: value})
+  const handleChange = (e : any) => {
+    const { name, value } = e.currentTarget
+    console.log(name, value)
+    setForm(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e : any) => {
     e.preventDefault()
     setLoading(true)
     SendEmail(form).then(() => {
@@ -62,11 +63,28 @@ const Contact = () => {
       alert("Something went wrong. Oops.")
     })
   }
+  useEffect(() => {
+  console.log("FORM STATE:", form);
+}, [form]);
 
   return (
     <div className='xl:mt-12 xl:flex-row flex-col-reverse flex gap-10 overflow-hidden'>
       <motion.div
-        variants={slideIn('left', 'tween', 0.2, 1)}
+        variants={{
+          hidden: {
+            x:"-100%",
+            y: 0,
+          },
+          show: {
+            x: 0,
+            y: 0,
+            transition: {
+              type: "tween",
+              delay: 0.2,
+              duration: 1,
+              ease: "easeOut",
+            },
+          }}}
         className='flex-[0.75] bg-black-100 p-8 rounded-2xl'
       >
       <p className={styles.sectionSubText}>Get in touch</p>
@@ -79,37 +97,36 @@ const Contact = () => {
         <label className='flex flex-col'>
           <span className='text-white font-medium mb-4'>Your Name</span>
           <input
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder='Insert Name Here'
-          className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder='Insert Name Here'
+            className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
           ></input>
         </label>
 
         <label className='flex flex-col'>
           <span className='text-white font-medium mb-4'>Your Email</span>
           <input
-          type="text"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder='Insert Email Here'
-          className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
+            type="text"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder='Insert Email Here'
+            className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
           ></input>
         </label>
 
         <label className='flex flex-col'>
           <span className='text-white font-medium mb-4'>Your Message</span>
           <textarea
-          rows={7}
-          type="text"
-          name="nessage"
-          value={form.message}
-          onChange={handleChange}
-          placeholder='Insert cool block of text here'
-          className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
+            rows={7}
+            name="message"
+            value={form.message}
+            onChange={handleChange}
+            placeholder='Insert cool block of text here'
+            className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
           ></textarea>
         </label>
         <button
@@ -122,7 +139,21 @@ const Contact = () => {
       </form>
       </motion.div>
       <motion.div
-        variants={slideIn('right', 'tween', 0.2, 1)}
+        variants={{
+          hidden: {
+            x:"100%",
+            y: 0,
+          },
+          show: {
+            x: 0,
+            y: 0,
+            transition: {
+              type: "tween",
+              delay: 0.2,
+              duration: 1,
+              ease: "easeOut",
+            },
+          }}}
         className='x1:flex-1 xl:h-auto md:h-[550px] h-[350px] w-full'
       >
         <EarthCanvas/>

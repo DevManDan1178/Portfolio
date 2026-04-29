@@ -1,14 +1,15 @@
 import React from 'react'
-import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component'
+import { VerticalTimeline, VerticalTimelineElement } from "react-vertical-timeline-component"
 import { motion } from 'framer-motion'
 import 'react-vertical-timeline-component/style.min.css'
 import {styles} from '../style'
-import { experiences, preTitle, title, subDescription } from '../constants/experiences'
+import { experiences, preTitle, title, subDescription, type Experience } from '../constants/experiences'
 import { SectionWrapper } from '../hoc'
 import { textVariant, fadeIn } from '../utils/motion'
-import { exp } from 'three/tsl'
 
-const ExperienceCard = ({experience}) => ( 
+const TITLE_TRANSITION_DELAY = 0.35
+
+const ExperienceCard = ({experience} : {experience : Experience}) => ( 
 <VerticalTimelineElement
     contentStyle = {{background : '#1d1836', color: '#fff'}}
     contentArrowStyle = {{borderRight : '7px solid #232631'}}
@@ -51,7 +52,7 @@ const ExperienceCard = ({experience}) => (
 const Experience = () => {
   return (
     <>
-      <motion.div variants={textVariant()}>
+      <motion.div variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}>
         <p className={styles.sectionSubText}>
           {preTitle}
         </p>
@@ -61,7 +62,7 @@ const Experience = () => {
       </motion.div>
         <div className='w-full flex'>
           <motion.p
-            variants={fadeIn("", "", 0.1, 1)}
+            variants={{show: {y: 0, opacity: 1, transition : {delay: 0.1, duration: 1}},}}
             className={styles.subDescriptionText}
           >
             {subDescription}

@@ -1,4 +1,4 @@
-import { CanvasTexture, LinearFilter, Object3D, Mesh, MeshBasicMaterial, Box3, Vector3, Raycaster, Vector2 } from "three";
+import { CanvasTexture, LinearFilter, Object3D, Mesh, MeshBasicMaterial, Box3, Vector3, Raycaster, Vector2, PointLight } from "three";
 import { Suspense, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
@@ -13,47 +13,44 @@ const RESOLUTION = {
   width : 1280,
   height: 720,
 }
-const RESOLUTION_SCALE : number = 0.5 //Keep as a a multiple of 2 or of 1/2
+const RESOLUTION_SCALE  = 0.5 //Keep as a a multiple of 2 or of 1/2
 
-function blockkeys(e : KeyboardEvent) {
-  e.stopPropagation()
-  e.preventDefault()
-}
+
+const FOCUS_DROPPING_UI_EVENTS : (keyof DocumentEventMap)[] = ["mousedown", "scroll"]
 
 const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: string; unityCanvas: HTMLCanvasElement | null }) => {
   const { camera, scene, gl } = useThree();
 
     useEffect(() => {
-      const handleGlobalClick = (event: MouseEvent) => {
+      const handleUIEvent = (event: Event) => {
         const canvasEl = gl.domElement;
 
         // If click is NOT inside the Three.js canvas
         if (!canvasEl.contains(event.target as Node)) {
-          console.log("Clicked outside WebGL canvas");
 
           window.__PolygonTD?.unityInstance?.SendMessage("GameMaster", "SetPaused");
-          window.addEventListener("keydown", blockkeys, true)
+          window.__PolygonTD.unityInstance?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "true")
           window.__PolygonTD.unityCanvas.blur();
         }
       };
-
-      document.addEventListener("mousedown", handleGlobalClick);
+      FOCUS_DROPPING_UI_EVENTS.forEach((mouseEvent : string) =>  document.addEventListener(mouseEvent, handleUIEvent))
 
       return () => {
-        document.removeEventListener("mousedown", handleGlobalClick);
+        FOCUS_DROPPING_UI_EVENTS.forEach((mouseEvent : string) =>  document.removeEventListener(mouseEvent, handleUIEvent))
       };
-    }, [gl]);
+    }, []);
 
   useEffect(() => {
     if (!unityCanvas) return;
 
     const raycaster = new Raycaster();
-    const mouse = new Vector2();
-
-    const getInputFunction = (messageFunction: string, pauseGameIfOutside : boolean) => (event: MouseEvent) => {
+    const getInputFunction = (messageFunction: string, affectsFocus : boolean) => (event: MouseEvent) => {
       if (!unityCanvas || event.button !== 0) return;
-      window.removeEventListener("keydown", blockkeys, true)
-      window.__PolygonTD.unityCanvas.focus()
+      if (affectsFocus) {
+        window.__PolygonTD.unityInstance?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "false") //TODO make unity block keys by adding a static bool and checking it on every input detection
+        window.__PolygonTD.unityCanvas.focus()
+      }
+      
       const rect = gl.domElement.getBoundingClientRect();
 
       const mouse = new Vector2(
@@ -66,7 +63,7 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
       const intersects = raycaster.intersectObjects(scene.children, true);
 
       if (!intersects.length) { 
-        if (pauseGameIfOutside) {
+        if (affectsFocus) {
             window.__PolygonTD?.unityInstance?.SendMessage("GameMaster", "SetPaused")
         }
         return;
@@ -102,11 +99,11 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
 
     
   }, [camera, scene, gl, screenMeshName, unityCanvas]);
-
   return null;
+
 };
 
-const Computers = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: HTMLCanvasElement | null }) => {
+const Computer = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: HTMLCanvasElement | null }) => {
   const computer = useGLTF("/desktop_pc/scene.gltf");
   const [unityTexture, setUnityTexture] = useState<CanvasTexture | null>(null);
 
@@ -136,12 +133,15 @@ const Computers = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: 
     if (unityTexture) unityTexture.needsUpdate = true;
   });
 
-  return <primitive object={computer.scene} scale={isMobile ? 0.65 : 0.75} position={[0, -2.75, -1.5]} />;
+  return <primitive 
+    object={computer.scene} 
+    scale={isMobile ? 0.65 : 0.75} 
+    position={[0, -2.55, -2.25]} 
+    rotation={[0, -0.185, 0]}
+  />;
 };
 
-// ----------------------
-// Main Canvas
-// ----------------------
+
 const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : GameEventHandlers}) => {
   const [isMobile, setIsMobile] = useState(false);
   const [unityCanvas, setUnityCanvas] = useState<HTMLCanvasElement | null>(null);
@@ -160,23 +160,36 @@ const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : GameEventHand
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
-  
+
 
   return (
-    <Canvas shadows camera={{ position: [20, 3, 5], fov: 25 }} gl={{ preserveDrawingBuffer: false }}>
+    <Canvas shadows camera={{ position: [25, 0, 5], fov: 25}} gl={{ preserveDrawingBuffer: false }}>
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           mouseButtons={{ RIGHT: MOUSE.ROTATE, LEFT: undefined, MIDDLE: MOUSE.DOLLY }}
           enableZoom
           enablePan={false}
-          maxDistance={25}
+          maxDistance={15}
           minDistance={7.5}
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
         />
-        <Computers isMobile={isMobile} unityCanvas={unityCanvas} />
+        <Computer isMobile={isMobile} unityCanvas={unityCanvas} />
         <UnityClickForwarder screenMeshName={SCREEN_MESH_NAME} unityCanvas={unityCanvas} />
       </Suspense>
+      <ambientLight intensity={0.5} />
+
+      <directionalLight
+        position={[10, 10, 5]}
+        intensity={1}
+        castShadow
+      />
+
+      <pointLight
+        position={[2.5, 2.5, 0]}
+        intensity={15}
+        distance={50}
+      />
       <Preload all />
     </Canvas>
   )

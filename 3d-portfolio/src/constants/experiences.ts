@@ -2,7 +2,7 @@ import { meta, starbucks, tesla, shopify, } from '../assets'
 
 export type Experience = {
   title: string,
-  companyName : String,
+  companyName : string,
   icon: string,
   iconBg : string,
   date : string,

@@ -2,21 +2,28 @@
 declare global {
   interface Window {
   __PolygonTD : {
-      unityCanvas: HTMLCanvasElement;
-    unityInstance: any;
+      unityCanvas: HTMLCanvasElement,
+      unityInstance: any,
     }
   }
 }
 
 const CONTAINER_ID = "unity-canvas";
 const GAME_PATH = "/unity/PolygonTD";
-const BUILD_NAME = "WebBuild_1.2.4_WebSignals";
+const BUILD_NAME = "WebBuild_1.2.5";
 
 export type GameEventHandlers = {
   OnLevelLost: (levelNumber : number) => void,
   OnLevelCleared: (levelNumber : number) => void,
   OnLevelStarted : (levelNumber : number) => void,
   OnPauseToggled : (paused : boolean) => void,
+  OnSceneChanged : (sceneName : string) => void,
+  OnLevelProgressChanged : (levelNumber : number) => void,
+}
+
+export const MENU_SCENES = {
+  mainMenu : "Main Menu",
+  levelSelect : "Level Select"
 }
 
 // Pure function that creates Unity canvas and returns a lambda to get it
@@ -68,28 +75,36 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
     }).then((unityInstance: any) => {
       window.__PolygonTD = {
         unityCanvas : window.__PolygonTD.unityCanvas,
-        unityInstance : unityInstance
+        unityInstance : unityInstance,
       }
       // Mute audio
       unityInstance.SendMessage("AudioManager", "SetMuteAllSounds", "true") 
       unityInstance.SendMessage("InputBridge", "SetRealInputReaderDisabled", "true")
       unityInstance.SendMessage("InputBridge", "SetCanQuit", "false")
       
-      window.addEventListener("unity-pause-toggled", (e : any) => {
+      window.addEventListener("PolygonTD-pause-toggled", (e : any) => {
         const paused = e.detail
         gameEventHandlers.OnPauseToggled(paused)
       })
-      window.addEventListener("unity-level-starting", (e : any) => {
+      window.addEventListener("PolygonTD-level-starting", (e : any) => {
         const levelNumber = e.detail
         gameEventHandlers.OnLevelStarted(levelNumber)
       })
-      window.addEventListener("unity-level-lost", (e : any) => {
+      window.addEventListener("PolygonTD-level-lost", (e : any) => {
         const levelNumber = e.detail
         gameEventHandlers.OnLevelLost(levelNumber)
       })
-      window.addEventListener("unity-level-cleared", (e : any) => {
+      window.addEventListener("PolygonTD-level-cleared", (e : any) => {
         const levelNumber = e.detail
         gameEventHandlers.OnLevelCleared(levelNumber)
+      })
+      window.addEventListener("PolygonTD-player-level-progression", (e : any) => {
+        const levelNumber = e.detail
+        gameEventHandlers.OnLevelProgressChanged(levelNumber)
+      })
+      window.addEventListener("PolygonTD-scene-change", (e : any) => {
+        const sceneName = e.detail
+        gameEventHandlers.OnSceneChanged(sceneName)
       })
     });
   };
