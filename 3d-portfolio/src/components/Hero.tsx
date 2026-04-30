@@ -46,9 +46,9 @@ const Hero = () => {
           <div className='w-1 sm:h-80 h-40 violet-gradient'/>
         </div>
         <div>
-          <h1 className={`${styles.heroHeadText} text-white`}>
+          <h2 className={`${styles.heroHeadText} text-white`}>
             {headerIntro} <span className='text-[#915eff]'>{portfolioName}</span>
-          </h1>
+          </h2>
           <p className={`${styles.heroSubText} mt-2 text-white-100`}>
             {description}
           </p>

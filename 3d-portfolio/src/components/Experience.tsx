@@ -5,12 +5,11 @@ import 'react-vertical-timeline-component/style.min.css'
 import {styles} from '../style'
 import { experiences, preTitle, title, subDescription, type Experience } from '../constants/experiences'
 import { SectionWrapper } from '../hoc'
-import { textVariant, fadeIn } from '../utils/motion'
 
 const TITLE_TRANSITION_DELAY = 0.35
 
 const ExperienceCard = ({experience} : {experience : Experience}) => ( 
-<VerticalTimelineElement
+  <VerticalTimelineElement
     contentStyle = {{background : '#1d1836', color: '#fff'}}
     contentArrowStyle = {{borderRight : '7px solid #232631'}}
     date = {experience.date}
@@ -52,7 +51,11 @@ const ExperienceCard = ({experience} : {experience : Experience}) => (
 const Experience = () => {
   return (
     <>
-      <motion.div variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}>
+      <motion.div 
+        initial="hidden" 
+        animate="show" 
+        variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
+      >
         <p className={styles.sectionSubText}>
           {preTitle}
         </p>
@@ -62,11 +65,13 @@ const Experience = () => {
       </motion.div>
         <div className='w-full flex'>
           <motion.p
-            variants={{show: {y: 0, opacity: 1, transition : {delay: 0.1, duration: 1}},}}
+            initial="hidden" 
+            animate="show"
+            variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY * 0.35}}}}
             className={styles.subDescriptionText}
           >
             {subDescription}
-          </motion.p>
+          </motion.p> 
         </div>
       <div className="mt-20 flex-col">
         <VerticalTimeline>
