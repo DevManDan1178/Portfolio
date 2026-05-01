@@ -198,7 +198,12 @@
   -webkit-text-fill-color: transparent;
 }
 
-
+@font-face {
+  font-family: "Pixeloid";
+  src: url("/fonts/PixeloidMono-VGj6x.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
 /* canvas- styles */
 .canvas-loader {

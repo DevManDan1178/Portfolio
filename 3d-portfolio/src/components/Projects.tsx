@@ -11,7 +11,7 @@ const PROJECTS_APPEARANCE_ANIMATION_Y = 200
 
 const ProjectCard = ({project , index} : {project : Project, index : number}) => {
   const [showingBulletPoints, setShowingBulletPoints] = useState<boolean>(false)
-  const {name, display, description, tags, link, visuals, bulletPoints, onClick} = project
+  const {name, display, description, tags, link, visuals, bulletPoints} = project
   const [showingSubtagIds, setShowingSubtagsIds] = useState<Record<string, boolean | undefined>>({}) //Bitmask
 
   const getToggleSubTagsCall : (subTag : string) => () => void = (subTag : string) => () => {
@@ -64,7 +64,6 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
         },}}}
         className='sm:w-[340px] w-[100%]'
         onClick={(e => {
-            if (onClick) onClick()
             console.log("clicked project ", project.name)
           })}
         onAnimationComplete={() => {
@@ -75,7 +74,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
       tiltMaxAngleX={5}
       tiltMaxAngleY={5}
       transitionSpeed={1000}
-      className={`bg-slate-800 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}`}
+      className={`bg-slate-700/50 hover:bg-slate-400/50 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
       >
         <div className='w-[calc(100%-30px)] pt-[10px] pb-[10px] group'>
           <div className='relative w-full h-full'>
@@ -122,7 +121,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
                 >
                   <span 
                     onClick={tag.subTags.length > 0 ? getToggleSubTagsCall(tag.name) : () => {}}
-                    className={`${hasSubTags ? "hover:bg-white/10  bg-black/20" : ""} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px] whitespace-nowrap`}
+                    className={`${hasSubTags ? "hover:bg-white/5 bg-black/15" : ""} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px] whitespace-nowrap`}
     
                   >
                     {tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}

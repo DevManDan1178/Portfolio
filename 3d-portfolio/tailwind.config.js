@@ -23,6 +23,9 @@ module.exports = {
       backgroundImage: {
         "hero-pattern": "url('/src/assets/herobg.png')",
       },
+      fontFamily : {
+        pixeloid : ["Pixeloid", "sans-serif"]
+      }
     },
   },
   plugins: [],

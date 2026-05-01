@@ -7,12 +7,12 @@ export const RESOLUTION = {
   width : 1280,
   height: 720,
 }
-export const RESOLUTION_SCALE  = 1 //Keep as a a multiple of 2 or of 1/2
+export const RESOLUTION_SCALE  = 0.5 //Keep as a a multiple of 2 or of 1/2
 
 export const MENU_SCENES = {
   mainMenu : "Main Menu",
   levelSelect : "Level Select"
-}
+} 
 var _unityCanvas : HTMLCanvasElement
 var _unityInstance : any 
 
@@ -35,6 +35,7 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
   canvas.style.top = "0";
   canvas.style.opacity = "0"; // or visibility: hidden
   canvas.tabIndex = 1;
+
   canvas.addEventListener("pointerdown", (e) => {
     // Only left click
     if (e.button !== 0) return;
@@ -54,12 +55,17 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
   script.async = true;
 
   script.onload = () => {
+
+    function onLoadingProgress(progress : number) {
+      
+    }
+
     // @ts-ignore
     createUnityInstance(canvas, {
       dataUrl: `${GAME_PATH}/Build/${BUILD_NAME}.data`,
       frameworkUrl: `${GAME_PATH}/Build/${BUILD_NAME}.framework.js`,
       codeUrl: `${GAME_PATH}/Build/${BUILD_NAME}.wasm`,
-    }).then((unityInstance: any) => {
+    }, onLoadingProgress).then((unityInstance: any) => {
       _unityInstance = unityInstance
       onUnityInstanceCreated(unityInstance)
       // Mute audio
@@ -91,6 +97,9 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
         const sceneName = e.detail
         gameEventHandlers.OnSceneChanged(sceneName)
       })
+      window.addEventListener("beforeunload", () => {
+        unityInstance?.Quit?.();
+      });
     });
   };
 
@@ -107,39 +116,3 @@ export type GameEventHandlers = {
   OnSceneChanged : (sceneName : string) => void,
   OnLevelProgressChanged : (levelNumber : number) => void,
 }
-
-export type UnityInstance = {
-  // Core messaging (MOST IMPORTANT)
-  SendMessage: (
-    gameObjectName: string,
-    methodName: string,
-    value?: string | number | boolean
-  ) => void;
-
-  // Lifecycle
-  Quit?: () => Promise<void> | void;
-  RemoveFocus?: () => void;
-
-  // Fullscreen control (Unity WebGL template feature)
-  SetFullscreen?: (enabled: 0 | 1) => void;
-
-  // Loading / progress (depends on loader version)
-  Module?: {
-    canvas?: HTMLCanvasElement;
-    WebGL?: WebGLRenderingContext;
-    requestFullscreen?: () => void;
-    exitFullscreen?: () => void;
-  };
-
-  // Memory / runtime hooks (sometimes exposed depending on build)
-  SendInternalMessage?: (target: string, method: string, value?: string) => void;
-
-  // Optional debug / stats (not always present)
-  SetProfilerEnabled?: (enabled: boolean) => void;
-
-  // Unity loader metadata (varies by template)
-  loaderUrl?: string;
-  dataUrl?: string;
-  frameworkUrl?: string;
-  codeUrl?: string;
-};

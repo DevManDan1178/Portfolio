@@ -9,58 +9,32 @@ export const SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER = 3
 export const BASE_TAG_SIZE = 20
 export const MINIMUM_SUBTAG_TEXT_SIZE = 14
 
-
-
 export const defaultTagSymbol = (tagName : string) => `‹${tagName}›`
 
 export const preTitle : string = "Stuff I Made"
 export const title : string = "Projects"
 export const subDescription : string = "Making stuff is fun when you make fun stuff."
 
-export type Tag = {
-  name : string,
-  color : string,
-  subTags : Tag[]
-  baseTextSize? : number,
-  overrideTagSymbol? : (tagName : string) => ReactElement
-}
-
-export type ImageSource = string | "None"
-
-export type BulletPoint = {
-  text : string,
-  color? : string,
-}
-
-export type ProjectDisplay = ({LinkElement} : {LinkElement? : ReactElement}) => ReactElement
-
-export type Project = {
-  name : string,
-  description: string,
-  tags: Tag[],
-  display : ProjectDisplay,
-  link? : string,
-  bulletPoints? : BulletPoint[],
-  visuals? : {
-    nameColor? : string,
-    descriptionColor? : string,
-  }
-  onClick? : () => void
-}
-
 const CategoryTags : Record<string, Tag> = {
+    Playable : { //DEPRECATED
+    name : "Click To Play",
+    color : "#e0f5c6",
+    subTags : [],
+    baseTextSize : 16,
+    overrideTagSymbol : (tagName : string) => (<span> <br/>
+      <span 
+      className="bg-black/25  hover:bg-white/25 rounded-xl cursor-pointer"
+      onClick={() => {window.open('/PolygonTD', '_blank')}}
+      >
+        {`「${tagName}」`}
+      </span>
+    </span>)
+  },
   Academic : {
     name : "Academic",
     color : "#e0b7ad",
     subTags : [],
     baseTextSize : 14,
-  },
-  Playable : {
-    name : "Playable",
-    color : "#e0f5c6",
-    subTags : [],
-    baseTextSize : 16,
-    overrideTagSymbol : (tagName : string) => <span>{`「${tagName}」`}</span>,
   },
   TeamProject : {
     name : "Team Project",
@@ -169,7 +143,7 @@ export const projects : Project[] = [
   {
     name : "Polygon Tower Defense",
     description : "Small tower defense game with player-customized upgrading and adding of map elements",
-    tags : [Tags.Unity, CategoryTags.Playable],
+    tags : [Tags.Unity, {...CategoryTags.Playable}],
     display : GetImageDisplay(polygonTD, "PolygonTD"),
     link : "https://randomguy1178.itch.io/polygon-tower-defense",
     visuals : {
@@ -179,7 +153,7 @@ export const projects : Project[] = [
   {
     name : "Echo Arena",
     description: "Simple arena shooter game where you must also evade your past movements",
-    tags : [Tags.Godot, MiscTags.GMTKJam2026, CategoryTags.Playable],
+    tags : [Tags.Godot, MiscTags.GMTKJam2026, {...CategoryTags.Playable}],
     display : GetImageDisplay(echoArena, "Echo Arena"),
     link : "https://randomguy1178.itch.io/echo-arena",
     visuals : {
@@ -189,7 +163,7 @@ export const projects : Project[] = [
   {
     name : "Untitled 2D Shooter",
     description : "Layered multiplayer (2+) horizontal shooter with various abilities, weapons, and cosmetics.",
-    tags : [Tags.RobloxStudio, CategoryTags.Playable],
+    tags : [Tags.RobloxStudio],
     display : GetImageDisplay(untitled2DShooter, "Untitled 2D Shooter"),
     link : "https://www.roblox.com/games/15434757878/Untitled-2D-Shooter",
     visuals : {
@@ -226,6 +200,26 @@ function GetImageDisplay(image : string, name : string) : ProjectDisplay {
     />
       {LinkElement}
     </>
+  }
+}
+
+function GetPlayableTag(onClick : () => void) : Tag {
+  
+    const overrideTagSymbol = (tagName : string) => (<span> <br/>
+      <span 
+      className="bg-black/25  hover:bg-white/25 rounded-xl cursor-pointer"
+      onClick={onClick}
+      >
+        {`「${tagName}」`}
+      </span>
+    </span>)
+    
+    return {
+    name : "Click To Play",
+    color : "#e0f5c6",
+    subTags : [],
+    baseTextSize : 16,
+    overrideTagSymbol : overrideTagSymbol
   }
 }
 
@@ -276,4 +270,35 @@ export function getDefaultLinkElement(onClick : () => void) {
       </div>
     </div> 
   )
+}
+
+
+export type Tag = {
+  name : string,
+  color : string,
+  subTags : Tag[]
+  baseTextSize? : number,
+  overrideTagSymbol? : (tagName : string) => ReactElement,
+}
+
+export type ImageSource = string | "None"
+
+export type BulletPoint = {
+  text : string,
+  color? : string,
+}
+
+export type ProjectDisplay = ({LinkElement} : {LinkElement? : ReactElement}) => ReactElement
+
+export type Project = {
+  name : string,
+  description: string,
+  tags: Tag[],
+  display : ProjectDisplay,
+  link? : string,
+  bulletPoints? : BulletPoint[],
+  visuals? : {
+    nameColor? : string,
+    descriptionColor? : string,
+  }
 }

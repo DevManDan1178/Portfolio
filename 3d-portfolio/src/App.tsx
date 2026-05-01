@@ -1,7 +1,9 @@
-import { BrowserRouter } from "react-router-dom";
-import { About, Contact, Experience, Testimonials, Hero, Navbar, Technologies, Projects, StarsCanvas } from "./components";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
-import { navLinks } from "./constants";
+import PolygonTDGamePage from "./pages/games/polygonTD/PolygonTDGamePage";
+import MainPage from "./pages/MainPage";
+
+
 
 function App() {
   useEffect(() => {
@@ -16,31 +18,20 @@ function App() {
     window.removeEventListener("hashchange", handleHashChange);
   };
 }, []);
+
+  
   return (
     <div>
-      <BrowserRouter> 
-        <div className="relative z-0 bg-primary">
-          <Navbar/>
-          <div 
-          className="bg-hero-pattern bg-cover bg-no-repeat bg-center"
-          id={navLinks.hero.id}
-          >
-            <Hero/>
-          </div>
-          <div id={navLinks.about.id}><About/></div>
-          <div id={navLinks.projects.id}><Projects/></div>
-          <div id={navLinks.technologies.id}> <Technologies/></div>
-          <div id={navLinks.experience.id}><Experience/></div>  
-          <div id={navLinks.testimonials.id}><Testimonials/></div>
-          <div className="relative z-0">
-            <Contact/>
-            <StarsCanvas/>
-          </div>
-        </div>
-      </BrowserRouter>
+        <BrowserRouter> 
+          <Routes>
+            <Route path="/" element={<MainPage/>}/>
+            <Route path="/PolygonTD" element={<PolygonTDGamePage/>}/>  
+          </Routes>
+        </BrowserRouter>
     </div>    
   )
     
 }
+
 
 export default App;

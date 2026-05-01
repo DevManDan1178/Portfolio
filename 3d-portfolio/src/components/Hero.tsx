@@ -4,7 +4,7 @@ import { styles } from '../style'
 import ComputerCanvas from './canvas/Computers'
 import { headerIntro, description, TerminalTexts } from '../constants/hero'
 import { portfolioHeroName } from '../constants'
-import { MENU_SCENES, type GameEventHandlers, type UnityInstance } from './canvas/PolygonTD'
+import { MENU_SCENES, type GameEventHandlers } from './canvas/PolygonTD'
 type GameState = "Idle" | "Menu" | "LevelSelect" | "Playing" | "Lost" | "Cleared"
 
 
