@@ -27,13 +27,10 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
   canvas.height = height;
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  canvas.style.visibility = "visible";
   canvas.style.pointerEvents = "auto";
   canvas.style.position = "absolute";
-  //canvas.style.display = "none"
   canvas.style.left = "-10000px";
-  canvas.style.top = "0";
-  canvas.style.opacity = "0"; // or visibility: hidden
+  canvas.style.visibility = "hidden";
   canvas.tabIndex = 1;
 
   canvas.addEventListener("pointerdown", (e) => {

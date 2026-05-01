@@ -4,7 +4,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import { MOUSE, SRGBColorSpace } from "three";
 import CanvasLoader from "../Loader";
-import PolygonTD, {RESOLUTION, RESOLUTION_SCALE, type GameEventHandlers, type UnityInstance} from './PolygonTD'
+import PolygonTD, {RESOLUTION, RESOLUTION_SCALE, type GameEventHandlers} from './PolygonTD'
+import { type UnityInstance } from "../../pages/games/UnityGamePage";
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
 //const SCREEN_MESH_SIZE = { x: 4.7397, y: 2.6041 };
@@ -88,19 +89,48 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas, unityInstanceRef, on
 
 };
 
+
+function waitForUnityFirstFrame(canvas: HTMLCanvasElement, cb: () => void) {
+  const check = () => {
+    const gl =
+      canvas.getContext("webgl2") ||
+      canvas.getContext("webgl");
+
+    if (!gl) return requestAnimationFrame(check);
+
+    const pixels = new Uint8Array(4);
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    const isNotBlack = pixels.some(v => v !== 0);
+
+    if (isNotBlack) {
+      cb();
+    } else {
+      requestAnimationFrame(check);
+    }
+  };
+
+  requestAnimationFrame(check);
+}
+
+
 const Computer = ({ isMobile, unityCanvas, updateFrames }: { isMobile: boolean; unityCanvas: HTMLCanvasElement | null, updateFrames : boolean }) => {
   const computer = useGLTF("/desktop_pc/scene.gltf");
   const [unityTexture, setUnityTexture] = useState<CanvasTexture | null>(null);
 
   useEffect(() => {
     if (!unityCanvas) return;
-    const texture = new CanvasTexture(unityCanvas);
-    texture.colorSpace = SRGBColorSpace
-    texture.generateMipmaps = false
-    texture.minFilter = LinearFilter;
-    texture.magFilter = LinearFilter;
-    texture.needsUpdate = true;
-    setUnityTexture(texture);
+
+    waitForUnityFirstFrame(unityCanvas, () => {
+      const texture = new CanvasTexture(unityCanvas);
+
+      texture.colorSpace = SRGBColorSpace;
+      texture.generateMipmaps = false;
+      texture.minFilter = LinearFilter;
+      texture.magFilter = LinearFilter;
+
+      setUnityTexture(texture);
+    });
   }, [unityCanvas]);
 
   useLayoutEffect(() => {
@@ -112,11 +142,15 @@ const Computer = ({ isMobile, unityCanvas, updateFrames }: { isMobile: boolean; 
     });
   }, [unityTexture, computer]);
 
-  
 
   useFrame(() => {
-    if (updateFrames && unityTexture) unityTexture.needsUpdate = true;
+    if (!updateFrames || !unityTexture || !unityCanvas) return;
+
+    if (unityCanvas.width > 0 && unityCanvas.height > 0) {
+      unityTexture.needsUpdate = true;
+    }
   });
+
 
   return <primitive 
     object={computer.scene} 
