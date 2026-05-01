@@ -1,29 +1,23 @@
 import React, { useState } from 'react'
 import Tilt from 'react-parallax-tilt'
 import { motion } from 'framer-motion'
-import { type BulletPoint, type Project } from '../constants/projects'
+import { getDefaultLinkElement, type BulletPoint, type Project, MINIMUM_SUBTAG_TEXT_SIZE, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, BASE_TAG_SIZE, PROJECTS_TITLE_TEXT_SIZE, PROJECTS_DESCRIPTION_TEXT_SIZE, PROJECTS_BULLET_POINTS_TEXT_SIZE, defaultTagSymbol } from '../constants/projects'
 import { styles } from '../style'
 import { SectionWrapper } from '../hoc'
 import { preTitle, title, subDescription, projects, type Tag } from '../constants/projects'
 
 const TITLE_TRANSITION_DELAY = 0.35
-
-const PROJECTS_TITLE_TEXT_SIZE = 24
-const PROJECTS_DESCRIPTION_TEXT_SIZE = 20
-const PROJECTS_BULLET_POINTS_TEXT_SIZE = 16
-
 const PROJECTS_APPEARANCE_ANIMATION_Y = 200
-const SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER = 2
-const BASE_TAG_SIZE = 20
-const MINIMUM_SUBTAG_TEXT_SIZE = 14
 
 const ProjectCard = ({project , index} : {project : Project, index : number}) => {
-  const {name, image, description, tags, link, visuals, bulletPoints, onClick} = project
+  const [showingBulletPoints, setShowingBulletPoints] = useState<boolean>(false)
+  const {name, display, description, tags, link, visuals, bulletPoints, onClick} = project
   const [showingSubtagIds, setShowingSubtagsIds] = useState<Record<string, boolean | undefined>>({}) //Bitmask
+
   const getToggleSubTagsCall : (subTag : string) => () => void = (subTag : string) => () => {
         setShowingSubtagsIds({...showingSubtagIds, [subTag] : !!!showingSubtagIds[subTag]})
       }
-
+  const Display = display
   //@ts-ignore
   function getSubTagsDisplay(tagList : Tag[], parentKey : string, textSize : number) {
     //@ts-ignore
@@ -36,27 +30,26 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
         >
           <span 
             onClick={hasSubTags? getToggleSubTagsCall(key) : () => {}}
-            className={`${hasSubTags ? "hover:bg-black/15" : ""} rounded-2xl text-[${textSize}px] ${tag.color}`}
+            className={`${hasSubTags ? "hover:bg-black/15" : ""} rounded-2xl text-[${textSize}px] ${tag.color} whitespace-nowrap inline-block`}
           >
-            {"<"}{tag.name}{"> "}
+            &nbsp;{tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}
           </span>
         
           {
             showingSubTags && <span>
-              <br/>
               {getSubTagsDisplay(tag.subTags, key, Math.max(MINIMUM_SUBTAG_TEXT_SIZE, textSize - SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER))}
-              <br/>
             </span>
           }
-        </span>
+        </span> 
     })
   }
-
+  const [showing, setShowing] = useState<boolean>(false)
+  
   return <motion.div 
      variants={{
       hidden: {
         x: 0,
-        y:-PROJECTS_APPEARANCE_ANIMATION_Y,
+        y:PROJECTS_APPEARANCE_ANIMATION_Y,
         opacity: 0,
       },
       show: {
@@ -69,33 +62,28 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
           duration: 0.75,
           ease: "easeOut",
         },}}}
-        className='sm:w-[360px] w-[100%]'
+        className='sm:w-[340px] w-[100%]'
         onClick={(e => {
             if (onClick) onClick()
             console.log("clicked project ", project.name)
           })}
+        onAnimationComplete={() => {
+          setShowing(true)
+        }}
       >
        <Tilt
       tiltMaxAngleX={5}
       tiltMaxAngleY={5}
       transitionSpeed={1000}
-      className={`bg-slate-800 rounded-2xl w-full h-full relative -top-[${PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex`}
+      className={`bg-slate-800 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}`}
       >
-        <div className='w-[calc(100%-20px)] pt-[10px] pb-[10px] group'>
+        <div className='w-[calc(100%-30px)] pt-[10px] pb-[10px] group'>
           <div className='relative w-full h-full'>
-            <img
-            src={image}
-            alt={name}
-            className='w-full h-full object-cover rounded-2xl brightness-[75%] group-hover:brightness-[100%] transition-[filter] duration-300 ease-in-out'
+            <Display 
+            LinkElement={!!link ? getDefaultLinkElement(() => window.open(link, "_blank")) : <></>
+            } 
             />
-            <div className='absolute inset-0 flex justify-end m-3 card-img_hover pointer-events-none'>
-              <div
-                className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer pointer-events-auto'
-                onClick={() => window.open(link, "_blank")}
-              > 
-                <h1 className='w-1/2 h-1/2 object-contain'> 🔗 </h1>
-              </div>
-            </div>
+            
           </div>
           <div className='mt-5'>
             <h3 className={`font-bold text-[${PROJECTS_TITLE_TEXT_SIZE}px] ${visuals?.nameColor ?? ""}`}
@@ -108,17 +96,23 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
             >
               {description}
             </p>
-            <div>
-              {bulletPoints?.map((bulletPoint : BulletPoint, index : number) => (
-                <p 
-                className={`${bulletPoint.color ?? ""} text-[${PROJECTS_BULLET_POINTS_TEXT_SIZE}px] mt-[10px]`}
-                style={{color : bulletPoint.color}}
-                >
-                  {"> "}{bulletPoint.text}
-                </p>
-              ))}
+            <div className='rounded-2xl mt-3 items-center justify-center flex cursor-default' onClick={() => {setShowingBulletPoints(!showingBulletPoints)}}>
+              {(bulletPoints && !showingBulletPoints) && 
+                  <div className='text-center hover:bg-white/5 bg-white/15 rounded-2xl w-[20px] text-[14px] text-teal-100 '>+</div>
+              }
+              <div>
+                {showingBulletPoints && bulletPoints?.map((bulletPoint : BulletPoint, index : number) => (
+                  <p 
+                  key={`${index}`}
+                  className={`${bulletPoint.color ?? "text-teal-100"} text-[${PROJECTS_BULLET_POINTS_TEXT_SIZE}px] mt-[10px]`}
+                  style={{color : bulletPoint.color}}
+                  > 
+                    &nbsp;&nbsp;{"• "}{bulletPoint.text}
+                  </p>
+                ))}
+              </div>
             </div>
-            <div className='mt-4 h-full gap-2'>
+            <div className='mt-3 h-full gap-2'>
               {tags.map((tag : Tag, index : number) => { 
                 const showingSubTags = showingSubtagIds[tag.name]
                 const hasSubTags = tag.subTags.length > 0
@@ -128,9 +122,10 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
                 >
                   <span 
                     onClick={tag.subTags.length > 0 ? getToggleSubTagsCall(tag.name) : () => {}}
-                    className={`${hasSubTags ? "hover:bg-white/10  bg-black/20" : ""} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px]`}
+                    className={`${hasSubTags ? "hover:bg-white/10  bg-black/20" : ""} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px] whitespace-nowrap`}
+    
                   >
-                    {"<"}{tag.name}{">"}
+                    {tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}
                     <br/>
                   </span>
                   {
@@ -174,11 +169,10 @@ const Projects = () => {
         </motion.p>
       </div>
       
-      <div className='flex flex-wrap gap-7 items-start justify-normal pt-[50px]'>
+      <div className='flex flex-wrap gap-7 items-start justify-center pt-[50px] w-[100%]'>
         {projects.map((project, index) => (
-          <div>
+          <div key={`project-${index}`}>
             <ProjectCard 
-              key={`project-${index}`}
               index={index}
               project={project}
             />

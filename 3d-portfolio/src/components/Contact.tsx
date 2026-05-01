@@ -6,13 +6,13 @@ import { styles } from '../style'
 import { EarthCanvas } from './canvas'
 import { SectionWrapper } from '../hoc'
 import { slideIn } from '../utils/motion'
-import { portfolioName, portfolioEmail } from '../constants/hero'
+import { portfolioHeroName, portfolioHeroEmail } from '../constants'
 
 const SERVICE_ID = ""
 const TEMPLATE_ID = ""
 const PUBLIC_KEY = ""
-const RECEIVER_EMAIL = portfolioEmail
-const RECEIVER_NAME = portfolioName
+const RECEIVER_EMAIL = portfolioHeroName
+const RECEIVER_NAME = portfolioHeroEmail
 
 
 

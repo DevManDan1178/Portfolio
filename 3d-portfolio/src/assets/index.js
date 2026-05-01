@@ -30,6 +30,7 @@ import polygonTD from "./projects/PolygonTDThumbnail.png"
 import echoArena from "./projects/EchoArenaThumbnail.png"
 import untitled2DShooter from "./projects/Untilted2DShooterThumbnail.png"
 import pendulumSimulator from "./projects/PendulumSimThumbnail.png"
+import portfolioSite from "./projects/PortfolioWebsiteThumbnail.png"
 
 
 export {
@@ -61,5 +62,6 @@ export {
   polygonTD,
   echoArena,
   untitled2DShooter,
-  pendulumSimulator
+  pendulumSimulator,
+  portfolioSite
 };

@@ -1,35 +1,25 @@
-// PolygonTD.tsx
-declare global {
-  interface Window {
-  __PolygonTD : {
-      unityCanvas: HTMLCanvasElement,
-      unityInstance: any,
-    }
-  }
-}
 
 const CONTAINER_ID = "unity-canvas";
 const GAME_PATH = "/unity/PolygonTD";
 const BUILD_NAME = "WebBuild_1.2.5";
 
-export type GameEventHandlers = {
-  OnLevelLost: (levelNumber : number) => void,
-  OnLevelCleared: (levelNumber : number) => void,
-  OnLevelStarted : (levelNumber : number) => void,
-  OnPauseToggled : (paused : boolean) => void,
-  OnSceneChanged : (sceneName : string) => void,
-  OnLevelProgressChanged : (levelNumber : number) => void,
+export const RESOLUTION = {
+  width : 1280,
+  height: 720,
 }
+export const RESOLUTION_SCALE  = 1 //Keep as a a multiple of 2 or of 1/2
 
 export const MENU_SCENES = {
   mainMenu : "Main Menu",
   levelSelect : "Level Select"
 }
+var _unityCanvas : HTMLCanvasElement
+var _unityInstance : any 
 
 // Pure function that creates Unity canvas and returns a lambda to get it
-export default function PolygonTD(width: number, height: number, gameEventHandlers : GameEventHandlers): () => HTMLCanvasElement {
-  if (window.__PolygonTD) {
-    return () => window.__PolygonTD.unityCanvas
+export default function PolygonTD(width: number, height: number, gameEventHandlers : GameEventHandlers, onUnityInstanceCreated : (unityInstance : any) => void): () => HTMLCanvasElement {
+  if (_unityCanvas) {
+    return () => _unityCanvas
   }
   const canvas = document.createElement("canvas");
   canvas.id = CONTAINER_ID;
@@ -54,10 +44,7 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
   })
-  window.__PolygonTD = {
-    unityCanvas : canvas,
-    unityInstance : undefined,
-  }
+  _unityCanvas = canvas
   
 
   //TODO add in Unity functions for losing focus, make game pause on focus loss
@@ -73,10 +60,8 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
       frameworkUrl: `${GAME_PATH}/Build/${BUILD_NAME}.framework.js`,
       codeUrl: `${GAME_PATH}/Build/${BUILD_NAME}.wasm`,
     }).then((unityInstance: any) => {
-      window.__PolygonTD = {
-        unityCanvas : window.__PolygonTD.unityCanvas,
-        unityInstance : unityInstance,
-      }
+      _unityInstance = unityInstance
+      onUnityInstanceCreated(unityInstance)
       // Mute audio
       unityInstance.SendMessage("AudioManager", "SetMuteAllSounds", "true") 
       unityInstance.SendMessage("InputBridge", "SetRealInputReaderDisabled", "true")
@@ -113,3 +98,48 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
 
   return () => canvas;
 }
+
+export type GameEventHandlers = {
+  OnLevelLost: (levelNumber : number) => void,
+  OnLevelCleared: (levelNumber : number) => void,
+  OnLevelStarted : (levelNumber : number) => void,
+  OnPauseToggled : (paused : boolean) => void,
+  OnSceneChanged : (sceneName : string) => void,
+  OnLevelProgressChanged : (levelNumber : number) => void,
+}
+
+export type UnityInstance = {
+  // Core messaging (MOST IMPORTANT)
+  SendMessage: (
+    gameObjectName: string,
+    methodName: string,
+    value?: string | number | boolean
+  ) => void;
+
+  // Lifecycle
+  Quit?: () => Promise<void> | void;
+  RemoveFocus?: () => void;
+
+  // Fullscreen control (Unity WebGL template feature)
+  SetFullscreen?: (enabled: 0 | 1) => void;
+
+  // Loading / progress (depends on loader version)
+  Module?: {
+    canvas?: HTMLCanvasElement;
+    WebGL?: WebGLRenderingContext;
+    requestFullscreen?: () => void;
+    exitFullscreen?: () => void;
+  };
+
+  // Memory / runtime hooks (sometimes exposed depending on build)
+  SendInternalMessage?: (target: string, method: string, value?: string) => void;
+
+  // Optional debug / stats (not always present)
+  SetProfilerEnabled?: (enabled: boolean) => void;
+
+  // Unity loader metadata (varies by template)
+  loaderUrl?: string;
+  dataUrl?: string;
+  frameworkUrl?: string;
+  codeUrl?: string;
+};

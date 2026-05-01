@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState, type RefObject } from 'react'
 import { motion } from 'framer-motion'
 import { styles } from '../style' 
 import ComputerCanvas from './canvas/Computers'
-import { headerIntro, description, portfolioName, TerminalTexts } from '../constants/hero'
-import { MENU_SCENES, type GameEventHandlers } from './canvas/PolygonTD'
-import { INFINITY } from 'three/tsl'
-
+import { headerIntro, description, TerminalTexts } from '../constants/hero'
+import { portfolioHeroName } from '../constants'
+import { MENU_SCENES, type GameEventHandlers, type UnityInstance } from './canvas/PolygonTD'
 type GameState = "Idle" | "Menu" | "LevelSelect" | "Playing" | "Lost" | "Cleared"
+
 
 const Hero = () => {
   const [levelProgress, setLevelProgress] = useState<number>(0)
   const [terminalText, setTerminalText] = useState<string>(TerminalTexts.TerminalIntroduction)
-
-  const gameEventHandlers : GameEventHandlers = {
+  const gameEventHandlers : RefObject<GameEventHandlers> = useRef({
     OnLevelCleared(levelNumber) {
       setTerminalText(levelNumber >= 5 ? TerminalTexts.LastLevelClear : TerminalTexts.LevelCleared)
     },
@@ -35,9 +34,8 @@ const Hero = () => {
         setTerminalText(TerminalTexts.Menu)
       }
     },
-  }
+  })
 
-  
   return (
     <div className='relative w-full h-screen mx-auto z-10 overflow-hidden items-center'>
       <div className={`${styles.paddingX} absolute inset-0 top-[120px] max-w-7xl mx-auto flex flex-row items-start gap-5`}>
@@ -47,7 +45,7 @@ const Hero = () => {
         </div>
         <div>
           <h2 className={`${styles.heroHeadText} text-white`}>
-            {headerIntro} <span className='text-[#915eff]'>{portfolioName}</span>
+            {headerIntro} <span className='text-[#915eff]'>{portfolioHeroName}</span>
           </h2>
           <p className={`${styles.heroSubText} mt-2 text-white-100`}>
             {description}
@@ -56,27 +54,27 @@ const Hero = () => {
       </div>
       
       <ComputerCanvas gameEventHandlers={gameEventHandlers}/>
-
-      <div className=' absolute h-[7.5%] bottom-0 w-[75%] justify-center items-center flex left-1/2 -translate-x-1/2'>
-        <a href='#about' className='w-[100%] items-center justify-center flex  bg-gray-950/50 rounded-3xl'>
-          <div className='h-full w-[100%] rounded-2xl border-4 border-secondary flex justify-center p-2 items-center overflow-hidden'>
-            <motion.div
-              animate={{  
-                y: ["-300%", "0%"]
-              }}
-              transition={{
-                duration: 2.5,
-                ease: "backInOut",
-              }}
-              className='w-full h-full rounded-full items-center'
-            >
-              <p className='text-center w-auto'>
-                {terminalText}
-              </p>
-            </motion.div>
-          </div>
-        </a>
+        <div className='absolute h-[calc(5%+25px)] bottom-[5px] w-[calc(40%+45px)] justify-between items-center flex left-1/2 -translate-x-1/2'>
+           <a href='#about' className='w-[100%] items-center justify-center flex  bg-gray-950/50 rounded-3xl'>
+              <div className='h-full w-[100%] rounded-2xl border-4 border-secondary flex justify-center p-2 items-center overflow-hidden'>
+                <motion.div
+                  animate={{  
+                    y: ["-300%", "0%"]
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    ease: "backInOut",
+                  }}
+                  className='w-full h-full rounded-full items-center flex justify-center'
+                >
+                  <p className='text-center w-auto text-[20px]'>
+                    {terminalText}
+                  </p>
+                </motion.div>
+              </div>
+            </a> 
       </div>
+
     </div>
   )
 }

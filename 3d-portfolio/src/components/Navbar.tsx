@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { styles } from '../style'
 import { logo, menu, close } from '../assets'
-import { navLinks, type NavLink } from '../constants'
-import { portfolioHandle } from '../constants/hero'
+import { navLinks, type NavLink , portfolioHeroHandle} from '../constants'
 
 
 const Navbar = () => {
@@ -82,7 +81,7 @@ const Navbar = () => {
           className="w-9 h-9 object-contain"
           />
           <p className='text-white text-[18px] font-bold cursor-pointer flex'> 
-            {portfolioHandle}
+            {portfolioHeroHandle}
           </p>
 
         </Link>

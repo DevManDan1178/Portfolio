@@ -1,54 +1,46 @@
-import { CanvasTexture, LinearFilter, Object3D, Mesh, MeshBasicMaterial, Box3, Vector3, Raycaster, Vector2, PointLight } from "three";
-import { Suspense, useEffect, useState } from "react";
+import { CanvasTexture, LinearFilter, Object3D, Mesh, MeshBasicMaterial, Raycaster, Vector2 } from "three";
+import { Suspense, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import { MOUSE, SRGBColorSpace } from "three";
 import CanvasLoader from "../Loader";
-import PolygonTD, { type GameEventHandlers } from "./PolygonTD";
+import PolygonTD, {RESOLUTION, RESOLUTION_SCALE, type GameEventHandlers, type UnityInstance} from './PolygonTD'
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
 //const SCREEN_MESH_SIZE = { x: 4.7397, y: 2.6041 };
 
-const RESOLUTION = {
-  width : 1280,
-  height: 720,
-}
-const RESOLUTION_SCALE  = 0.5 //Keep as a a multiple of 2 or of 1/2
-
-
 const FOCUS_DROPPING_UI_EVENTS : (keyof DocumentEventMap)[] = ["mousedown", "scroll"]
 
-const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: string; unityCanvas: HTMLCanvasElement | null }) => {
+
+const UnityClickForwarder = ({ screenMeshName, unityCanvas, unityInstanceRef, onBlur, onFocus }: { screenMeshName: string; unityCanvas: HTMLCanvasElement | null, unityInstanceRef : RefObject<UnityInstance | null>, onBlur : () => void, onFocus : () => void}) => {
   const { camera, scene, gl } = useThree();
+    
+  useEffect(() => {
+    const handleUIEvent = (event: Event) => {
+      const canvasEl = gl.domElement;
 
-    useEffect(() => {
-      const handleUIEvent = (event: Event) => {
-        const canvasEl = gl.domElement;
+      // If click is NOT inside the Three.js canvas
+      if (!canvasEl.contains(event.target as Node)) { 
+        onBlur()
+      }
+    };
+    FOCUS_DROPPING_UI_EVENTS.forEach((mouseEvent : string) =>  document.addEventListener(mouseEvent, handleUIEvent))
 
-        // If click is NOT inside the Three.js canvas
-        if (!canvasEl.contains(event.target as Node)) {
-
-          window.__PolygonTD?.unityInstance?.SendMessage("GameMaster", "SetPaused");
-          window.__PolygonTD.unityInstance?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "true")
-          window.__PolygonTD.unityCanvas.blur();
-        }
-      };
-      FOCUS_DROPPING_UI_EVENTS.forEach((mouseEvent : string) =>  document.addEventListener(mouseEvent, handleUIEvent))
-
-      return () => {
-        FOCUS_DROPPING_UI_EVENTS.forEach((mouseEvent : string) =>  document.removeEventListener(mouseEvent, handleUIEvent))
-      };
-    }, []);
+    return () => {
+      FOCUS_DROPPING_UI_EVENTS.forEach((mouseEvent : string) =>  document.removeEventListener(mouseEvent, handleUIEvent))
+    };
+  }, []);
 
   useEffect(() => {
     if (!unityCanvas) return;
 
     const raycaster = new Raycaster();
+    const unityInstance = unityInstanceRef.current
     const getInputFunction = (messageFunction: string, affectsFocus : boolean) => (event: MouseEvent) => {
       if (!unityCanvas || event.button !== 0) return;
+      
       if (affectsFocus) {
-        window.__PolygonTD.unityInstance?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "false") //TODO make unity block keys by adding a static bool and checking it on every input detection
-        window.__PolygonTD.unityCanvas.focus()
+        onFocus()
       }
       
       const rect = gl.domElement.getBoundingClientRect();
@@ -64,7 +56,7 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
 
       if (!intersects.length) { 
         if (affectsFocus) {
-            window.__PolygonTD?.unityInstance?.SendMessage("GameMaster", "SetPaused")
+            unityInstance?.SendMessage("GameMaster", "SetPaused")
         }
         return;
       }
@@ -78,16 +70,11 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
       }
 
       const uv = hit.uv;
-
-      const canvasXRelative = uv.x;
-      const canvasYRelative = uv.y;
-      window.__PolygonTD?.unityInstance?.SendMessage("InputBridge", messageFunction,`${canvasXRelative},${canvasYRelative}`
+      unityInstance?.SendMessage("InputBridge", messageFunction,`${uv.x},${uv.y}`
       );
     };
   
     //TODO add keybinds for towers in the game, add a static parameter to prevent quitting like for muting audio
-
-    
     const pointerDownLambda = getInputFunction("OnPointerDown", true)
     const mouseMoveLambda = getInputFunction("OnMouseMove", false)
     gl.domElement.addEventListener("mousemove", mouseMoveLambda);
@@ -96,14 +83,12 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas }: { screenMeshName: 
       gl.domElement.removeEventListener("mousemove", mouseMoveLambda);
       gl.domElement.removeEventListener("mousedown", pointerDownLambda);
     }
-
-    
   }, [camera, scene, gl, screenMeshName, unityCanvas]);
   return null;
 
 };
 
-const Computer = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: HTMLCanvasElement | null }) => {
+const Computer = ({ isMobile, unityCanvas, updateFrames }: { isMobile: boolean; unityCanvas: HTMLCanvasElement | null, updateFrames : boolean }) => {
   const computer = useGLTF("/desktop_pc/scene.gltf");
   const [unityTexture, setUnityTexture] = useState<CanvasTexture | null>(null);
 
@@ -118,7 +103,7 @@ const Computer = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: H
     setUnityTexture(texture);
   }, [unityCanvas]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!unityTexture) return;
     computer.scene.traverse((child: Object3D) => {
       if (child instanceof Mesh && child.name === SCREEN_MESH_NAME) {
@@ -130,7 +115,7 @@ const Computer = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: H
   
 
   useFrame(() => {
-    if (unityTexture) unityTexture.needsUpdate = true;
+    if (updateFrames && unityTexture) unityTexture.needsUpdate = true;
   });
 
   return <primitive 
@@ -142,17 +127,9 @@ const Computer = ({ isMobile, unityCanvas }: { isMobile: boolean; unityCanvas: H
 };
 
 
-const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : GameEventHandlers}) => {
+const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : RefObject<GameEventHandlers>}) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [unityCanvas, setUnityCanvas] = useState<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const getCanvas = PolygonTD(RESOLUTION.width * RESOLUTION_SCALE, RESOLUTION.height * RESOLUTION_SCALE, gameEventHandlers); //CANVAS_DIMENSIONS.x, CANVAS_DIMENSIONS.y
-    const canvas = getCanvas();
-    document.body.appendChild(canvas);
-    setUnityCanvas(canvas);
-  }, []);
-
+  
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 500px)");
     setIsMobile(mediaQuery.matches);
@@ -161,9 +138,43 @@ const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : GameEventHand
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
+  const unityInstanceRef = useRef<UnityInstance | null>(null)
+  const [unityCanvas, setUnityCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [updateFrames, setUpdateFrames] = useState<boolean>(true)
+  
+  useEffect(() => {
+    const onUnityInstanceCreated = (unityInstance : any) => {
+      unityInstanceRef.current = unityInstance
+    }
+
+    const getCanvas = PolygonTD(RESOLUTION.width * RESOLUTION_SCALE, RESOLUTION.height * RESOLUTION_SCALE, gameEventHandlers.current, onUnityInstanceCreated);
+    const canvas = getCanvas();
+    document.body.appendChild(canvas);
+    setUnityCanvas(canvas);
+  }, []);
+
+  const onUnityFocus = () => {
+    console.log("focus")
+    unityInstanceRef.current?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "false") //TODO make unity block keys by adding a static bool and checking it on every input detection
+    unityCanvas?.focus()
+    setUpdateFrames(true)
+  }
+
+  const onUnityBlur = () => {
+    unityInstanceRef.current?.SendMessage("GameMaster", "SetPaused");
+    unityInstanceRef.current?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "true")
+    unityCanvas?.blur()
+    setUpdateFrames(false)
+  }
 
   return (
-    <Canvas shadows camera={{ position: [25, 0, 5], fov: 25}} gl={{ preserveDrawingBuffer: false }}>
+    <Canvas 
+      shadows 
+      camera={{ position: [25, 0, 5], fov: 25}} gl={{ preserveDrawingBuffer: true }}
+      onFocus={() => {
+        onUnityFocus()
+      }}
+    >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
           mouseButtons={{ RIGHT: MOUSE.ROTATE, LEFT: undefined, MIDDLE: MOUSE.DOLLY }}
@@ -174,8 +185,8 @@ const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : GameEventHand
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
         />
-        <Computer isMobile={isMobile} unityCanvas={unityCanvas} />
-        <UnityClickForwarder screenMeshName={SCREEN_MESH_NAME} unityCanvas={unityCanvas} />
+        <Computer isMobile={isMobile} unityCanvas={unityCanvas} updateFrames={updateFrames}/>
+        <UnityClickForwarder screenMeshName={SCREEN_MESH_NAME} unityCanvas={unityCanvas} unityInstanceRef={unityInstanceRef} onBlur={onUnityBlur} onFocus={onUnityFocus}/>
       </Suspense>
       <ambientLight intensity={0.5} />
 

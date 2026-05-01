@@ -1,51 +1,20 @@
 import { experiences } from "./experiences";
 import { services } from "./services";
-import { projects } from "./projects";
 import { testimonials } from "./testimonials";
 import { technologies } from "./technologies";
+import { projects } from "./projects";
+import { navLinks, type NavLink } from "./navbar";
 
-export type NavLink = {
-  id: string,
-  title: string,
-  showInNavbar : boolean,
-}
+export const portfolioHeroName : string = "[Name]"
+export const portfolioHeroHandle : string = "DevManDan"
+export const portfolioHeroEmail : string = "danielorejuelaliu@gmail.com"
 
-export const navLinks : Record<string, NavLink> = {
-  hero : {
-    id : "hero",
-    title : "Hero",
-    showInNavbar : false,
-  },
-  about : {
-    id: "about",
-    title: "About",
-    showInNavbar : true,
-  },
-  projects : {
-    id: "projects",
-    title: "Projects",
-    showInNavbar : true,
-  },
-  technologies : {
-    id : "technologies",
-    title: "Tech",
-    showInNavbar : true,
-  },
-  experience : {
-    id: "experience",
-    title: "Experience",
-    showInNavbar : true,
-  },
-  testimonials : {
-    id : "testimonials",
-    title : "Testimonials",
-    showInNavbar : true,
-  },
-  contact : {
-    id: "contact",
-    title: "Contact",
-    showInNavbar : true,
-  },
+export { 
+  services, 
+  technologies, 
+  experiences, 
+  testimonials, 
+  projects, 
+  navLinks,
+  type NavLink,
 };
-
-export { services, technologies, experiences, testimonials, projects };

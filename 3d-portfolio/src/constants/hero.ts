@@ -1,7 +1,3 @@
-export const portfolioName : string = "[Name]"
-export const portfolioHandle : string = "DevManDan"
-export const portfolioEmail : string = "danielorejuelaliu@gmail.com"
-
 export const headerIntro : string = "Hi, I'm " 
 
 export const description : string = "Check out my stuff"
@@ -18,3 +14,7 @@ export const TerminalTexts = {
     Unpaused : "Let's do this"
 }
 
+
+export const SubTerminalTexts = {
+    Introduction : "Show me something cool!"
+}
