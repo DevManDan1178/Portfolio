@@ -16,20 +16,6 @@ export const title : string = "Projects"
 export const subDescription : string = "Making stuff is fun when you make fun stuff."
 
 const CategoryTags : Record<string, Tag> = {
-    Playable : { //DEPRECATED
-    name : "Click To Play",
-    color : "#e0f5c6",
-    subTags : [],
-    baseTextSize : 16,
-    overrideTagSymbol : (tagName : string) => (<span> <br/>
-      <span 
-      className="bg-black/25  hover:bg-white/25 rounded-xl cursor-pointer"
-      onClick={() => {window.open('/PolygonTD', '_blank')}}
-      >
-        {`「${tagName}」`}
-      </span>
-    </span>)
-  },
   Academic : {
     name : "Academic",
     color : "#e0b7ad",
@@ -143,7 +129,7 @@ export const projects : Project[] = [
   {
     name : "Polygon Tower Defense",
     description : "Small tower defense game with player-customized upgrading and adding of map elements",
-    tags : [Tags.Unity, {...CategoryTags.Playable}],
+    tags : [Tags.Unity, GetPlayableTag("/PolygonTD")],
     display : GetImageDisplay(polygonTD, "PolygonTD"),
     link : "https://randomguy1178.itch.io/polygon-tower-defense",
     visuals : {
@@ -153,7 +139,7 @@ export const projects : Project[] = [
   {
     name : "Echo Arena",
     description: "Simple arena shooter game where you must also evade your past movements",
-    tags : [Tags.Godot, MiscTags.GMTKJam2026, {...CategoryTags.Playable}],
+    tags : [Tags.Godot, MiscTags.GMTKJam2026, GetPlayableTag("/EchoArena")],
     display : GetImageDisplay(echoArena, "Echo Arena"),
     link : "https://randomguy1178.itch.io/echo-arena",
     visuals : {
@@ -203,12 +189,12 @@ function GetImageDisplay(image : string, name : string) : ProjectDisplay {
   }
 }
 
-function GetPlayableTag(onClick : () => void) : Tag {
+function GetPlayableTag(routePath : string) : Tag {
   
     const overrideTagSymbol = (tagName : string) => (<span> <br/>
       <span 
       className="bg-black/25  hover:bg-white/25 rounded-xl cursor-pointer"
-      onClick={onClick}
+      onClick={() => {window.open(routePath, '_blank')}}
       >
         {`「${tagName}」`}
       </span>

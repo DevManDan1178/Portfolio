@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type ReactElement } from "react";
-import UnityGamePage, { type FileInfo, type UnityInstance } from "../UnityGamePage";
+import { type ReactElement } from "react";
+import UnityGamePage, { type FileInfo } from "../UnityGamePage";
 
 
-const GAME_PATH = "/unity/PolygonTD";
+const GAME_PATH = "/games/PolygonTD";
 const BUILD_NAME = "WebBuild_1.2.5";
 
 

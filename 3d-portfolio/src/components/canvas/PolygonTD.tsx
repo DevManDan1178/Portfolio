@@ -1,6 +1,6 @@
 
 const CONTAINER_ID = "unity-canvas";
-const GAME_PATH = "/unity/PolygonTD";
+const GAME_PATH = "/games/PolygonTD";
 const BUILD_NAME = "WebBuild_1.2.5";
 
 export const RESOLUTION = {

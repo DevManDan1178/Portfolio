@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import PolygonTDGamePage from "./pages/games/polygonTD/PolygonTDGamePage";
+import EchoArenaGamePage from "./pages/games/echoArena/EchoArenaGamePage";
 import MainPage from "./pages/MainPage";
 
 
@@ -26,6 +27,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage/>}/>
             <Route path="/PolygonTD" element={<PolygonTDGamePage/>}/>  
+            <Route path="/EchoArena" element={<EchoArenaGamePage/>}/>
           </Routes>
         </BrowserRouter>
     </div>    

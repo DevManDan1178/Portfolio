@@ -4,7 +4,8 @@ export type FileInfo = {gamePath : string, buildName : string}
 
 export default function UnityGamePage({ descriptionList, config, canvasDimensions, containerId, fileInfo } : {descriptionList : ReactElement[], config : UnityLoaderConfig, canvasDimensions : {x : number, y : number}, containerId : string, fileInfo : FileInfo}) : () => ReactElement {
     return () => {
-        const [loadingProgress, setLoadingProgress] = useState<number>(0)
+        const [loading, setLoading] = useState(true)
+        const [progress, setProgress] = useState<number>(0)
         const containerRef = useRef<HTMLDivElement>(null);
         const canvasRef = useRef<HTMLCanvasElement | null>(null);
         const unityInstanceRef = useRef<any>(null);
@@ -12,7 +13,7 @@ export default function UnityGamePage({ descriptionList, config, canvasDimension
         
         function onLoadingProgress(progress : number) {
             console.log("loading progress ", progress)
-            setLoadingProgress(progress)
+            setProgress(progress)
         }
 
         useEffect(() => {
@@ -41,11 +42,11 @@ export default function UnityGamePage({ descriptionList, config, canvasDimension
             createUnityInstance(canvas, config, onLoadingProgress).then((unityInstance: UnityInstance) => {
                 unityInstanceRef.current = unityInstance;
                 canvas.focus()
-                
                 unityInstance.SendMessage("InputBridge", "SetRealInputReaderDisabled", "false");
                 unityInstance.SendMessage("InputBridge", "SetCanQuit", "false")
+                setLoading(false)
                 window.addEventListener("beforeunload", () => {
-                unityInstance?.Quit?.();
+                    unityInstance?.Quit?.();
                 });
             });
             };
@@ -70,11 +71,28 @@ export default function UnityGamePage({ descriptionList, config, canvasDimension
                 className="w-[calc(50%+125px)] aspect-video border-2 border-zinc-700 rounded-2xl flex items-center justify-center relative"
                 ref={containerRef}
             > 
-                {loadingProgress < 0.99 && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="font-pixeloid text-[40px] text-white">
-                    LOADING - {Math.floor(loadingProgress * 100)}%
+                {loading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 gap-4">
+
+                    <div className="font-pixeloid text-[30px] text-white">
+                    LOADING...
                     </div>
+
+                    {/* PROGRESS BAR BACKGROUND */}
+                    <div className="w-[60%] h-4 bg-zinc-800 rounded-sm overflow-hidden">
+                    
+                    {/* PROGRESS BAR FILL */}
+                    <div
+                        className="h-full bg-white transition-all duration-200"
+                        style={{ width: `${Math.floor(progress * 100)}%` }}
+                    />
+                    </div>
+
+                    {/* PERCENT TEXT */}
+                    <div className="text-[25px] text-zinc-400 font-pixeloid">
+                    {Math.floor(progress * 100)}%
+                    </div>
+
                 </div>
                 )}
             </div>
