@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 
 export type FileInfo = {gamePath : string, buildName : string}
 
+
 export default function UnityGamePage({ descriptionList, config, canvasDimensions, containerId, fileInfo } : {descriptionList : ReactElement[], config : UnityLoaderConfig, canvasDimensions : {x : number, y : number}, containerId : string, fileInfo : FileInfo}) : () => ReactElement {
     return () => {
         const [loading, setLoading] = useState(true)
@@ -63,31 +64,32 @@ export default function UnityGamePage({ descriptionList, config, canvasDimension
         return (
             <div className="w-[100%] h-screen flex flex-col items-center justify-normal p-10 bg-zinc-950 text-white">
             
+            {/* TITLE */}
             <div className="text-3xl font-semibold ">
                 <p className="pb-5 text-center font-pixeloid">POLYGON TOWER DEFENSE</p> 
             </div>
 
+            {/* GAME CONTAINER */}
             <div 
-                className="w-[calc(50%+125px)] aspect-video border-2 border-zinc-700 rounded-2xl flex items-center justify-center relative"
+                className="w-[calc(50%+125px)] aspect-video border-4 border-zinc-700 rounded-2xl flex items-center justify-center relative"
                 ref={containerRef}
-            > 
+            >   
+                {/* LOADING CONTAINER */}
                 {loading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 gap-4">
+                <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-black/80 z-10 gap-4">
 
                     <div className="font-pixeloid text-[30px] text-white">
                     LOADING...
                     </div>
 
-                    {/* PROGRESS BAR BACKGROUND */}
-                    <div className="w-[60%] h-4 bg-zinc-800 rounded-sm overflow-hidden">
-                    
-                    {/* PROGRESS BAR FILL */}
-                    <div
-                        className="h-full bg-white transition-all duration-200"
-                        style={{ width: `${Math.floor(progress * 100)}%` }}
-                    />
-                    </div>
-
+                    {/* PROGRESS BAR*/}
+                    <div className="w-[60%] h-4 bg-zinc-800 overflow-hidden">          
+                        {/* PROGRESS BAR FILL */}
+                        <div
+                            className="h-full bg-white transition-all duration-200"
+                            style={{ width: `${Math.floor(progress * 100)}%` }}
+                        />
+                        </div>
                     {/* PERCENT TEXT */}
                     <div className="text-[25px] text-zinc-400 font-pixeloid">
                     {Math.floor(progress * 100)}%
@@ -96,15 +98,14 @@ export default function UnityGamePage({ descriptionList, config, canvasDimension
                 </div>
                 )}
             </div>
-            
+            {/* DESCRIPTION */}
             <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
                 <div className="w-full max-w-[80%] text-center">
                 {descriptionList.map((description : ReactElement, index : number) => (
                     <p key={index}>
                     {description}
                     <br/>
-                    </p>
-                
+                    </p> 
                 ))
 
                 }

@@ -8,45 +8,47 @@ import { SectionWrapper } from '../hoc'
 
 const TITLE_TRANSITION_DELAY = 0.35
 
-const ExperienceCard = ({experience} : {experience : Experience}) => ( 
-  <VerticalTimelineElement
-    contentStyle = {{background : '#1d1836', color: '#fff'}}
-    contentArrowStyle = {{borderRight : '7px solid #232631'}}
-    date = {experience.date}
-    iconStyle = {{background: experience.iconBg}}
-    icon = {
-      <div className='flex justify-center items-center w-full h-full'>
-        <img
-          src = {experience.icon}
-          alt = {experience.companyName}
-          className='w-[60%] h-[60$] object-contain items-center'
-        />
+const ExperienceCard = ({experience} : {experience : Experience}) => {
+  const iconInfo = experience.iconInfo
+  return (
+    <VerticalTimelineElement
+      contentStyle = {{background : '#1d1836', color: '#fff'}}
+      contentArrowStyle = {{borderRight : '7px solid #232631'}}
+      date = {experience.date}
+      iconStyle = {{background: iconInfo.background, overflow : "hidden"}}
+      icon = {
+        <div className='flex justify-center items-center w-full h-full'>
+          <img
+            src = {iconInfo.icon}
+            alt = {experience.companyName}
+            className={`w-[${100 * (iconInfo.iconScale ?? 1)}%] h-[${100 * (iconInfo.iconScale ?? 1)}%] object-contain items-center overflow-hidden`}
+          />
+        </div>  
+      }
+      >
+      <div>
+        <h3 className='text-white text-[24px] font-bold'>
+          {experience.title}
+        </h3>
+        <p className='text-secondary text-[16px] font-semibold' style={{margin: 0}}>
+          {experience.companyName}
+        </p>
       </div>
-    }
-    >
-    <div>
-      <h3 className='text-white text-[24px] font-bold'>
-        {experience.title}
-      </h3>
-      <p className='text-secondary text-[16px] font-semibold' style={{margin: 0}}>
-        {experience.companyName}
-      </p>
-    </div>
-    <ul className='mt-5 list-disc ml-5 space-y-2'>
-      {experience.points.map((point, index) => (
-        <li 
-          key={`experience-point-${index}`}
-          className='text-white-100 text-[14px] pl-1 tracking-wider'
-        >
-          {point}  
-        </li>
+      <ul className='mt-5 list-disc ml-5 space-y-2'>
+        {experience.points.map((point, index) => (
+          <li 
+            key={`experience-point-${index}`}
+            className='text-white-100 text-[14px] pl-1 tracking-wider'
+          >
+            {point}  
+          </li>
 
-      ))}
-    </ul>
+        ))}
+      </ul>
 
-  </VerticalTimelineElement>
-)
-
+    </VerticalTimelineElement>
+  )
+}
 
 const Experience = () => {
   return (

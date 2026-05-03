@@ -21,16 +21,13 @@ import tailwind from "./tech/tailwind.png";
 import typescript from "./tech/typescript.png";
 import threejs from "./tech/threejs.svg";
 
-import meta from "./company/meta.png";
-import shopify from "./company/shopify.png";
-import starbucks from "./company/starbucks.png";
-import tesla from "./company/tesla.png";
-
 import polygonTD from "./projects/PolygonTDThumbnail.png"
 import echoArena from "./projects/EchoArenaThumbnail.png"
 import untitled2DShooter from "./projects/Untilted2DShooterThumbnail.png"
 import pendulumSimulator from "./projects/PendulumSimThumbnail.png"
 import portfolioSite from "./projects/PortfolioWebsiteThumbnail.png"
+
+import vanierCollege from "./experience/VanierCollege.png"
 
 
 export {
@@ -55,13 +52,10 @@ export {
   tailwind,
   typescript,
   threejs,
-  meta,
-  shopify,
-  starbucks,
-  tesla,
   polygonTD,
   echoArena,
   untitled2DShooter,
   pendulumSimulator,
-  portfolioSite
+  portfolioSite,
+  vanierCollege
 };

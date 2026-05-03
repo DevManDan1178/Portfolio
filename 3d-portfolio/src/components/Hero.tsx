@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState, type RefObject } from 'react'
-import { motion } from 'framer-motion'
+import { motion, transform } from 'framer-motion'
 import { styles } from '../style' 
 import ComputerCanvas from './canvas/Computers'
 import { headerIntro, description, TerminalTexts } from '../constants/hero'
 import { portfolioHeroName } from '../constants'
 import { MENU_SCENES, type GameEventHandlers } from './canvas/PolygonTD'
-type GameState = "Idle" | "Menu" | "LevelSelect" | "Playing" | "Lost" | "Cleared"
+import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
+const ANIMATED_HEADER_APPEARANCE_DURATION : number = .75
+const DESCRIPTION_APPEARANCE_DELAY : number = 0.75
+const ANIMATED_DESCRIPTION_APPEARANCE_DURATION : number = 0.5
 
 const Hero = () => {
   const [levelProgress, setLevelProgress] = useState<number>(0)
@@ -28,6 +31,7 @@ const Hero = () => {
       setLevelProgress(levelNumber)
     },
     OnSceneChanged(sceneName) {
+      console.log(sceneName, MENU_SCENES.levelSelect)
       if (sceneName === MENU_SCENES.levelSelect) {
         setTerminalText(TerminalTexts.LevelSelect)
       } else if (sceneName === MENU_SCENES.mainMenu) {
@@ -35,7 +39,8 @@ const Hero = () => {
       }
     },
   })
-
+  const headerTimeBetweenLetters = ANIMATED_HEADER_APPEARANCE_DURATION/(headerIntro.length + portfolioHeroName.length)
+  const descriptionTimeBetweenLetters = ANIMATED_DESCRIPTION_APPEARANCE_DURATION/(description.length)
   return (
     <div className='relative w-full h-screen mx-auto z-10 overflow-hidden items-center'>
       <div className={`${styles.paddingX} absolute inset-0 py-2 top-[40px] max-w-7xl mx-auto flex flex-row items-start gap-5`}>
@@ -45,10 +50,14 @@ const Hero = () => {
         </div>
         <div>
           <h2 className={`${styles.heroHeadText} text-white`}>
-            {headerIntro} <span className='text-[#915eff]'>{portfolioHeroName}</span>
+            <AnimatedTextAppearance text={headerIntro} timeBetweenLetters={headerTimeBetweenLetters} startingState={{translateY: 100}}/> 
+            <span className='text-[#915eff]'> 
+               &nbsp;
+              <AnimatedTextAppearance text={portfolioHeroName} timeBetweenLetters={headerTimeBetweenLetters} delay={headerIntro.length * headerTimeBetweenLetters} startingState={{translateY: -100, translateX: -10}}/> 
+            </span>
           </h2>
           <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-            {description}
+            <AnimatedTextAppearance text={description} timeBetweenLetters={descriptionTimeBetweenLetters} delay={ANIMATED_HEADER_APPEARANCE_DURATION + DESCRIPTION_APPEARANCE_DELAY} startingState={{translateY: -20, translateX: -10}}/> 
           </p>
         </div>
       </div>

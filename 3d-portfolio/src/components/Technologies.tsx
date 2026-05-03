@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
 import { BallCanvas } from './canvas'
 import { SectionWrapper } from '../hoc'
-import { technologies, title, subDescription, type Technology, solvedtitle, solvedSubDescription, abortedSubDescription, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
+import { preTitle, technologies, title, subDescription, type Technology, solvedtitle, solvedSubDescription, abortedSubDescription, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../style'
 
@@ -26,7 +26,7 @@ const Technologies = () => {
   const [aborted, setAborted] = useState(false)
   const [inputDisabled, setInputDisabled] = useState(false)
   const [technologyNodes, setTechnologyNodes] = useState<TechnologyNode[]>(getRandomizedTechnologyNodes())
-
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   
 
   const onCorrectPairSelected = (index1 : number, index2 : number) => {
@@ -41,7 +41,7 @@ const Technologies = () => {
       return technologyNode
     }))
     if (solved) {
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setSolved(true), SOLVED_DISPLAY_DELAY
       })
     }
@@ -50,6 +50,10 @@ const Technologies = () => {
   const onWrongPairSelected = (index1 : number, index2 : number) => {
     setInputDisabled(true)
     const onTimeout = () => {
+      if (aborted) {
+        return
+      }
+      console.log(aborted)
       setTechnologyNodes(technologyNodes.map((technologyNode : TechnologyNode, _index : number) => {
         if (_index == index1 || _index == index2) {
           return  {technology: technologyNode.technology, status: {solved: false, selected: false}} 
@@ -59,8 +63,7 @@ const Technologies = () => {
       setInputDisabled(false)
     }
 
-    setTimeout(onTimeout, PAIR_SELECTED_HIDE_DELAY)
-    
+    timeoutRef.current = setTimeout(onTimeout, PAIR_SELECTED_HIDE_DELAY)
   }
 
   const onPairSelected = (index1 : number, index2 : number) => {
@@ -108,6 +111,9 @@ const Technologies = () => {
   }
   
   const abort = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
     setAborted(true)
     setInputDisabled(true)
     const newTechnologyNodes = Array.from(new Map(technologyNodes.map((technologyNode : TechnologyNode) => 
@@ -119,26 +125,32 @@ const Technologies = () => {
   return (
     <div>
       <motion.div variants={{
-        hidden: {y: -50, opacity: 0, },
-        show: {y: 0, opacity: 1, },
-        }}>
-          <h2 className={styles.sectionHeadText + " text-center"}>
+          hidden: {y: -50, opacity: 0, },
+          show: {y: 0, opacity: 1, },
+        }}
+        >
+          <p className={styles.sectionSubText}>
+            {preTitle}
+          </p>
+          <h2 className={styles.sectionHeadText + " text-start"}>
             {solved ? solvedtitle : title}
           </h2>  
-          <p className={styles.subDescriptionText + " text-center"}>
+          <p className={styles.subDescriptionText + " text-start"}>
             {solved ? solvedSubDescription : (aborted ? abortedSubDescription : subDescription)}
           </p> 
       </motion.div>
-      <div className='flex flex-row flex-wrap justify-center gap-10 h-[350px]'>
-          <BallCanvas technologies={technologyNodes} getOnClick={getOnClick} />
-      </div>
-      <div className='w-full flex items-center justify-center'>
-        <button className={`gap-10 h-[25px] p-[20px] self-center hover:${aborted ?"cursor-default" : "cursor-pointer"}`} onClick={solved ? reset : (aborted ? () => {} : abort)} >
-          <p className="text-[25px] text-secondary tracking-wider text-center">
-             {solved ? solvedButtonText : (aborted ? abortedButtonText : abortingButtonText)}
-          </p>
-        </button>
-      </div>   
+      <motion.div layout>
+        <div className='flex flex-row flex-wrap justify-center gap-10 h-[350px]'>
+            <BallCanvas technologies={technologyNodes} getOnClick={getOnClick} />
+        </div>
+        <div className='w-full flex items-center justify-center'>
+          <button className={`gap-10 mt-5 h-[80px] w-[calc(30%+100px)] ${aborted ? "cursor-default" : "cursor-pointer"}  bg-white/15 rounded-lg border-2 border-white/10 items-center justify-center`} onClick={solved ? reset : (aborted ? () => {} : abort)} >
+            <p className="text-[25px] text-secondary tracking-wider text-center">
+              {solved ? solvedButtonText : (aborted ? abortedButtonText : abortingButtonText)}
+            </p>
+          </button>
+        </div> 
+      </motion.div>  
     </div>
   )
 }

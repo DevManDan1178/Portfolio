@@ -19,24 +19,26 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
       }
   const Display = display
   //@ts-ignore
-  function getSubTagsDisplay(tagList : Tag[], parentKey : string, textSize : number) {
+  function getSubTagsDisplay(tagList : Tag[], parentKey : string, maxTextSize : number) {
     //@ts-ignore
     return tagList.map((tag : Tag, index : number) => { 
       const key = `${parentKey}${tag.name}`
-      const hasSubTags = tag.subTags.length > 0
+      const hasSubTags = tag.subTags && tag.subTags.length > 0
       const showingSubTags = !!showingSubtagIds[key]
+      const textSize = tag.baseTextSize ? Math.min(tag.baseTextSize, maxTextSize) : maxTextSize
       return <span key={key}
           className="cursor-default"
         >
           <span 
             onClick={hasSubTags? getToggleSubTagsCall(key) : () => {}}
             className={`${hasSubTags ? "hover:bg-black/15" : ""} rounded-2xl text-[${textSize}px] ${tag.color} whitespace-nowrap inline-block`}
+            style={{color : tag.color}}
           >
             &nbsp;{tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}
           </span>
         
           {
-            showingSubTags && <span>
+            (showingSubTags && tag.subTags) && <span>
               {getSubTagsDisplay(tag.subTags, key, Math.max(MINIMUM_SUBTAG_TEXT_SIZE, textSize - SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER))}
             </span>
           }
@@ -74,7 +76,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
       tiltMaxAngleX={5}
       tiltMaxAngleY={5}
       transitionSpeed={1000}
-      className={`bg-slate-700/50 hover:bg-slate-400/50 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
+      className={`bg-slate-700/50 hover:bg-slate-400/35 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
       >
         <div className='w-[calc(100%-30px)] pt-[10px] pb-[10px] group'>
           <div className='relative w-full h-full'>
@@ -112,15 +114,15 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
               </div>
             </div>
             <div className='mt-3 h-full gap-2'>
-              {tags.map((tag : Tag, index : number) => { 
+              {tags.map((tag : Tag, index : number) => {  
                 const showingSubTags = showingSubtagIds[tag.name]
-                const hasSubTags = tag.subTags.length > 0
+                const hasSubTags = tag.subTags && tag.subTags.length > 0
                 return <span key={tag.name}
                   className={`${tag.color} cursor-default`}
                   style={{ color: tag.color }}
                 >
                   <span 
-                    onClick={tag.subTags.length > 0 ? getToggleSubTagsCall(tag.name) : () => {}}
+                    onClick={hasSubTags ? getToggleSubTagsCall(tag.name) : () => {}}
                     className={`${hasSubTags ? "hover:bg-white/5 bg-black/15" : ""} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px] whitespace-nowrap`}
     
                   >
@@ -128,7 +130,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
                     <br/>
                   </span>
                   {
-                    showingSubTags && <span>
+                    (showingSubTags && tag.subTags) && <span>
                       {getSubTagsDisplay(tag.subTags, tag.name, BASE_TAG_SIZE - SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER)}
                       <br/>
                     </span>

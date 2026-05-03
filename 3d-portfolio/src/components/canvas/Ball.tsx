@@ -11,10 +11,10 @@ const BALL_DISTANCE_FROM_CAMERA : number = 7.5
 const BALL_SIDE_ROWS : number = 1
 const BALL_ANGLE_STEP : number = 3.5 * Math.PI/180
 const SOLVED_BALL_SPIN_SPEED : number = 0.5
-const DEFAULT_BALL_SCALE = 2.75
+const DEFAULT_BALL_SCALE = 3
 const SOLVED_BALL_SCALE = 2.25
 const DEFAULT_BALL_DECAL_SCALE = 1.15
-const SOLVED_BALL_DECAL_SCALE = 1.5
+const SOLVED_BALL_DECAL_SCALE = 1.25
 
 const Ball = ({ icon, position, rotationY, status, onClick } : {icon : string, position : Vector3, rotationY : number, status : NodeStatus, onClick : () => (void)}) => {
   const [decal] = useTexture([icon])
@@ -50,7 +50,7 @@ const Ball = ({ icon, position, rotationY, status, onClick } : {icon : string, p
           onClick()
         }}
       >
-        <icosahedronGeometry args = {[1, 1]}/>
+        <boxGeometry args = {[1.5, 1.5, 1.5]}/>
         <meshStandardMaterial 
           color='#fff8eb'
           polygonOffset

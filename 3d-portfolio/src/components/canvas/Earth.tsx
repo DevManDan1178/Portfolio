@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Preload, useGLTF } from '@react-three/drei'
 import CanvasLoader from '../Loader'
+import { MOUSE } from 'three'
 
 
 
@@ -33,10 +34,11 @@ const EarthCanvas = () => {
     >
       <Suspense fallback={<CanvasLoader/>}>
         <OrbitControls
-        autoRotate
+        mouseButtons={{LEFT:MOUSE.ROTATE, RIGHT: MOUSE.ROTATE}}
+        enablePan={false}
         enableZoom={false}
-        maxPolarAngle={Math.PI * 0.5}
-        minPolarAngle={Math.PI * 0.5}
+        maxPolarAngle={Math.PI * 2}
+        minPolarAngle={0}
         />
         <Earth/>
       </Suspense>

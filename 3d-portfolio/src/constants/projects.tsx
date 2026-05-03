@@ -19,79 +19,78 @@ const CategoryTags : Record<string, Tag> = {
   Academic : {
     name : "Academic",
     color : "#e0b7ad",
-    subTags : [],
     baseTextSize : 14,
   },
   TeamProject : {
     name : "Team Project",
     color : "#f7b6fc",
-    subTags : [],
     baseTextSize : 14,
   }
 }
 
+const LolTags : Record<string, Tag> = {
+  FLStudioFree : {
+    name : "FL Studio free version lol",
+    color : "#ffaf69",
+    baseTextSize : 10
+  }
+}
 
 const MiscTags : Record<string, Tag> = {
   GMTKJam2026 : {
     name : "GMTK Game Jam 2026",
     color : "lime-text-gradient",
-    subTags : [],
     baseTextSize : 16
   },
-
 }
 
 const BaseTags : Record<string, Tag> = {
   CSharp : {
     name : "C#",
     color : "green-text-gradient",
-    subTags : [],
   },
 
   GDScript : {
     name : "GDScript",
     color : "light-blue-text-gradient",
-    subTags : [],
   },
   Luau : {
     name : "Luau",
     color : "dark-blue",
-    subTags : [],
   },
   Typescript : {
     name : "Typescript",
     color : "blue-text-gradient",
-    subTags : [],
   },
   Javascript : {
     name : "Javascript",
     color : "yellow-text-gradient",
-    subTags : [],
   },
   CSS : {
     name : "CSS",
     color : "purple-text-gradient",
-    subTags : [],
   },
   GameDev : {
     name : "Game Development",
     color : "orange-text-gradient",
-    subTags : [],
   },
   WebDev : {
     name : "Web Development",
     color : "#ffffa8",
-    subTags : []
   },
   Java : {
     name : "Java",
     color : "#f8981d",
-    subTags : [],
   },
   Git : {
     name : "Git",
     color : "#c7c7c7", 
-    subTags : [],
+  },
+  MusicComposition : {
+    name : "♫ Composition",
+    color : "#d096ff",
+    baseTextSize : 14,
+    subTags : [LolTags.FLStudioFree]
   }
 }
 
@@ -129,7 +128,7 @@ export const projects : Project[] = [
   {
     name : "Polygon Tower Defense",
     description : "Small tower defense game with player-customized upgrading and adding of map elements",
-    tags : [Tags.Unity, GetPlayableTag("/PolygonTD")],
+    tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/PolygonTD")],
     display : GetImageDisplay(polygonTD, "PolygonTD"),
     link : "https://randomguy1178.itch.io/polygon-tower-defense",
     visuals : {
@@ -139,7 +138,7 @@ export const projects : Project[] = [
   {
     name : "Echo Arena",
     description: "Simple arena shooter game where you must also evade your past movements",
-    tags : [Tags.Godot, MiscTags.GMTKJam2026, GetPlayableTag("/EchoArena")],
+    tags : [Tags.Godot, MiscTags.GMTKJam2026, GetPlayableTag("/EchoArena", "Click to Play ‹PC›")],
     display : GetImageDisplay(echoArena, "Echo Arena"),
     link : "https://randomguy1178.itch.io/echo-arena",
     visuals : {
@@ -189,7 +188,7 @@ function GetImageDisplay(image : string, name : string) : ProjectDisplay {
   }
 }
 
-function GetPlayableTag(routePath : string) : Tag {
+function GetPlayableTag(routePath : string, tagName? : string) : Tag {
   
     const overrideTagSymbol = (tagName : string) => (<span> <br/>
       <span 
@@ -201,9 +200,8 @@ function GetPlayableTag(routePath : string) : Tag {
     </span>)
     
     return {
-    name : "Click To Play",
+    name : tagName ?? "Click To Play",
     color : "#e0f5c6",
-    subTags : [],
     baseTextSize : 16,
     overrideTagSymbol : overrideTagSymbol
   }
@@ -262,7 +260,7 @@ export function getDefaultLinkElement(onClick : () => void) {
 export type Tag = {
   name : string,
   color : string,
-  subTags : Tag[]
+  subTags? : Tag[]
   baseTextSize? : number,
   overrideTagSymbol? : (tagName : string) => ReactElement,
 }
