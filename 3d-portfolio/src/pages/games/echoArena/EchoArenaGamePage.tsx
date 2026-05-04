@@ -7,7 +7,7 @@ const descriptionList: ReactElement[] = [
     Echo Arena is a simple survival arena shooter where you must plan your movement carefully.<br />
   </span>,
   <span className="text-[15px] text-left w-[85%] tracking-wide leading-loose mt-5">
-    Every 15 seconds, a new shadow starts repeating your past actions. <br />
+    Every 15 seconds, a new <span className="text-gray-400/80">shadow</span> starts repeating your past actions. <br />
     How long can you survive while avoiding past versions of yourself?
   </span>,
   <span className="text-[13px] font-pixeloid">
@@ -84,7 +84,7 @@ export default function EchoArenaGamePage() {
               {/* PROGRESS BAR */}
               <div className="w-[60%] h-4 bg-zinc-800 overflow-hidden">
                 <div
-                  className="h-full bg-white transition-all duration-200"
+                  className="h-full bg-white transition-all duration-[0.1s]"
                   style={{ width: `${Math.floor(progress * 100)}%` }}
                 />
               </div>

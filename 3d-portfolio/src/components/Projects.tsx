@@ -81,7 +81,8 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
         <div className='w-[calc(100%-30px)] pt-[10px] pb-[10px] group'>
           <div className='relative w-full h-full'>
             <Display 
-            LinkElement={!!link ? getDefaultLinkElement(() => window.open(link, "_blank")) : <></>
+            LinkElement={!!link ? 
+               getDefaultLinkElement(() => window.open(link.url, "_blank"), link.linkImage) : <></>
             } 
             />
             
@@ -147,7 +148,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
 
 const Projects = () => {
   return (
-    <>
+    <div>
         <motion.div 
           variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
           layout
@@ -182,7 +183,7 @@ const Projects = () => {
 
       }
       </div>
-    </>
+    </div>
   )
 }
 

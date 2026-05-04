@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { styles } from '../style'
-import { logo, menu, close } from '../assets'
+import { menu, close } from '../assets'
 import { navLinks, type NavLink , portfolioHeroHandle} from '../constants'
 
 
@@ -75,11 +75,13 @@ const Navbar = () => {
             window.scrollTo(0, 0);
           }}
         >
+          {/* 
           <img 
           src= {logo} 
           alt="logo"
           className="w-9 h-9 object-contain"
           />
+          */}
           <p className='text-white text-[18px] font-bold cursor-pointer flex'> 
             {portfolioHeroHandle}
           </p>

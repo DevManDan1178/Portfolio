@@ -1,95 +1,112 @@
-import { useEffect } from 'react'
-import {useState, useRef} from 'react'
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import emailjs from '@emailjs/browser'
 import { styles } from '../style'
-import { EarthCanvas } from './canvas'
 import { SectionWrapper } from '../hoc'
-import { slideIn } from '../utils/motion'
-import { portfolioHeroName, portfolioHeroEmail } from '../constants'
-
-const SERVICE_ID = ""
-const TEMPLATE_ID = ""
-const PUBLIC_KEY = ""
-const RECEIVER_EMAIL = portfolioHeroName
-const RECEIVER_NAME = portfolioHeroEmail
+import { emailDomain, emailUser, preTitle, title, subDescription } from '../constants/contact'
+import { SocialLinks } from '../constants/contact'
+import {  useState } from 'react'
 
 
+const EMAIL_COPIED_DISPLAY_DURATION = 3
 
-async function SendEmail(form : any) {
-  if (SERVICE_ID.length == 0 || TEMPLATE_ID.length == 0 || PUBLIC_KEY.length == 0 || RECEIVER_EMAIL.length == 0) {
-    console.log("Email was not send because the API was not configured properly")
-    return
-  }
-  emailjs.send(
-    SERVICE_ID, 
-    TEMPLATE_ID, 
-    {
-      from_name: form.name,
-      to_name: RECEIVER_NAME,
-      from_email: form.email,
-      to_email: RECEIVER_EMAIL,
-    },
-    PUBLIC_KEY
-  )
-}
+const TITLE_TRANSITION_DELAY = 0.35
+
 
 const Contact = () => {
-  const formRef = useRef<HTMLFormElement | null>(null)
-  const [form, setForm] = useState({name: '', email: '', message: ''})
-  const [loading, setLoading] = useState(false)
+ const [showEmailCopied, setShowEmailCopied] = useState(false)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const handleChange = (e : any) => {
-    const { name, value } = e.currentTarget
-    console.log(name, value)
-    setForm(prev => ({ ...prev, [name]: value }))
+  const onEmailCopy = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    navigator.clipboard.writeText(emailUser + "@" + emailDomain)
+    setShowEmailCopied(true)
+
+    timeoutRef.current = setTimeout(() => {
+      setShowEmailCopied(false)
+    }, EMAIL_COPIED_DISPLAY_DURATION * 1000)
   }
-
-  const handleSubmit = (e : any) => {
-    e.preventDefault()
-    setLoading(true)
-    SendEmail(form).then(() => {
-      setLoading(false)
-      alert("Message recieved! I will get back to you soon. (probably)")
-
-      setForm({
-        name:'',
-        email:'',
-        message:'',
-      })
-    }, (error) => {
-      setLoading(false)
-      console.log(error)
-      alert("Something went wrong. Oops.")
-    })
-  }
-  useEffect(() => {
-  console.log("FORM STATE:", form);
-}, [form]);
 
   return (
-    <div className='xl:mt-12 xl:flex-row flex-col-reverse flex gap-10 overflow-hidden'>
-      <motion.div
-        variants={{
-          hidden: {
-            x:"-100%",
-            y: 0,
-          },
-          show: {
-            x: 0,
-            y: 0,
-            transition: {
-              type: "tween",
-              delay: 0.2,
-              duration: 1,
-              ease: "easeOut",
-            },
-          }}}
-        className='flex-[0.75] bg-black-100 p-8 rounded-2xl'
+    <div>
+      <motion.div 
+        variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
+        layout
       >
-      <p className={styles.sectionSubText}>Get in touch</p>
-      <h3 className={styles.sectionHeadText}>Contact.</h3>
-      <form
+        <p className={styles.sectionSubText}>
+          {preTitle}
+        </p>
+        <h2 className={styles.sectionHeadText}>
+          {title}
+        </h2>   
+      </motion.div> 
+      <div className='w-full flex'>
+        <motion.p
+          variants={{show: {y: 0, opacity: 1, transition : {delay: 0.1, duration: 1}},}} 
+          className={styles.subDescriptionText}
+          layout
+        >
+          {subDescription}
+        </motion.p>
+      </div>
+        <span className='flex text-center justify-center mt-[25px] text-[30px] font-semibold'>
+          Clicky Stuffs
+        </span>
+        <div className='flex items-center justify-center gap-10 mt-[25px]'>
+          {Object.entries(SocialLinks).map(([platform, link], index : number) =>  (
+            <div
+              key={index}
+              onClick={() => window.open(link.url, "_blank")}
+              className="flex flex-col items-center justify-center gap-2 group"
+            >
+            <div className="w-[50px] h-[50px] flex items-center justify-center bg-black rounded-lg relative overflow-hidden border-2 border-white/50">
+              <img
+                src={link.linkIcon}
+                className="w-3/4 relative aspect-square"
+              />
+
+              {/* ripple layer */}
+              <div className=" w-full h-full absolute flex items-center justify-center z-1">
+                <div
+                  className="
+                    w-[0%] h-[0%]
+                    rounded-full
+                    backdrop-invert
+                    group-hover:w-[200%]
+                    group-hover:h-[200%]
+                    transition-all
+                    duration-[0.5s]
+                    ease-in-out
+                  "
+                />
+              </div>
+            </div>
+            {/* LABEL */}
+            <span className="text-white/75 text-xs text-center"> 
+              <b>{link.platform}</b>
+            </span>
+          </div>
+        ))}
+      </div>
+      <div  className='mt-[25px] flex items-center justify-center w-full'>
+          <button 
+            className=' bg-white/10 hover:bg-white/20 pl-2 pr-2 rounded-xl transition-colors transition-duration[0.5s] border-white/30 border-[2px] hover:border-white/20'
+            onClick={onEmailCopy}
+          >
+            <span className='text-blue-100/60'>{showEmailCopied ? "Copied" : "Copy"}[</span> 
+            <span className='green-text-gradient font-semibold'>{emailUser}</span>
+            <span className='blue-text-gradient font-pixeloid'> @   </span>
+            <span className='blue-text-gradient font-semibold'>{emailDomain}</span>
+            <span className='text-blue-100/60'>]</span> 
+          </button>     
+      </div>   
+    </div>
+  )
+}
+/*
+<form
         ref={formRef}
         onSubmit={handleSubmit}
         className='mt-12 flex flex-col gap-8'
@@ -136,31 +153,5 @@ const Contact = () => {
           {loading ? 'Sending...' : 'Send'}
         </button>
 
-      </form>
-      </motion.div>
-      <motion.div
-        variants={{
-          hidden: {
-            x:"100%",
-            y: 0,
-          },
-          show: {
-            x: 0,
-            y: 0,
-            transition: {
-              type: "tween",
-              delay: 0.2,
-              duration: 1,
-              ease: "easeOut",
-            },
-          }}}
-        className='x1:flex-1 xl:h-auto md:h-[550px] h-[350px] w-full'
-      >
-        <EarthCanvas/>
-
-      </motion.div>
-    </div>
-  )
-}
-
+      </form>*/
 export default SectionWrapper(Contact, "contact")

@@ -5,13 +5,13 @@ export type Testimonial = {
   image : string,
 }
 
-export const preTitle : string = "Stuff people say about me"
+export const preTitle : string = "Stuff people definately say about me"
 export const title : string = "Testimonials"
 
 export const testimonials : Testimonial[] = [
   {
     statement:
-      "Oh yeah, I know him. He's a pretty chill guy.",
+      "Oh yeah. I know him. He's a pretty chill guy.",
     name: "Alex",
     designation: "Waterloo student",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s",
@@ -23,12 +23,5 @@ export const testimonials : Testimonial[] = [
     designation: "McGill student",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s",
   },
-  {
-    statement:
-    "His pseudoenergy is very condusive.",
-    name: "Cristian",
-    designation: "Vanier student",
-    image : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3bHGb_Zk4zWeD4jw9ew8HboAT2zQIUZhYNA&s"
-  }
 ];
 

@@ -122,7 +122,7 @@ export default function UnityGamePage({
 
                 <div className="w-[60%] h-4 bg-zinc-800 overflow-hidden">
                   <div
-                    className="h-full bg-white transition-all duration-200"
+                    className="h-full bg-white transition-all duration-[0.1s]"
                     style={{ width: `${Math.floor(progress * 100)}%` }}
                   />
                 </div>

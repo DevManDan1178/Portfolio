@@ -39,7 +39,8 @@ const descriptionList : ReactElement[] = [
     <br/>
     Number keys can select the corresponding items in your hotbar. Pressing Q will cancel placement.
     <br/>
-    Camera can be moved with WASD or arrow keys.
+    Camera can be moved with WASD or arrow keys and zoomed in/out with E/Q.
+    <br/>
     Toggle camera controls with the space bar (or press the button).
     <br/>
     <span className="text-[10px] font-pixeloid">

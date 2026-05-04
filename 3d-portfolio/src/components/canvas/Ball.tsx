@@ -7,11 +7,11 @@ import { animated, useSpring } from '@react-spring/three'
 import type { NodeStatus, TechnologyNode } from '../Technologies'
 
 const CAMERA_TARGET_DISTANCE : number = 100
-const BALL_DISTANCE_FROM_CAMERA : number = 7.5
+const BALL_DISTANCE_FROM_CAMERA : number = 8.5
 const BALL_SIDE_ROWS : number = 1
 const BALL_ANGLE_STEP : number = 3.5 * Math.PI/180
 const SOLVED_BALL_SPIN_SPEED : number = 0.5
-const DEFAULT_BALL_SCALE = 3
+const DEFAULT_BALL_SCALE = 3.5
 const SOLVED_BALL_SCALE = 2.25
 const DEFAULT_BALL_DECAL_SCALE = 1.15
 const SOLVED_BALL_DECAL_SCALE = 1.25
@@ -158,7 +158,7 @@ const BallCanvas = ({ technologies, getOnClick } : {technologies : TechnologyNod
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls 
           target={[0, 0, -CAMERA_TARGET_DISTANCE]}
-          mouseButtons={{RIGHT: MOUSE.ROTATE}}
+          mouseButtons={{RIGHT: MOUSE.ROTATE, LEFT : MOUSE.ROTATE}}
           enableZoom={false}
           enablePan={false}
           enableRotate

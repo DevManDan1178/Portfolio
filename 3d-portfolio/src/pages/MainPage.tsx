@@ -6,6 +6,9 @@ export default function MainPage() {
 
     return  (
         <div className="relative z-0 bg-primary">
+            <div className="fixed inset-0 -z-20">
+                <StarsCanvas/>
+            </div>
             <Navbar/>
             <div 
                 className="bg-hero-pattern bg-cover bg-no-repeat bg-center"
@@ -17,11 +20,8 @@ export default function MainPage() {
             <div id={navLinks.projects.id}><Projects/></div>
             <div id={navLinks.technologies.id}> <Technologies/></div>
             <div id={navLinks.experience.id}><Experience/></div>  
-            <div id={navLinks.testimonials.id}><Testimonials/></div>
-            <div className="relative z-0">
-            <Contact/>
-            <StarsCanvas/>
-            </div>
+            <div id={navLinks.contact.id}><Contact/></div>
+
         </div>
     )
 }

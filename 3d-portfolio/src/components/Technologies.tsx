@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { BallCanvas } from './canvas'
 import { SectionWrapper } from '../hoc'
-import { preTitle, technologies, title, subDescription, type Technology, solvedtitle, solvedSubDescription, abortedSubDescription, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
+import { preTitle, technologies, title, subDescription, type Technology, solvedtitle, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../style'
 
@@ -106,8 +106,10 @@ const Technologies = () => {
 
   const reset = () => {
     setSolved(false)
+    setAborted(false)
     setInputDisabled(false)
     setTechnologyNodes(getRandomizedTechnologyNodes())
+    
   }
   
   const abort = () => {
@@ -116,11 +118,19 @@ const Technologies = () => {
     }
     setAborted(true)
     setInputDisabled(true)
-    const newTechnologyNodes = Array.from(new Map(technologyNodes.map((technologyNode : TechnologyNode) => 
-        [technologyNode.technology.name, {technology:technologyNode.technology, status: {solved : false, selected: true}}])).values())
+    const newTechnologyNodes = technologyNodes.map((technologyNode) => ({technology:technologyNode.technology, status: {solved : false, selected: true}})) //Array.from(new Map(technologyNodes.map((technologyNode : TechnologyNode) => 
+        //[technologyNode.technology.name, {technology:technologyNode.technology, status: {solved : false, selected: true}}])).values())
     console.log(newTechnologyNodes)
     setTechnologyNodes(newTechnologyNodes)
   }
+
+  const groupedTechnologies = technologies.reduce((accumulator, technology) => {
+    if (!accumulator[technology.category]){ 
+      accumulator[technology.category] = []
+    }
+    accumulator[technology.category].push(technology);
+    return accumulator;
+  }, {} as Record<string, Technology[]>);
 
   return (
     <div>
@@ -136,15 +146,52 @@ const Technologies = () => {
             {solved ? solvedtitle : title}
           </h2>  
           <p className={styles.subDescriptionText + " text-start"}>
-            {solved ? solvedSubDescription : (aborted ? abortedSubDescription : subDescription)}
+            {subDescription}
           </p> 
       </motion.div>
       <motion.div layout>
-        <div className='flex flex-row flex-wrap justify-center gap-10 h-[350px]'>
+        <div className="mt-10 w-full flex flex-col gap-10">
+          {Object.entries(groupedTechnologies).map(([category, items]) => (
+            <div key={category} className="w-full">
+              
+              {/* Category title */}
+              <h3 className="text-white/70 text-xl mb-4 tracking-wider">
+                <b>{category}</b>
+              </h3>
+
+              {/* Items */}
+              <div className="flex flex-wrap justify-left gap-6">
+                {items.map((tech) => (
+                  <div
+                    key={tech.name}
+                    className="flex flex-col items-center gap-2 w-[90px]
+                     bg-white/25 group hover:bg-white/50 border-[5px] border-white/10 hover:border-black/50 rounded-lg 
+                     transition-all duration-300 ease-out"
+                  >
+                    <img
+                      src={tech.icon}
+                      alt={tech.name}
+                      className="w-12 h-12 object-contain pt-2"
+                    />
+                    <p className="text-sm text-white/90 text-center group-hover:text-black/70 transition-all duration-300 ease-out">
+                      {tech.name}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              
+            </div>
+          ))}
+        </div>
+        <span>
+          <span className="text-white/80 text-[25px] text-center w-full flex items-center justify-center mt-[75px]"> <b> Match my stack </b>  <br/> </span>
+          <span className="text-green-100/80 text-[15px] text-center w-full flex items-center justify-center"> Click to play! </span>
+        </span>
+        <div className='flex flex-row flex-wrap justify-center gap-10 h-[350px] mt-[10px] mb-[20px] border-2 border-white/40 rounded-2xl'>
             <BallCanvas technologies={technologyNodes} getOnClick={getOnClick} />
         </div>
         <div className='w-full flex items-center justify-center'>
-          <button className={`gap-10 mt-5 h-[80px] w-[calc(30%+100px)] ${aborted ? "cursor-default" : "cursor-pointer"}  bg-white/15 rounded-lg border-2 border-white/10 items-center justify-center`} onClick={solved ? reset : (aborted ? () => {} : abort)} >
+          <button className={`gap-10 h-[60px] w-[calc(15%+50px)] "cursor-pointer" bg-white/15 rounded-lg border-2 border-white/10 items-center justify-center`} onClick={solved ? reset : (aborted ? reset : abort)} >
             <p className="text-[25px] text-secondary tracking-wider text-center">
               {solved ? solvedButtonText : (aborted ? abortedButtonText : abortingButtonText)}
             </p>

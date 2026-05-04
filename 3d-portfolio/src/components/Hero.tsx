@@ -2,14 +2,11 @@ import React, { useEffect, useRef, useState, type RefObject } from 'react'
 import { motion, transform } from 'framer-motion'
 import { styles } from '../style' 
 import ComputerCanvas from './canvas/Computers'
-import { headerIntro, description, TerminalTexts } from '../constants/hero'
+import { headerIntroElement, descriptionElement, TerminalTexts, TERMINAL_TEXT_APPEARANCE_DELAY, TERMINAL_TEXT_APPEARANCE_DURATION } from '../constants/hero'
 import { portfolioHeroName } from '../constants'
 import { MENU_SCENES, type GameEventHandlers } from './canvas/PolygonTD'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
-const ANIMATED_HEADER_APPEARANCE_DURATION : number = .75
-const DESCRIPTION_APPEARANCE_DELAY : number = 0.75
-const ANIMATED_DESCRIPTION_APPEARANCE_DURATION : number = 0.5
 
 const Hero = () => {
   const [levelProgress, setLevelProgress] = useState<number>(0)
@@ -39,10 +36,9 @@ const Hero = () => {
       }
     },
   })
-  const headerTimeBetweenLetters = ANIMATED_HEADER_APPEARANCE_DURATION/(headerIntro.length + portfolioHeroName.length)
-  const descriptionTimeBetweenLetters = ANIMATED_DESCRIPTION_APPEARANCE_DURATION/(description.length)
+
   return (
-    <div className='relative w-full h-screen mx-auto z-10 overflow-hidden items-center'>
+    <div className='relative w-full h-screen mx-auto z-10 overflow-hidden items-center justify-center flex'>
       <div className={`${styles.paddingX} absolute inset-0 py-2 top-[40px] max-w-7xl mx-auto flex flex-row items-start gap-5`}>
          <div className='flex flex-col justify-center items-center mt-5'>
           <div className='w-5 h-5 rounded-full bg-[#915eff]'/>
@@ -50,36 +46,23 @@ const Hero = () => {
         </div>
         <div>
           <h2 className={`${styles.heroHeadText} text-white`}>
-            <AnimatedTextAppearance text={headerIntro} timeBetweenLetters={headerTimeBetweenLetters} startingState={{translateY: 100}}/> 
-            <span className='text-[#915eff]'> 
-               &nbsp;
-              <AnimatedTextAppearance text={portfolioHeroName} timeBetweenLetters={headerTimeBetweenLetters} delay={headerIntro.length * headerTimeBetweenLetters} startingState={{translateY: -100, translateX: -10}}/> 
-            </span>
+            {headerIntroElement}
           </h2>
           <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-            <AnimatedTextAppearance text={description} timeBetweenLetters={descriptionTimeBetweenLetters} delay={ANIMATED_HEADER_APPEARANCE_DURATION + DESCRIPTION_APPEARANCE_DELAY} startingState={{translateY: -20, translateX: -10}}/> 
+            {descriptionElement}
           </p>
         </div>
       </div>
       
-      <ComputerCanvas gameEventHandlers={gameEventHandlers}/>
-        <div className='absolute h-[calc(5%+25px)] bottom-[5px] w-[calc(40%+45px)] justify-between items-center flex left-1/2 -translate-x-1/2'>
+      <div className='h-full w-full items-center flex justify-center relative border-2 border-white/20'>
+        <ComputerCanvas gameEventHandlers={gameEventHandlers}/>
+      </div>
+        <div className='absolute h-[calc(5%+35px)] bottom-[5px] w-[calc(30%+250px)] justify-between items-center flex left-1/2 -translate-x-1/2'>
            <a href='#about' className='w-[100%] items-center justify-center flex  bg-gray-950/50 rounded-3xl'>
               <div className='h-full w-[100%] rounded-2xl border-4 border-secondary flex justify-center p-2 items-center overflow-hidden'>
-                <motion.div
-                  animate={{  
-                    y: ["-300%", "0%"]
-                  }}
-                  transition={{
-                    duration: 2.5,
-                    ease: "backInOut",
-                  }}
-                  className='w-full h-full rounded-full items-center flex justify-center'
-                >
-                  <p className='text-center w-auto text-[20px]'>
-                    {terminalText}
-                  </p>
-                </motion.div>
+                <p className='text-[20px]'>
+                  <AnimatedTextAppearance text={terminalText} timeBetweenLetters={TERMINAL_TEXT_APPEARANCE_DURATION/terminalText.length} delay={TERMINAL_TEXT_APPEARANCE_DELAY} startingState={{translateY: 10}}/>             
+                </p>
               </div>
             </a> 
       </div>

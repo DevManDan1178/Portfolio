@@ -1,5 +1,4 @@
 import { experiences } from "./experiences";
-import { services } from "./services";
 import { testimonials } from "./testimonials";
 import { technologies } from "./technologies";
 import { projects } from "./projects";
@@ -10,7 +9,6 @@ export const portfolioHeroHandle : string = "DevManDan"
 export const portfolioHeroEmail : string = "danielorejuelaliu@gmail.com"
 
 export { 
-  services, 
   technologies, 
   experiences, 
   testimonials, 

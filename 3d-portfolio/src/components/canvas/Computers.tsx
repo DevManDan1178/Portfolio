@@ -6,6 +6,7 @@ import { MOUSE, SRGBColorSpace } from "three";
 import CanvasLoader from "../Loader";
 import PolygonTD, {RESOLUTION, RESOLUTION_SCALE, type GameEventHandlers} from './PolygonTD'
 import { type UnityInstance } from "../../pages/games/UnityGamePage";
+import { uv } from "three/tsl";
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
 //const SCREEN_MESH_SIZE = { x: 4.7397, y: 2.6041 };
@@ -71,10 +72,13 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas, unityInstanceRef, on
       }
 
       const uv = hit.uv;
+      if (messageFunction == "OnPointerDown") {
+        console.log("Mouse input onto game screen at:", uv)
+      }
+
       unityInstance?.SendMessage("InputBridge", messageFunction,`${uv.x},${uv.y}`
       );
     };
-  
     //TODO add keybinds for towers in the game, add a static parameter to prevent quitting like for muting audio
     const pointerDownLambda = getInputFunction("OnPointerDown", true)
     const mouseMoveLambda = getInputFunction("OnMouseMove", false)
@@ -160,7 +164,7 @@ const Computer = ({ isMobile, unityCanvas, updateFrames }: { isMobile: boolean; 
   />;
 };
 
-
+var unityFocused = false
 const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : RefObject<GameEventHandlers>}) => {
   const [isMobile, setIsMobile] = useState(false);
   
@@ -188,24 +192,31 @@ const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : RefObject<Gam
   }, []);
 
   const onUnityFocus = () => {
+    if (unityFocused) return
     console.log("focus")
     unityInstanceRef.current?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "false") //TODO make unity block keys by adding a static bool and checking it on every input detection
     unityCanvas?.focus()
     setUpdateFrames(true)
+    unityFocused = true
   }
 
   const onUnityBlur = () => {
+    if (!unityFocused) return
+    console.log("blur")
     unityInstanceRef.current?.SendMessage("GameMaster", "SetPaused");
     unityInstanceRef.current?.SendMessage("InputBridge", "SetKeyboardInputDisabled", "true")
     unityCanvas?.blur()
     setUpdateFrames(false)
+    unityFocused = false
   }
 
   return (
     <Canvas 
+      tabIndex={0}
       shadows 
       camera={{ position: [25, 0, 5], fov: 25}} gl={{ preserveDrawingBuffer: true }}
       onFocus={() => {
+        scrollTo(0,0)
         onUnityFocus()
       }}
     >
