@@ -4,21 +4,22 @@ import PolygonTDGamePage from "./pages/games/polygonTD/PolygonTDGamePage";
 import EchoArenaGamePage from "./pages/games/echoArena/EchoArenaGamePage";
 import MainPage from "./pages/MainPage";
 import RickRoll from "./pages/misc/RickRoll";
+import Sidestep2GamePage from "./pages/games/sidestep2/Sidestep2GamePage";
 
 
 function App() {
   useEffect(() => {
-  const handleHashChange = () => {
-    // remove hash without reloading or scrolling
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-  };
+    const handleHashChange = () => {
+      // remove hash without reloading or scrolling
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    };
 
-  window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener("hashchange", handleHashChange);
 
-  return () => {
-    window.removeEventListener("hashchange", handleHashChange);
-  };
-}, []);
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, []);
 
   return (
     <div>
@@ -27,7 +28,7 @@ function App() {
             <Route path="/" element={<MainPage/>}/>
             <Route path="/PolygonTD" element={<PolygonTDGamePage/>}/>  
             <Route path="/EchoArena" element={<EchoArenaGamePage/>}/>
-
+            <Route path="/Sidestep2" element={<Sidestep2GamePage/>}/>
             <Route path="/SecretRealPortfolio" element={<RickRoll/>}/>
           </Routes>
         </BrowserRouter>

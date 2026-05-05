@@ -9,13 +9,15 @@ import { preTitle, title, subDescription, projects, type Tag } from '../constant
 const TITLE_TRANSITION_DELAY = 0.35
 const PROJECTS_APPEARANCE_ANIMATION_Y = 200
 
+const PARENT_TAG_STYLE = "hover:bg-white/5 bg-white/10 cursor-pointer"
+
 const ProjectCard = ({project , index} : {project : Project, index : number}) => {
   const [showingBulletPoints, setShowingBulletPoints] = useState<boolean>(false)
   const {name, display, description, tags, link, visuals, bulletPoints} = project
-  const [showingSubtagIds, setShowingSubtagsIds] = useState<Record<string, boolean | undefined>>({}) //Bitmask
+  const [toggledSubtagIds, setShowingSubtagsIds] = useState<Record<string, boolean | undefined>>({}) //Bitmask
 
   const getToggleSubTagsCall : (subTag : string) => () => void = (subTag : string) => () => {
-        setShowingSubtagsIds({...showingSubtagIds, [subTag] : !!!showingSubtagIds[subTag]})
+        setShowingSubtagsIds({...toggledSubtagIds, [subTag] : !!!toggledSubtagIds[subTag]})
       }
   const Display = display
   //@ts-ignore
@@ -24,14 +26,14 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
     return tagList.map((tag : Tag, index : number) => { 
       const key = `${parentKey}${tag.name}`
       const hasSubTags = tag.subTags && tag.subTags.length > 0
-      const showingSubTags = !!showingSubtagIds[key]
+      const showingSubTags = !toggledSubtagIds[key]
       const textSize = tag.baseTextSize ? Math.min(tag.baseTextSize, maxTextSize) : maxTextSize
       return <span key={key}
           className="cursor-default"
         >
           <span 
             onClick={hasSubTags? getToggleSubTagsCall(key) : () => {}}
-            className={`${hasSubTags ? "hover:bg-black/15" : ""} rounded-2xl text-[${textSize}px] ${tag.color} whitespace-nowrap inline-block`}
+            className={`${hasSubTags && PARENT_TAG_STYLE} rounded-2xl text-[${textSize}px] ${tag.color} whitespace-nowrap inline-block`}
             style={{color : tag.color}}
           >
             &nbsp;{tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}
@@ -106,17 +108,17 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
                 {showingBulletPoints && bulletPoints?.map((bulletPoint : BulletPoint, index : number) => (
                   <p 
                   key={`${index}`}
-                  className={`${bulletPoint.color ?? "text-teal-100"} text-[${PROJECTS_BULLET_POINTS_TEXT_SIZE}px] mt-[10px]`}
+                  className={`${bulletPoint.color ?? "text-blue-100/90"} text-[${PROJECTS_BULLET_POINTS_TEXT_SIZE}px] mt-[10px]`}
                   style={{color : bulletPoint.color}}
                   > 
-                    &nbsp;&nbsp;{"• "}{bulletPoint.text}
+                    {"• "}{bulletPoint.text}
                   </p>
                 ))}
               </div>
             </div>
             <div className='mt-3 h-full gap-2'>
               {tags.map((tag : Tag, index : number) => {  
-                const showingSubTags = showingSubtagIds[tag.name]
+                const showingSubTags = !toggledSubtagIds[tag.name]
                 const hasSubTags = tag.subTags && tag.subTags.length > 0
                 return <span key={tag.name}
                   className={`${tag.color} cursor-default`}
@@ -124,7 +126,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
                 >
                   <span 
                     onClick={hasSubTags ? getToggleSubTagsCall(tag.name) : () => {}}
-                    className={`${hasSubTags ? "hover:bg-white/5 bg-black/15" : ""} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px] whitespace-nowrap`}
+                    className={`${hasSubTags && PARENT_TAG_STYLE} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px] whitespace-nowrap`}
     
                   >
                     {tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}

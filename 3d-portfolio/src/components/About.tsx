@@ -40,7 +40,7 @@ const About = () => {
             },}}}
         className={styles.subDescriptionText}
       >
-      <SubDescription/>
+        <SubDescription/>
       </motion.p>
       <motion.div 
         className='flex items-center justify-center gap-10 mt-[25px]'
@@ -69,7 +69,7 @@ const About = () => {
             target='_blank' 
           >
             <div
-              className="w-[50px] h-[50px] flex items-center justify-center bg-black rounded-lg relative overflow-hidden border-2 border-white/50"
+              className="w-[50px] h-[50px] flex items-center justify-center bg-black rounded-lg relative overflow-hidden border-2 border-white/50 cursor-pointer"
             >
               <img
                 src={link.linkIcon}

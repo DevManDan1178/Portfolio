@@ -12,9 +12,9 @@ export function SubDescription() {
     I focus on building interactive and engaging experiences that are fun to play and use. <br/>
     I've built several projects ranging from small tools to video games. <br/> 
     I've worked with several <span className="text-teal-200/80  hover:text-teal-200 font-bold"> game engines </span>
-    and with <span className="text-blue-200/80 hover:text-blue-200 font-bold"> front-end web development</span>.
+    and with some <span className="text-blue-200/80 hover:text-blue-200 font-bold"> front-end web development</span> sprinkled in.
     <br/>
-    Look around! I hope you enjoy exploring them! <span className="text-yellow-200/90 cursor-pointer hover:text-yellow-100" onClick={() => setShowSmiley(!showSmiley)}>:D</span>
+    Look around! I hope you enjoy exploring! <span className="text-yellow-200/90 cursor-pointer hover:text-yellow-100" onClick={() => setShowSmiley(!showSmiley)}>:D</span>
     <br/><br/>
       <span className="text-[22px]">
         <span className={`text-teal-200/90 font-bold`}>Unity, Roblox Studio, Godot </span> <br/>

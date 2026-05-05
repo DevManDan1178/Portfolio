@@ -3,12 +3,14 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 export type FileInfo = { gamePath: string; buildName: string };
 
 export default function UnityGamePage({
+  titleElement,
   descriptionList,
   config,
   canvasDimensions,
   containerId,
   fileInfo,
 }: {
+  titleElement : ReactElement,
   descriptionList: ReactElement[];
   config: UnityLoaderConfig;
   canvasDimensions: { x: number; y: number };
@@ -22,13 +24,15 @@ export default function UnityGamePage({
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const unityInstanceRef = useRef<UnityInstance | null>(null);
+    const isQuittingRef = useRef(false);
 
     function onLoadingProgress(progress: number) {
       setProgress(progress);
     }
 
     useEffect(() => {
-      if (!containerRef.current || canvasRef.current) return;
+      if (!containerRef.current) return;
+      if (unityInstanceRef.current) return; // ✅ prevents double init
 
       const canvas = document.createElement("canvas");
       canvas.id = containerId;
@@ -43,11 +47,13 @@ export default function UnityGamePage({
       canvasRef.current = canvas;
       containerRef.current.appendChild(canvas);
 
-      const script = document.createElement("script");
-      script.src = `${fileInfo.gamePath}/Build/${fileInfo.buildName}.loader.js`;
-      script.async = true;
+      const loaderSrc = `${fileInfo.gamePath}/Build/${fileInfo.buildName}.loader.js`;
 
-      script.onload = () => {
+      let script = document.querySelector(
+        `script[src="${loaderSrc}"]`
+      ) as HTMLScriptElement | null;
+
+      const startUnity = () => {
         // @ts-ignore
         createUnityInstance(canvas, config, onLoadingProgress).then(
           (unityInstance: UnityInstance) => {
@@ -63,33 +69,57 @@ export default function UnityGamePage({
             unityInstance.SendMessage("InputBridge", "SetCanQuit", "false");
 
             setLoading(false);
-
-            window.addEventListener("beforeunload", () => {
-              unityInstance?.Quit?.();
-            });
           }
         );
       };
 
-      document.body.appendChild(script);
+      if (!script) {
+        script = document.createElement("script");
+        script.src = loaderSrc;
+        script.async = true;
+        script.onload = startUnity;
+        document.body.appendChild(script);
+      } else {
+        // script already exists
+        if ((window as any).createUnityInstance) {
+          startUnity();
+        } else {
+          script.onload = startUnity;
+        }
+      }
 
       return () => {
-        script.remove();
-        canvas.remove();
-        unityInstanceRef.current?.Quit?.();
+        const unity = unityInstanceRef.current;
+
+        if (unity && !isQuittingRef.current) {
+          isQuittingRef.current = true;
+
+          //@ts-ignore
+          unity.Quit?.().then(() => {
+            unityInstanceRef.current = null;
+
+            if (canvasRef.current) {
+              canvasRef.current.remove();
+              canvasRef.current = null;
+            }
+          });
+        } else {
+          if (canvasRef.current) {
+            canvasRef.current.remove();
+            canvasRef.current = null;
+          }
+        }
       };
     }, []);
 
     const handleFullscreen = () => {
       const unity = unityInstanceRef.current;
 
-      // 1. Unity's built-in fullscreen
       if (unity?.SetFullscreen) {
         unity.SetFullscreen(1);
         return;
       }
 
-      // 2. Fallback to browser fullscreen
       if (!document.fullscreenElement) {
         containerRef.current?.requestFullscreen();
       } else {
@@ -99,21 +129,15 @@ export default function UnityGamePage({
 
     return (
       <div className="w-[100%] h-screen flex flex-col items-center justify-normal p-10 bg-zinc-950 text-white">
-        {/* TITLE */}
         <div className="text-3xl font-semibold">
-          <p className="pb-5 text-center font-pixeloid">
-            POLYGON TOWER DEFENSE
-          </p>
+          {titleElement}
         </div>
 
-        {/* GAME + BUTTON WRAPPER */}
         <div className="w-full flex flex-col items-center">
-          {/* GAME CONTAINER */}
           <div
             className="w-[calc(50%+125px)] aspect-video border-4 border-zinc-700 rounded-2xl flex items-center justify-center relative"
             ref={containerRef}
           >
-            {/* LOADING */}
             {loading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-black/80 z-10 gap-4">
                 <div className="font-pixeloid text-[30px] text-white">
@@ -134,7 +158,6 @@ export default function UnityGamePage({
             )}
           </div>
 
-          {/* FULLSCREEN BUTTON */}
           <button
             onClick={handleFullscreen}
             className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
@@ -143,7 +166,6 @@ export default function UnityGamePage({
           </button>
         </div>
 
-        {/* DESCRIPTION */}
         <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
           <div className="w-full max-w-[80%] text-center">
             {descriptionList.map((description: ReactElement, index: number) => (

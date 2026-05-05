@@ -1,5 +1,5 @@
 import { useState, useEffect ,type ReactElement } from "react"
-import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment } from "../assets"
+import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../assets"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
 export const PROJECTS_DESCRIPTION_TEXT_SIZE = 20
@@ -29,11 +29,6 @@ const CategoryTags : Record<string, Tag> = {
 }
 
 const LolTags : Record<string, Tag> = {
-  FLStudioFree : {
-    name : "FL Studio free version lol",
-    color : "#ffaf69",
-    baseTextSize : 10
-  }
 }
 
 const MiscTags : Record<string, Tag> = {
@@ -90,8 +85,7 @@ const BaseTags : Record<string, Tag> = {
     name : "♫ Composition",
     color : "#d096ff",
     baseTextSize : 14,
-    subTags : [LolTags.FLStudioFree]
-  }
+  } 
 }
 
 const Tags : Record<string, Tag> = {
@@ -152,6 +146,16 @@ export const projects : Project[] = [
     }
   },
   {
+    name : "Sidestep²",
+    description : "Small bullet hell game.",
+    tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/Sidestep2")],
+    display : GetImageDisplay(sidestep2, "Sidestep²"),
+    link : {
+      url : "https://devman-dan.itch.io/sidestep",
+      linkImage : itchIO,
+    },
+  },
+  {
     name : "Untitled 2D Shooter",
     description : "Layered multiplayer (2+) horizontal shooter with various abilities, weapons, and cosmetics.",
     tags : [Tags.RobloxStudio],
@@ -203,7 +207,7 @@ function GetImageDisplay(image : string, name : string) : ProjectDisplay {
     return <><img
       src={image}
       alt={name}
-      className='w-full h-full object-cover rounded-2xl brightness-[75%] group-hover:brightness-[100%] transition-[filter] duration-300 ease-in-out'   
+      className='opacity-70 group-hover:opacity-90 w-full h-full object-cover rounded-2xl brightness-[75%] group-hover:brightness-[100%] transition-[filter] duration-300 ease-in-out'   
     />
       {LinkElement}
     </>
@@ -274,7 +278,7 @@ function WebsiteDisplay() {
     <div
       className="w-full h-full relative "
     >
-      {GetImageDisplay(portfolioSite, "Yes")({LinkElement : linkElement})}
+      {GetImageDisplay(portfolioSite, "Portfolio Site")({LinkElement : linkElement})}
       {linkPressCount > 0 &&
         <>
           <h3 className="w-full absolute inset-0 flex items-center justify-center text-center text-[30px] bg-black/50 ">
@@ -317,7 +321,7 @@ export type Tag = {
   color : string,
   subTags? : Tag[]
   baseTextSize? : number,
-  overrideTagSymbol? : (tagName : string) => ReactElement,
+  overrideTagSymbol? : (tagName : string) => ReactElement | string,
 }
 
 export type ImageSource = string | "None"

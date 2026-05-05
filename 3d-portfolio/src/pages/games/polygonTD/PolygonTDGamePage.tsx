@@ -28,6 +28,10 @@ const fileInfo : FileInfo = {
   gamePath: GAME_PATH
 }
 
+const titleElement = <p className="pb-5 text-center font-pixeloid">
+            POLYGON TOWER DEFENSE
+          </p>
+
 const descriptionList : ReactElement[] = [
   <span className="text-[18px] text-left w-[85%] tracking-wide leading-loose">Polygon TD is a simple tower defense game where towers and enemies are just basic shapes.<br/></span>,
   <span className="text-[15px] text-left w-[85%] tracking-wide leading-loose mt-5">
@@ -55,6 +59,7 @@ const descriptionList : ReactElement[] = [
 ]
 
 export default UnityGamePage({
+  titleElement : titleElement,
   descriptionList : descriptionList,
   canvasDimensions : canvasDimensions,
   config : config,

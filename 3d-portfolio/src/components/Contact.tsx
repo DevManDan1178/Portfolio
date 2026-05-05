@@ -59,7 +59,7 @@ const Contact = () => {
             <div
               key={index}
               onClick={() => window.open(link.url, "_blank")}
-              className="flex flex-col items-center justify-center gap-2 group"
+              className="flex flex-col items-center justify-center gap-2 group cursor-pointer"
             >
             <div className="w-[50px] h-[50px] flex items-center justify-center bg-black rounded-lg relative overflow-hidden border-2 border-white/50">
               <img
@@ -92,7 +92,7 @@ const Contact = () => {
       </div>
       <div  className='mt-[25px] flex items-center justify-center w-full'>
           <button 
-            className=' bg-white/10 hover:bg-white/20 pl-2 pr-2 rounded-xl transition-colors transition-duration[0.5s] border-white/30 border-[2px] hover:border-white/20'
+            className=' bg-white/10 hover:bg-white/20 pl-2 pr-2 rounded-xl transition-all transition-duration[0.5s] border-white/30 border-[2px] hover:border-white/20 hover:scale-110'
             onClick={onEmailCopy}
           >
             <span className='text-blue-100/60'>{showEmailCopied ? "Copied" : "Copy"}[</span> 

@@ -11,7 +11,7 @@ export type Technology = {
 
 export const preTitle : string = "Stuff I know"
 export const title : string = "Tech Stack" //"\u00A0" is an invisible character
-export const subDescription : string = "Web and game development tools I use to build interactive applications."
+export const subDescription : string = "Development tools I use to build interactive applications."
 export const solvedtitle : string = "Tech Stack"
 export const abortingButtonText : ReactElement = <span className="text-lime-100/80 text-[25px] text-center w-full flex items-center justify-center"> Reveal </span>
 export const abortedButtonText : string = "Play"

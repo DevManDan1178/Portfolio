@@ -25,6 +25,7 @@ import java from "./tech/Java.svg"
 import vsCode from "./tech/VSCode.png"
 
 import polygonTD from "./projects/PolygonTDThumbnail.png"
+import sidestep2 from "./projects/Sidestep2.png"
 import echoArena from "./projects/EchoArenaThumbnail.png"
 import untitled2DShooter from "./projects/Untilted2DShooterThumbnail.png"
 import pendulumSimulator from "./projects/PendulumSimThumbnail.png"
@@ -75,5 +76,6 @@ export {
   itchIO,
   typingPracticeAssignment,
   linkedIn,
-  email
+  email,
+  sidestep2,
 };
