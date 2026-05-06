@@ -1,13 +1,9 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import { styles } from '../style'
 import { SectionWrapper } from '../hoc'
-import { fadeIn, textVariant } from '../utils/motion'
 import { testimonials, preTitle, title, type Testimonial } from '../constants/testimonials'
 
-const TITLE_TRANSITION_DELAY = 0.35
-
-const TestimonialCard = ({index, testimonial} : {index : number, testimonial : Testimonial}) => {
+const TestimonialCard = ({testimonial} : {testimonial : Testimonial}) => {
   const {statement, name, designation, image} = {...testimonial}
     return (
       <motion.div
@@ -57,24 +53,25 @@ const Testimonials = () => {
   return (
     <div className='mt-12 bg-black-100 rounded-[20px]'>
       <div className={`${styles.padding} bg-tertiary rounded-2xl min-h-[300px]`}>
-        <motion.div  
+        <div > 
+          {/*
           variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
           viewport={{ once: true }}
-        >
+          */}
           <p className={styles.sectionSubText}>
             {preTitle}
           </p>
           <h2 className={styles.sectionHeadText}>
             {title}
           </h2>
-        </motion.div>
+        </div>
       </div>
       <div className={`${styles.paddingX} -mt-20 pb-14 flex flex-wrap gap-7`}>
         {testimonials.map((testimonial, index) => (
           <TestimonialCard
             key={testimonial.name}
             testimonial={testimonial}
-            index={index}
+
           />
         ))}
       </div>

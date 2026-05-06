@@ -1,7 +1,8 @@
 
-import type { ReactElement } from 'react'
+import { useEffect, type ReactElement, useState } from 'react'
 import { InvertingDisplay } from './effects/VisualEffects'
 import { pages, type PageInfo } from '../constants/pages/pages'
+import { styles, GetScreenSizeType, type ScreenSizeType } from '../style'
 
 export function GetPages(pages : PageInfo[], openInNewTab : boolean = true) : () => ReactElement {
   return () => (
@@ -26,10 +27,21 @@ export function PagesForAll(openInNewTab : boolean = true) : () => ReactElement 
 }
 
 export function GetPageDisplays(pages : PageInfo[], openInNewTab : boolean = true) {
-    return pages.map((page : PageInfo, index : number) => (GetLinkDisplay(page.url, page.iconElement, page.name, index, openInNewTab)))
+    const [screenSizeType, setScreenSizeType] = useState<ScreenSizeType>(GetScreenSizeType())
+    
+    useEffect(() => {
+        const checkScreenSize = () => {
+        setScreenSizeType(GetScreenSizeType())
+    }
+        checkScreenSize()
+        window.addEventListener("resize", checkScreenSize)
+
+    return () => window.removeEventListener("resize", checkScreenSize)
+    }, [])
+    return pages.map((page : PageInfo, index : number) => (GetLinkDisplay(page.url, page.iconElement, page.name, index, openInNewTab, styles.getLinkDisplayPixelSize(screenSizeType))))
 }
 
-export function GetLinkDisplay(url : string, iconElement : ReactElement | string, linkName : string, key : number | string, openInNewTab : boolean = true) {
+export function GetLinkDisplay(url : string, iconElement : ReactElement | string, linkName : string, key : number | string, openInNewTab : boolean = true, pixelSize : number = 50) { 
     return (
         <a
         key={key}
@@ -37,8 +49,19 @@ export function GetLinkDisplay(url : string, iconElement : ReactElement | string
         href={url}
         target={openInNewTab ? "_blank" : "_self"}
     >
-        <div className="relative w-[50px] h-[50px] flex items-center justify-center inset-0 rounded-xl overflow-hidden border-2 border-white/30">
-            <span className='text-[40px] items-center text-center justify-center flex'>
+        <div 
+            className={`relative items-center justify-center inset-0 rounded-xl overflow-hidden border-2 border-white/30 flex`}
+            style={{
+                width: `${pixelSize}px`,
+                height: `${pixelSize}px`,
+            }}
+        >
+            <span 
+                style={{
+                    fontSize: `${pixelSize * 0.45}px`,
+                }}
+                className={`items-center text-center justify-center flex`}
+            >
                 {iconElement}
             </span>
 
@@ -47,7 +70,12 @@ export function GetLinkDisplay(url : string, iconElement : ReactElement | string
         </div>
         
         {/* LABEL */}
-        <span className="text-white/75 text-xs text-center"> 
+        <span 
+        className={`text-white/75 text-center`}
+          style={{
+                fontSize: `${pixelSize * 0.25}px`,
+            }}
+        > 
             <b>{linkName}</b>
         </span>
     </a>

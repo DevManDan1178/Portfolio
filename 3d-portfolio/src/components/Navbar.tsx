@@ -22,8 +22,11 @@ const Navbar = () => {
     navbarLinks.forEach((link, i) => {
       const el = document.getElementById(link.id);
       if (!el) return;
-
+      
       const rect = el.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25;
+
+      if (!isVisible) return;
 
       // distance from center of screen
       const elementCenter = rect.top + rect.height / 2;
@@ -64,6 +67,14 @@ const Navbar = () => {
   };
 }, [navbarLinks]);
 
+  function getOnClick(navId : string) : () => void {
+    return () => {
+        document.getElementById(navId)?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+  }
+
   return (
     <nav
       className={`${styles.paddingX} w-full flex items-center py-2 fixed top-0 z-20 bg-primary`}> 
@@ -91,11 +102,11 @@ const Navbar = () => {
           {navbarLinks.map((link : NavLink, index : number) => (
             <li 
               key={link.id}
-              className={`${surfingNavlinkIndices[index] ? "text-white" : "text-secondary"} hover:text-white text-[18px] font-medium cursor-pointer`}
+              className={`${surfingNavlinkIndices[index] ? "text-white/90 hover:text-white" : "text-secondary hover:text-white/80 "} text-[18px] font-medium cursor-pointer`}
             >
-              <a href={`#${link.id}`}>
+              <button onClick={getOnClick(link.id)}>
                 {link.title}
-              </a>
+              </button>
             </li>
           ))     
           }
@@ -110,25 +121,23 @@ const Navbar = () => {
           />
           <div className={`${!toggle ? "hidden" : "flex"} p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px]`}>
             <ul className='list-none flex justify-end items-start flex-col gap-4'>
-              {navbarLinks.map((link : NavLink) => (
+              {navbarLinks.map((link : NavLink, index : number) => (
                 <li 
                   key={link.id}
-                  className={`text-secondary font-poppins font-medium cursor-pointer text-[16px]`}
+                  className={`${surfingNavlinkIndices[index] ? "text-white/90 hover:text-white" : "text-secondary hover:text-white/80 "} font-poppins font-medium cursor-pointer text-[16px]`}
                   onClick={() => {
                     setToggle(false)
                   }}
                 >
-                  <a href={`#${link.id}`}>
+                  <button onClick={getOnClick(link.id)}>
                     {link.title}
-                  </a>
+                  </button>
                 </li>
               ))     
               }
             </ul>
-          </div>
-          
+          </div>       
         </div>
-
       </div>
     </nav>
   )

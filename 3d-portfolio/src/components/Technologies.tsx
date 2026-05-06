@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
+import { useRef, useState} from 'react'
+import useSound from 'use-sound'
 import { BallCanvas } from './canvas'
 import { SectionWrapper } from '../hoc'
-import { preTitle, technologies, title, subDescription, type Technology, solvedtitle, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
+import { preTitle, technologies, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../style'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
@@ -21,6 +22,11 @@ const PAIR_SELECTED_HIDE_DELAY : number = 1 * 1000
 const SOLVED_DISPLAY_DELAY : number = 0.5 * 1000
 
 const Technologies = () => {
+  const [playSelectSound] = useSound('/sounds/match2Minigame/BallFlip.wav', {volume: 0.3})
+  const [playMatchSound] = useSound('/sounds/match2Minigame/BallMatch.wav', {volume: .6})
+  const [playMatchFailSound] = useSound('/sounds/match2Minigame/BallMatchFail.wav', {volume: 0.3})
+  const [playGameFlipSound] = useSound('/sounds/match2Minigame/BallMatchFail.wav', {volume: 0.25, playbackRate: 1.2})
+
   const getRandomizedTechnologyNodes = () => ([...technologies, ...technologies].map((technology : Technology) => (
     {technology : technology, status : {solved : false, selected : false}}
   )).sort(() => Math.random() - 0.5))
@@ -43,6 +49,7 @@ const Technologies = () => {
       }
       return technologyNode
     }))
+    playMatchSound()
     if (solved) {
       timeoutRef.current = setTimeout(() => {
         setSolved(true), SOLVED_DISPLAY_DELAY
@@ -56,7 +63,7 @@ const Technologies = () => {
       if (aborted) {
         return
       }
-      console.log(aborted)
+      playMatchFailSound()
       setTechnologyNodes(technologyNodes.map((technologyNode : TechnologyNode, _index : number) => {
         if (_index == index1 || _index == index2) {
           return  {technology: technologyNode.technology, status: {solved: false, selected: false}} 
@@ -69,12 +76,13 @@ const Technologies = () => {
     timeoutRef.current = setTimeout(onTimeout, PAIR_SELECTED_HIDE_DELAY)
   }
 
-  const onPairSelected = (index1 : number, index2 : number) => {
+  function onPairSelected(index1 : number, index2 : number) : boolean {
     if (technologyNodes[index1].technology.name == technologyNodes[index2].technology.name) {
       onCorrectPairSelected(index1, index2)
-      return
+      return true
     }
     onWrongPairSelected(index1, index2)
+    return false
   }
 
   const onSelected = (index : number) => {
@@ -91,9 +99,12 @@ const Technologies = () => {
       return  {technology: technologyNode.technology, status: {solved : false, selected: selected}}
     }))
     if (otherSelectedIndex != -1) {
-      onPairSelected(otherSelectedIndex, index)
+      if (!onPairSelected(otherSelectedIndex, index)) {
+        playSelectSound()
+      }
+      return
     }
-
+    playSelectSound()
   }
 
   const getOnClick = (index : number) => () => {
@@ -112,7 +123,7 @@ const Technologies = () => {
     setAborted(false)
     setInputDisabled(false)
     setTechnologyNodes(getRandomizedTechnologyNodes())
-    
+    playGameFlipSound()
   }
   
   const abort = () => {
@@ -123,8 +134,8 @@ const Technologies = () => {
     setInputDisabled(true)
     const newTechnologyNodes = technologyNodes.map((technologyNode) => ({technology:technologyNode.technology, status: {solved : false, selected: true}})) //Array.from(new Map(technologyNodes.map((technologyNode : TechnologyNode) => 
         //[technologyNode.technology.name, {technology:technologyNode.technology, status: {solved : false, selected: true}}])).values())
-    console.log(newTechnologyNodes)
     setTechnologyNodes(newTechnologyNodes)
+    playGameFlipSound()
   }
 
   const groupedTechnologies = technologies.reduce((accumulator, technology) => {
@@ -136,7 +147,7 @@ const Technologies = () => {
   }, {} as Record<string, Technology[]>);
 
   return (
-    <div>
+    <div className='mb-[75px]'>
       <div> {/*
         variants={{
           hidden: {y: -50, opacity: 0, },
@@ -147,7 +158,7 @@ const Technologies = () => {
             <AnimatedTextAppearance text={preTitle} startingState={{translateY: 5}}/>
           </p>
           <h2 className={styles.sectionHeadText + " text-start"}>
-            {solved ? solvedtitle : title}
+            {title}
           </h2>  
           <p className={styles.subDescriptionText + " text-start"}>
             {subDescription}
@@ -166,7 +177,7 @@ const Technologies = () => {
             >
               
               {/* Category title */}
-              <h3 className="text-white/70 text-xl mb-4 tracking-wider">
+              <h3 className={`text-white/70 ${styles.techStackCategoryTextStyle} mb-4 tracking-wider`}>
                 <b>{category}</b>
               </h3>
 
@@ -175,16 +186,16 @@ const Technologies = () => {
                 {items.map((tech) => (
                   <div
                     key={tech.name}
-                    className="flex flex-col items-center gap-2 w-[90px]
+                    className={`flex flex-col items-center gap-2 ${styles.techStackElementStyles.boxWidthStyle} py-2
                      bg-white/25 group hover:bg-white/50 border-[5px] border-white/10 hover:border-black/50 rounded-lg 
-                     transition-all duration-300 ease-out"
+                     transition-all duration-300 ease-out`}
                   >
                     <img
                       src={tech.icon}
                       alt={tech.name}
-                      className="w-12 h-12 object-contain pt-2"
+                      className={`${styles.techStackElementStyles.imageSizeStyle} aspect-square object-contain pt-2`}
                     />
-                    <p className="text-sm text-white/90 text-center group-hover:text-black/70 transition-all duration-300 ease-out">
+                    <p className={`${styles.techStackElementStyles.nameSizeSyle} text-white/90 text-center group-hover:text-black/70 transition-all duration-300 ease-out`}>
                       {tech.name}
                     </p>
                   </div>
@@ -195,15 +206,19 @@ const Technologies = () => {
           ))}
         </div>
         <span>
-          <span className="text-white/80 text-[25px] text-center w-full flex items-center justify-center mt-[75px]"> <b> Match my stack </b>  <br/> </span>
-          <span className="text-green-100/80 text-[15px] text-center w-full flex items-center justify-center"> Click to play! </span>
+          <span className={`text-white/80 ${styles.techStackMatchStyle.titleTextSizeStyle} text-center w-full flex items-center justify-center mt-[75px]`}> 
+            <b> Match my stack </b>  <br/> 
+          </span>
+          <span className={`text-green-100/80 ${styles.techStackMatchStyle.subTitleTextSizeStyle} text-center w-full flex items-center justify-center`}> 
+            Click to play! 
+          </span>
         </span>
         <div className='flex flex-row flex-wrap justify-center gap-10 w-full aspect-[3/1] mt-[10px] mb-[20px] border-2 border-white/40 rounded-2xl'>
             <BallCanvas technologies={technologyNodes} getOnClick={getOnClick} />
         </div>
         <div className='w-full flex items-center justify-center'>
-          <button className={`gap-10 h-[60px] w-[calc(15%+50px)] "cursor-pointer" bg-white/15 rounded-lg border-2 border-white/10 items-center justify-center`} onClick={solved ? reset : (aborted ? reset : abort)} >
-            <p className="text-[25px] text-secondary tracking-wider text-center">
+          <button className={`gap-10 ${styles.techStackMatchStyle.buttonSizeStyle} "cursor-pointer" bg-white/15 rounded-lg border-2 border-white/10 items-center justify-center`} onClick={solved ? reset : (aborted ? reset : abort)} >
+            <p className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary tracking-wider text-center`}>
               {solved ? solvedButtonText : (aborted ? abortedButtonText : abortingButtonText)}
             </p>
           </button>

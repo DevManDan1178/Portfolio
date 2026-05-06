@@ -1,4 +1,4 @@
-import { About, Contact, Experience, Testimonials, Hero, Navbar, Technologies, Projects, StarsCanvas } from "../components";
+import { About, Contact, Experience, Hero, Navbar, Technologies, Projects, StarsCanvas } from "../components";
 import { GetPagesExcept } from "../components/Pages";
 import { pages } from "../constants/pages/pages";
 import { navLinks } from "../constants";

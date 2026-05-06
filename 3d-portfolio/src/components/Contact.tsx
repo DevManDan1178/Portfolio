@@ -1,16 +1,13 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { styles } from '../style'
 import { SectionWrapper } from '../hoc'
 import { emailDomain, emailUser, preTitle, title, subDescription, GetSocialLinkElement } from '../constants/contact'
 import { SocialLinks } from '../constants/contact'
-import {  useState } from 'react'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
+import { type ScreenSizeType, GetScreenSizeType, styles } from '../style'
 
 
 const EMAIL_COPIED_DISPLAY_DURATION = 3
-
-const TITLE_TRANSITION_DELAY = 0.35
 
 
 const Contact = () => {
@@ -29,6 +26,19 @@ const Contact = () => {
       setShowEmailCopied(false)
     }, EMAIL_COPIED_DISPLAY_DURATION * 1000)
   }
+
+   const [screenSizeType, setScreenSizeType] = useState<ScreenSizeType>(GetScreenSizeType())
+  
+     useEffect(() => {
+      const checkScreenSize = () => {
+        setScreenSizeType(GetScreenSizeType())
+      }
+      checkScreenSize()
+      window.addEventListener("resize", checkScreenSize)
+  
+      return () => window.removeEventListener("resize", checkScreenSize)
+    }, [])
+  
 
   return (
     <div>
@@ -57,11 +67,11 @@ const Contact = () => {
           Clicky Stuffs
         </span>
         <div className='flex items-center justify-center gap-10 mt-[25px]'>
-          {Object.entries(SocialLinks).map(([platform, link], index : number) =>  (
-            GetSocialLinkElement(link, index.toString())
+          {Object.entries(SocialLinks).map(([_platform, link], index : number) =>  (
+            GetSocialLinkElement(link, index.toString(), true, styles.getLinkDisplayPixelSize(screenSizeType))
         ))}
       </div>
-      <div  className='pt-[25px] flex items-center justify-center w-full'>
+      <div  className={`pt-[25px] ${styles.copyEmailSizeStyle} flex items-center justify-center w-full`}>
           <button 
             className=' bg-white/10 hover:bg-white/20 pl-2 pr-2 rounded-xl transition-all transition-duration[0.5s] border-white/30 border-[2px] hover:border-white/20 hover:scale-110'
             onClick={onEmailCopy}

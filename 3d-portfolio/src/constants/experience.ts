@@ -8,7 +8,7 @@ export type IconInfo = {
 
 export type Experience = {
   title: string,
-  companyName : string,
+  subTitle : string,
   iconInfo : IconInfo,
   date : string,
   points : string[]
@@ -21,7 +21,7 @@ export const subDescription : string = "Currently a work in progress."
 export const experiences : Experience[] = [
   {
     title : "Math, Science, and Computer Science",
-    companyName : "Vanier College",
+    subTitle : "Vanier College",
     iconInfo : {
       icon : vanierCollege,
       background : "#ff9896",

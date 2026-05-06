@@ -1,3 +1,4 @@
+import type { UnityInstance } from "../../pages/games/UnityGamePage";
 
 const CONTAINER_ID = "unity-canvas";
 const GAME_PATH = "/games/PolygonTD";
@@ -33,15 +34,6 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
   canvas.style.visibility = "hidden";
   canvas.tabIndex = 1;
 
-  canvas.addEventListener("pointerdown", (e) => {
-    // Only left click
-    if (e.button !== 0) return;
-
-    // Get canvas-local coordinates
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-  })
   _unityCanvas = canvas
   
 
@@ -53,16 +45,17 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
 
   script.onload = () => {
 
+    /*
     function onLoadingProgress(progress : number) {
       
-    }
+    }*/
 
     // @ts-ignore
     createUnityInstance(canvas, {
       dataUrl: `${GAME_PATH}/Build/${BUILD_NAME}.data`,
       frameworkUrl: `${GAME_PATH}/Build/${BUILD_NAME}.framework.js`,
       codeUrl: `${GAME_PATH}/Build/${BUILD_NAME}.wasm`,
-    }, onLoadingProgress).then((unityInstance: any) => {
+    }, /*onLoadingProgress*/).then((unityInstance: any) => {
       _unityInstance = unityInstance
       onUnityInstanceCreated(unityInstance)
       // Mute audio
@@ -104,6 +97,8 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
 
   return () => canvas;
 }
+
+export const GetUnityInstance : () => UnityInstance = () => _unityInstance
 
 export type GameEventHandlers = {
   OnLevelLost: (levelNumber : number) => void,

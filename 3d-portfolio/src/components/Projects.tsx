@@ -1,13 +1,12 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Tilt from 'react-parallax-tilt'
 import { motion } from 'framer-motion'
-import { getDefaultLinkElement, type BulletPoint, type Project, MINIMUM_SUBTAG_TEXT_SIZE, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, BASE_TAG_SIZE, PROJECTS_TITLE_TEXT_SIZE, PROJECTS_DESCRIPTION_TEXT_SIZE, PROJECTS_BULLET_POINTS_TEXT_SIZE, defaultTagSymbol } from '../constants/projects'
+import { getDefaultLinkElement, type BulletPoint, type Project, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, defaultTagSymbol } from '../constants/projects'
 import { styles } from '../style'
 import { SectionWrapper } from '../hoc'
 import { preTitle, title, subDescription, projects, type Tag } from '../constants/projects'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
-const TITLE_TRANSITION_DELAY = 0.35
 const PROJECTS_APPEARANCE_ANIMATION_Y = 75
 const PROJECT_APPEARANCE_DURATION = 0.45
 
@@ -23,19 +22,19 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
       }
   const Display = display
   //@ts-ignore
-  function getSubTagsDisplay(tagList : Tag[], parentKey : string, maxTextSize : number) {
+  function getSubTagsDisplay(tagList : Tag[], parentKey : string, textSizeReduction : number) {
     //@ts-ignore
     return tagList.map((tag : Tag, index : number) => { 
       const key = `${parentKey}${tag.name}`
       const hasSubTags = tag.subTags && tag.subTags.length > 0
-      const showingSubTags = !toggledSubtagIds[key]
-      const textSize = tag.baseTextSize ? Math.min(tag.baseTextSize, maxTextSize) : maxTextSize
+      const showingSubTags = !toggledSubtagIds[key] == !tag.hideSubTagsByDefault
+      const textSizeStyle = styles.getProjectTagTextSizeStyle((tag.baseTextSizeModifier ?? 0) - textSizeReduction) 
       return <span key={key}
           className="cursor-default"
         >
           <span 
             onClick={hasSubTags? getToggleSubTagsCall(key) : () => {}}
-            className={`${hasSubTags && PARENT_TAG_STYLE} rounded-2xl text-[${textSize}px] ${tag.color} whitespace-nowrap inline-block`}
+            className={`${hasSubTags && PARENT_TAG_STYLE} rounded-2xl ${textSizeStyle} ${tag.color} whitespace-nowrap inline-block`}
             style={{color : tag.color}}
           >
             &nbsp;{tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}
@@ -43,7 +42,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
         
           {
             (showingSubTags && tag.subTags) && <span>
-              {getSubTagsDisplay(tag.subTags, key, Math.max(MINIMUM_SUBTAG_TEXT_SIZE, textSize - SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER))}
+              {getSubTagsDisplay(tag.subTags, key, textSizeReduction + SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER)}
             </span>
           }
         </span> 
@@ -52,30 +51,21 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
   const [showing, setShowing] = useState<boolean>(false)
   
   return <motion.div 
+      key={index}
+      
+      initial="hidden"
+      animate="show"
       variants={{
-        hidden: {
-          x: 0,
-          y:PROJECTS_APPEARANCE_ANIMATION_Y,
-          opacity: 0,
-        },
-        show: {
-        x: 0,
-        y: 0,
-        opacity: 1,
-        transition: {
-          type: "spring",
-          delay: index * PROJECT_APPEARANCE_DURATION,
-          duration: PROJECT_APPEARANCE_DURATION,
-          ease: "easeOut",
-        },}}}
-        className='sm:w-[340px] w-[100%]'
-        onClick={(e => {
+                hidden: {y: PROJECTS_APPEARANCE_ANIMATION_Y, opacity: 0, },
+                show: {y: 0, opacity: 1, transition: { type: "spring", duration: PROJECT_APPEARANCE_DURATION, delay: index * PROJECT_APPEARANCE_DURATION}},
+              }}
+        className='sm:w-[320px] w-[200px]'
+        onClick={(_e => {
             console.log("clicked project ", project.name)
           })}
         onAnimationComplete={() => {
           setShowing(true)
         }}
-        viewport={{ once: true }}
       >
        <Tilt
       tiltMaxAngleX={5}
@@ -83,7 +73,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
       transitionSpeed={1000}
       className={`bg-slate-700/50 hover:bg-slate-400/35 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
       >
-        <div className='w-[calc(100%-30px)] pt-[10px] pb-[10px] group'>
+        <div className='w-[c  alc(100%-30px)] pt-[10px] pb-[10px] group'>
           <div className='relative w-full h-full'>
             <Display 
             LinkElement={!!link ? 
@@ -93,12 +83,12 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
             
           </div>
           <div className='mt-5'>
-            <h3 className={`font-bold text-[${PROJECTS_TITLE_TEXT_SIZE}px] ${visuals?.nameColor ?? ""}`}
+            <h3 className={`font-bold ${styles.projectHeadTextSizeStyle} ${visuals?.nameColor ?? ""}`}
              style={{ color: visuals?.nameColor ?? "white" }}
             >
               {name}
             </h3>
-            <p className={`mt-2 text-[${PROJECTS_DESCRIPTION_TEXT_SIZE}px] ${visuals?.descriptionColor ?? ""}`}
+            <p className={`mt-2 ${styles.projectDescriptionTextStyle} ${visuals?.descriptionColor ?? ""}`}
               style={{ color: visuals?.descriptionColor ?? "white" }}
             >
               {description}
@@ -111,7 +101,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
                 {showingBulletPoints && bulletPoints?.map((bulletPoint : BulletPoint, index : number) => (
                   <p 
                   key={`${index}`}
-                  className={`${bulletPoint.color ?? "text-blue-100/90"} text-[${PROJECTS_BULLET_POINTS_TEXT_SIZE}px] mt-[10px]`}
+                  className={`${bulletPoint.color ?? "text-blue-100/90"}${styles.projectBulletPointsTextStyle} mt-[10px]`}
                   style={{color : bulletPoint.color}}
                   > 
                     {"• "}{bulletPoint.text}
@@ -120,16 +110,17 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
               </div>
             </div>
             <div className='mt-3 h-full gap-2'>
-              {tags.map((tag : Tag, index : number) => {  
-                const showingSubTags = !toggledSubtagIds[tag.name]
+              {tags.map((tag : Tag) => {  
+                const showingSubTags = !toggledSubtagIds[tag.name] == !tag.hideSubTagsByDefault
                 const hasSubTags = tag.subTags && tag.subTags.length > 0
+                const textSizeStyle = styles.getProjectTagTextSizeStyle(tag.baseTextSizeModifier) 
                 return <span key={tag.name}
                   className={`${tag.color} cursor-default`}
                   style={{ color: tag.color }}
                 >
                   <span 
                     onClick={hasSubTags ? getToggleSubTagsCall(tag.name) : () => {}}
-                    className={`${hasSubTags && PARENT_TAG_STYLE} rounded-lg text-[${tag.baseTextSize ?? BASE_TAG_SIZE}px] whitespace-nowrap`}
+                    className={`${hasSubTags && PARENT_TAG_STYLE} rounded-lg ${textSizeStyle} whitespace-nowrap`}
     
                   >
                     {tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}
@@ -137,7 +128,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
                   </span>
                   {
                     (showingSubTags && tag.subTags) && <span>
-                      {getSubTagsDisplay(tag.subTags, tag.name, BASE_TAG_SIZE - SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER)}
+                      {getSubTagsDisplay(tag.subTags, tag.name, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER)}
                       <br/>
                     </span>
                   }
@@ -178,7 +169,7 @@ const Projects = () => {
         </motion.p>
       </div>
       
-      <div className='flex flex-wrap gap-7 items-start justify-center pt-[50px] w-[100%]'>
+      <div className='flex flex-wrap gap-16 items-start justify-center pt-[50px] w-[100%]'>
         {projects.map((project, index) => (
           <div key={`project-${index}`}>
             <ProjectCard 

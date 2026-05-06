@@ -12,7 +12,7 @@ export default function OriginalMusicPage() {
             <div className="min-h-screen w-full flex flex-col items-center px-6 py-16 text-white">
                 <h1 className="text-4xl font-bold mb-4">Original Soundtracks</h1>
                 <p className="text-white/70 mb-10 text-center max-w-xl">
-                    They aren't published anywhere (yet?).
+                    They aren't published anywhere.
                 </p>
 
                 <div className="w-full max-w-3xl flex flex-col gap-12">

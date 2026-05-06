@@ -8,18 +8,18 @@ export type PageInfo = {
 
 export const pages : Record<string, PageInfo> = { 
     main : {
-        name : "Main",
-        iconElement : ".",
+        name : "Main Page",
+        iconElement : "↩",
         url : "/"
     },
     games : {
-        name : "Games",
+        name : "/ Games",
         iconElement : "▶",
         url : "/Games"
     },
     ost : {
-        name : "OST",
-        iconElement : "♫",
+        name : "/ OST",
+        iconElement : "♪",
         url : "/OST"
     },
 }

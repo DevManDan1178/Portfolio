@@ -1,24 +1,22 @@
-import React, { useEffect, useRef, useState, type RefObject } from 'react'
-import { motion, transform } from 'framer-motion'
+import { useRef, useState, type RefObject } from 'react'
 import { styles } from '../style' 
 import ComputerCanvas from './canvas/Computers'
 import { headerIntroElement, descriptionElement, TerminalTexts, TERMINAL_TEXT_APPEARANCE_DELAY, TERMINAL_TEXT_APPEARANCE_DURATION } from '../constants/hero'
-import { portfolioHeroName } from '../constants'
 import { MENU_SCENES, type GameEventHandlers } from './canvas/PolygonTD'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
 
 const Hero = () => {
-  const [levelProgress, setLevelProgress] = useState<number>(0)
+  const [_levelProgress, setLevelProgress] = useState<number>(0)
   const [terminalText, setTerminalText] = useState<string>(TerminalTexts.TerminalIntroduction)
   const gameEventHandlers : RefObject<GameEventHandlers> = useRef({
     OnLevelCleared(levelNumber) {
       setTerminalText(levelNumber >= 5 ? TerminalTexts.LastLevelClear : TerminalTexts.LevelCleared)
     },
-    OnLevelLost(levelNumber) {
+    OnLevelLost(_levelNumber) {
       setTerminalText(TerminalTexts.LevelLost)
     },
-    OnLevelStarted(levelNumber) {
+    OnLevelStarted(_levelNumber) {
       setTerminalText(TerminalTexts.LevelStarted)
     },
     OnPauseToggled(paused) {
@@ -60,7 +58,7 @@ const Hero = () => {
         <div className='absolute h-[calc(5%+35px)] bottom-[5px] w-[calc(30%+250px)] justify-between items-center flex left-1/2 -translate-x-1/2'>
            <a href='#about' className='w-[100%] items-center justify-center flex  bg-gray-950/50 rounded-3xl'>
               <div className='h-full w-[100%] rounded-2xl border-4 border-secondary flex justify-center p-2 items-center overflow-hidden'>
-                <p className='text-[20px]'>
+                <p className={`${styles.terminalTextSizeStyle}`}>
                   <AnimatedTextAppearance appearOnlyOnce text={terminalText} timeBetweenLetters={TERMINAL_TEXT_APPEARANCE_DURATION/terminalText.length} delay={TERMINAL_TEXT_APPEARANCE_DELAY} startingState={{translateY: 10}}/>             
                 </p>
               </div>

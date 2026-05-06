@@ -1,4 +1,4 @@
-import { experiences } from "./experiences";
+import { experiences } from "./experience";
 import { testimonials } from "./testimonials";
 import { technologies } from "./technologies";
 import { projects } from "./projects";

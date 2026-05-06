@@ -1,13 +1,11 @@
-import React from 'react'
 import { VerticalTimeline, VerticalTimelineElement } from "react-vertical-timeline-component"
 import { motion } from 'framer-motion'
 import 'react-vertical-timeline-component/style.min.css'
 import {styles} from '../style'
-import { experiences, preTitle, title, subDescription, type Experience } from '../constants/experiences'
+import { experiences, preTitle, title, subDescription, type Experience } from '../constants/experience'
 import { SectionWrapper } from '../hoc'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
-const TITLE_TRANSITION_DELAY = 0.35
 const DESCRIPTION_TRANSITION_DELAY = 0.25
 
 const ExperienceCard = ({experience} : {experience : Experience}) => {
@@ -22,25 +20,25 @@ const ExperienceCard = ({experience} : {experience : Experience}) => {
         <div className='flex justify-center items-center w-full h-full'>
           <img
             src = {iconInfo.icon}
-            alt = {experience.companyName}
+            alt = {experience.subTitle}
             className={`w-[${100 * (iconInfo.iconScale ?? 1)}%] h-[${100 * (iconInfo.iconScale ?? 1)}%] object-contain items-center overflow-hidden`}
           />
         </div>  
       }
       >
       <div>
-        <h3 className='text-white text-[24px] font-bold'>
+        <h3 className={`text-white ${styles.experienceCardStyles.titleTextSizeStyle} font-bold`}>
           {experience.title}
         </h3>
-        <p className='text-secondary text-[16px] font-semibold' style={{margin: 0}}>
-          {experience.companyName}
+        <p className={`text-secondary ${styles.experienceCardStyles.subTitleSizeStyle} font-semibold m-0`}>
+          {experience.subTitle}
         </p>
       </div>
       <ul className='mt-5 list-disc ml-5 space-y-2'>
         {experience.points.map((point, index) => (
           <li 
             key={`experience-point-${index}`}
-            className='text-white-100 text-[14px] pl-1 tracking-wider'
+            className={`text-white-100 ${styles.experienceCardStyles.bulletPointsSizeStyle} pl-1 tracking-wider`}
           >
             {point}  
           </li>
@@ -74,7 +72,7 @@ const Experience = () => {
             initial="hidden" 
             animate="show"
             variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: DESCRIPTION_TRANSITION_DELAY}}}}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             className={styles.subDescriptionText}
           >
             {subDescription}

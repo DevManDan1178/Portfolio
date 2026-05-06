@@ -6,7 +6,7 @@ export const PROJECTS_TITLE_TEXT_SIZE = 24
 export const PROJECTS_DESCRIPTION_TEXT_SIZE = 20
 export const PROJECTS_BULLET_POINTS_TEXT_SIZE = 14
 
-export const SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER = 3
+export const SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER = 2
 export const BASE_TAG_SIZE = 20
 export const MINIMUM_SUBTAG_TEXT_SIZE = 14
 
@@ -20,23 +20,20 @@ const CategoryTags : Record<string, Tag> = {
   Academic : {
     name : "Academic",
     color : "#fff1c9",
-    baseTextSize : 16,
+    baseTextSizeModifier : - 2,
   },
   TeamProject : {
     name : "Team Project",
-    color : "#f7b6fc",
-    baseTextSize : 14,
+    color : "#f4e3ff",
+    baseTextSizeModifier :- 2,
   }
-}
-
-const LolTags : Record<string, Tag> = {
 }
 
 const MiscTags : Record<string, Tag> = {
   GMTKJam2026 : {
     name : "GMTK Game Jam 2026",
     color : "lime-text-gradient",
-    baseTextSize : 16
+    baseTextSizeModifier : 1
   },
 }
 
@@ -45,7 +42,6 @@ const BaseTags : Record<string, Tag> = {
     name : "C#",
     color : "green-text-gradient",
   },
-
   GDScript : {
     name : "GDScript",
     color : "light-blue-text-gradient",
@@ -82,10 +78,13 @@ const BaseTags : Record<string, Tag> = {
     name : "Git",
     color : "#c7c7c7", 
   },
+  ThreeJS : {
+    name : "ThreeJS",
+    color : "grey-text-gradient"
+  },
   MusicComposition : {
-    name : "♫ Composition",
+    name : "♪ Composition",
     color : "#d096ff",
-    baseTextSize : 14,
   } 
 }
 
@@ -96,9 +95,10 @@ const Tags : Record<string, Tag> = {
     subTags : [BaseTags.Javascript, BaseTags.Typescript, BaseTags.WebDev],
   },
   Tailwind : {
-    name: "tailwind",
+    name: "Tailwind",
     color: "pink-text-gradient",
     subTags : [BaseTags.CSS],
+    hideSubTagsByDefault : true,
   },
   Unity : {
     name : "Unity",
@@ -173,7 +173,7 @@ export const projects : Project[] = [
     name : "Interactive Portfolio Experience",
     display : WebsiteDisplay, 
     description : "What more can I say? Look around.",
-    tags : [Tags.React, Tags.Tailwind]
+    tags : [{...Tags.React, hideSubTagsByDefault: true}, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Git]
   },
   {
     name : "Pendulum Simulator",
@@ -229,7 +229,7 @@ function GetPlayableTag(routePath : string, tagName : string = "Click to Play") 
     return {
     name : tagName,
     color : "#e0f5c6",
-    baseTextSize : 16,
+    baseTextSizeModifier : 4,
     overrideTagSymbol : overrideTagSymbol
   }
 }
@@ -259,7 +259,7 @@ function WebsiteDisplay() {
 
   const linkElement = getLinkElement(onLinkClicked)
   useEffect(() => {
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setLinkPressDisabled(false)
     }, LINK_PRESS_DISABLE_DURATION * 1000)
   }, [linkPressDisabled])
@@ -328,8 +328,9 @@ export type Tag = {
   name : string,
   color : string,
   subTags? : Tag[]
-  baseTextSize? : number,
+  baseTextSizeModifier? : number,
   overrideTagSymbol? : (tagName : string) => ReactElement | string,
+  hideSubTagsByDefault? : boolean,
 }
 
 export type ImageSource = string | "None"

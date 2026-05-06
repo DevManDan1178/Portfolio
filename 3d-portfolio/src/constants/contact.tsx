@@ -1,6 +1,5 @@
 import type { ReactElement } from "react"
 import { github, itchIO, linkedIn, email } from "../assets"
-import { InvertingDisplay } from "../components/effects/VisualEffects"
 import { GetLinkDisplay } from "../components/Pages"
 
 
@@ -41,13 +40,13 @@ export const CoreSocialLinks : LinkList = {
 }
 
 
-export function GetSocialLinkElement(link : SocialLink, key : string | number) : ReactElement{
+export function GetSocialLinkElement(link : SocialLink, key : string | number, openInNewTab : boolean = true, pixelSize : number = 50) : ReactElement{
     const linkIcon =  <img
                     src={link.linkIcon}
-                    className="w-3/4 aspect-square absolute"   
+                    className="w-3/4 h-3/4 aspect-square relative"   
                 />
   
-    return (GetLinkDisplay(link.url, linkIcon, link.platform, key) )
+    return GetLinkDisplay(link.url, linkIcon, link.platform, key, openInNewTab, pixelSize) 
 }
 export const SocialLinks : LinkList = {
     ...CoreSocialLinks,

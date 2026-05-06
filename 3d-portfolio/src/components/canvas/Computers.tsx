@@ -6,7 +6,6 @@ import { MOUSE, SRGBColorSpace } from "three";
 import CanvasLoader from "../Loader";
 import PolygonTD, {RESOLUTION, RESOLUTION_SCALE, type GameEventHandlers} from './PolygonTD'
 import { type UnityInstance } from "../../pages/games/UnityGamePage";
-import { uv } from "three/tsl";
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
 //const SCREEN_MESH_SIZE = { x: 4.7397, y: 2.6041 };

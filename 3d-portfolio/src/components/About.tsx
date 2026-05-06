@@ -1,16 +1,28 @@
 
 import { motion } from 'framer-motion'
-import { styles } from '../style'
-import { preTitle, title, SubDescription, type Service } from '../constants/about'
+import { styles, GetScreenSizeType, type ScreenSizeType } from '../style'
+import { preTitle, title, SubDescription} from '../constants/about'
 import { GetSocialLinkElement, CoreSocialLinks as SocialLinks } from '../constants/contact'
 import "../index.css"
 import { SectionWrapper } from '../hoc'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
+import { useEffect, useState } from 'react'
 
-const TITLE_TRANSITION_DELAY = 0.35
 const DESCRIPTION_TRANSITION_DELAY = 0.75
 
 const About = () => {
+  const [screenSizeType, setScreenSizeType] = useState<ScreenSizeType>(GetScreenSizeType())
+
+   useEffect(() => {
+    const checkScreenSize = () => {
+      setScreenSizeType(GetScreenSizeType())
+    }
+    checkScreenSize()
+    window.addEventListener("resize", checkScreenSize)
+
+    return () => window.removeEventListener("resize", checkScreenSize)
+  }, [])
+
   return (
     <>
       <div> {/*  
@@ -41,12 +53,15 @@ const About = () => {
               duration: DESCRIPTION_TRANSITION_DELAY,
               ease: "easeOut",
             },}}}
-        className={styles.subDescriptionText}
+        className={`${styles.subDescriptionText}`}
       >
-        <SubDescription/>
+        <span className={styles.aboutDescriptionTextSizeStyle}>
+          <SubDescription/>
+        </span>
+        
       </motion.p>
       <motion.div 
-        className='flex items-center justify-center gap-10 mt-[25px]'
+        className='flex items-center justify-center gap-10 mt-[25px]  mb-[50px]'
         variants={{
           hidden: {
             x: 0,
@@ -64,8 +79,8 @@ const About = () => {
               ease: "easeOut",
             },}}}
       >
-        {Object.entries(SocialLinks).map(([platform, link], index : number) =>  (
-          GetSocialLinkElement(link, index.toString())
+        {Object.entries(SocialLinks).map(([_platform, link], index : number) =>  (
+          GetSocialLinkElement(link, index.toString(), true, styles.getLinkDisplayPixelSize(screenSizeType))
         ))}
       </motion.div>
     </>
