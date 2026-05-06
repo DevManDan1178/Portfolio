@@ -2,25 +2,28 @@
 import { motion } from 'framer-motion'
 import { styles } from '../style'
 import { preTitle, title, SubDescription, type Service } from '../constants/about'
-import { CoreSocialLinks as SocialLinks } from '../constants/contact'
+import { GetSocialLinkElement, CoreSocialLinks as SocialLinks } from '../constants/contact'
 import "../index.css"
 import { SectionWrapper } from '../hoc'
+import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
 const TITLE_TRANSITION_DELAY = 0.35
+const DESCRIPTION_TRANSITION_DELAY = 0.75
 
 const About = () => {
   return (
     <>
-      <motion.div
+      <div> {/*  
         variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
-      >
+        viewport={{ once: true }}
+        */}
         <p className={styles.sectionSubText}>
-          {preTitle}
+          <AnimatedTextAppearance text={preTitle} startingState={{translateY: 5} }/>
         </p>
         <h2 className={styles.sectionHeadText}>
           {title}
         </h2>
-      </motion.div>
+      </div>
       <motion.p
         variants={{
           hidden: {
@@ -35,7 +38,7 @@ const About = () => {
             transition: {
               type: "spring",
               delay: .5,
-              duration: 0.75,
+              duration: DESCRIPTION_TRANSITION_DELAY,
               ease: "easeOut",
             },}}}
         className={styles.subDescriptionText}
@@ -62,41 +65,7 @@ const About = () => {
             },}}}
       >
         {Object.entries(SocialLinks).map(([platform, link], index : number) =>  (
-          <a
-            key={index}
-            className="flex flex-col items-center justify-center gap-2 group"
-            href={link.url}
-            target='_blank' 
-          >
-            <div
-              className="w-[50px] h-[50px] flex items-center justify-center bg-black rounded-lg relative overflow-hidden border-2 border-white/50 cursor-pointer"
-            >
-              <img
-                src={link.linkIcon}
-                className="w-3/4 relative aspect-square"
-              />
-
-              {/* ripple layer */}
-              <div className=" w-full h-full absolute flex items-center justify-center z-1">
-                <div
-                  className="
-                    w-[0%] h-[0%]
-                    rounded-full
-                    backdrop-invert
-                    group-hover:w-[200%]
-                    group-hover:h-[200%]
-                    transition-all
-                    duration-[0.5s]
-                    ease-in-out
-                  "
-                />
-              </div>
-            </div>
-            {/* LABEL */}
-            <span className="text-white/75 text-xs text-center"> 
-              <b>{link.platform}</b>
-            </span>
-          </a>
+          GetSocialLinkElement(link, index.toString())
         ))}
       </motion.div>
     </>

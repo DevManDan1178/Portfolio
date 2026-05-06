@@ -1,5 +1,6 @@
 import { type ReactElement } from "react";
 import UnityGamePage, { type FileInfo } from "../UnityGamePage";
+import { styles } from "../../../style";
 
 
 const GAME_PATH = "/games/PolygonTD";
@@ -32,13 +33,13 @@ const titleElement = <p className="pb-5 text-center font-pixeloid">
             POLYGON TOWER DEFENSE
           </p>
 
-const descriptionList : ReactElement[] = [
-  <span className="text-[18px] text-left w-[85%] tracking-wide leading-loose">Polygon TD is a simple tower defense game where towers and enemies are just basic shapes.<br/></span>,
+const descriptionElement : ReactElement = <span className={styles.sectionSubText}>
+  <span className="text-[18px] text-left w-[85%] tracking-wide leading-loose">Polygon TD is a simple tower defense game where towers and enemies are just basic shapes.<br/></span>
   <span className="text-[15px] text-left w-[85%] tracking-wide leading-loose mt-5">
-    Place turrets on <span style={{color: "#d7bbfd"}}> tiles</span> to defend the <span style={{color: "#ecf170", opacity: 0.85}}>endpoint</span>. 
+    Place turrets on <span style={{color: "#d7bbfd"}}> tiles</span> to defend the <span style={{color: "#ecf170", opacity: 0.85}}>endpoint</span>. <br/>
     Tailor your own tower upgrades and optimize your defenses.<br/> 
     Extensions to the <span style={{color: "#ffffff", opacity: 0.85}}>path</span> only apply when connected adjacent to the <span style={{color: "#ecf170", opacity: 0.85}}>endpoint</span>
-  </span>,
+  </span>
   <span className="text-[13px] font-pixeloid">
     <br/>
     Number keys can select the corresponding items in your hotbar. Pressing Q will cancel placement.
@@ -56,11 +57,11 @@ const descriptionList : ReactElement[] = [
       <span className="text-[10px]">(They aren't published)</span>
     </span>
   </span>
-]
+</span>
 
 export default UnityGamePage({
   titleElement : titleElement,
-  descriptionList : descriptionList,
+  descriptionElement : descriptionElement,
   canvasDimensions : canvasDimensions,
   config : config,
   fileInfo : fileInfo,

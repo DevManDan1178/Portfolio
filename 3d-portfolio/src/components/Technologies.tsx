@@ -4,6 +4,7 @@ import { SectionWrapper } from '../hoc'
 import { preTitle, technologies, title, subDescription, type Technology, solvedtitle, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../style'
+import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
 export type NodeStatus = {
   solved : boolean,
@@ -14,6 +15,8 @@ export type TechnologyNode = {
   status : NodeStatus
 }
 
+const TECHNOLOGY_CATEGORY_APPEARANCE_DURATION = 1.25
+const TECHNOLOGY_CATEGORY_APPEARANCE_DELAY = 0.5
 const PAIR_SELECTED_HIDE_DELAY : number = 1 * 1000
 const SOLVED_DISPLAY_DELAY : number = 0.5 * 1000
 
@@ -134,13 +137,14 @@ const Technologies = () => {
 
   return (
     <div>
-      <motion.div variants={{
+      <div> {/*
+        variants={{
           hidden: {y: -50, opacity: 0, },
           show: {y: 0, opacity: 1, },
         }}
-        >
+        */}
           <p className={styles.sectionSubText}>
-            {preTitle}
+            <AnimatedTextAppearance text={preTitle} startingState={{translateY: 5}}/>
           </p>
           <h2 className={styles.sectionHeadText + " text-start"}>
             {solved ? solvedtitle : title}
@@ -148,11 +152,18 @@ const Technologies = () => {
           <p className={styles.subDescriptionText + " text-start"}>
             {subDescription}
           </p> 
-      </motion.div>
-      <motion.div layout>
+      </div>
+      <div>
         <div className="mt-10 w-full flex flex-col gap-10">
-          {Object.entries(groupedTechnologies).map(([category, items]) => (
-            <div key={category} className="w-full">
+          {Object.entries(groupedTechnologies).map(([category, items], index) => (
+            <motion.div 
+              variants={{
+                hidden: {x: -50, opacity: 0, },
+                show: {x: 0, opacity: 1, transition: { type: "spring", duration: TECHNOLOGY_CATEGORY_APPEARANCE_DURATION, delay: index * TECHNOLOGY_CATEGORY_APPEARANCE_DELAY}},
+              }}
+              key={category} 
+              className="w-full"
+            >
               
               {/* Category title */}
               <h3 className="text-white/70 text-xl mb-4 tracking-wider">
@@ -180,7 +191,7 @@ const Technologies = () => {
                 ))}
               </div>
               
-            </div>
+            </motion.div>
           ))}
         </div>
         <span>
@@ -197,7 +208,7 @@ const Technologies = () => {
             </p>
           </button>
         </div> 
-      </motion.div>  
+      </div>  
     </div>
   )
 }

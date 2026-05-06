@@ -3,8 +3,10 @@ import { useEffect } from "react";
 import PolygonTDGamePage from "./pages/games/polygonTD/PolygonTDGamePage";
 import EchoArenaGamePage from "./pages/games/echoArena/EchoArenaGamePage";
 import MainPage from "./pages/MainPage";
-import RickRoll from "./pages/misc/RickRoll";
+import Bruh from "./pages/misc/Bruh";
 import Sidestep2GamePage from "./pages/games/sidestep2/Sidestep2GamePage";
+import OriginalMusicPage from "./pages/exhibits/OriginalMusic";
+import GamesPage from "./pages/exhibits/Games";
 
 
 function App() {
@@ -29,7 +31,9 @@ function App() {
             <Route path="/PolygonTD" element={<PolygonTDGamePage/>}/>  
             <Route path="/EchoArena" element={<EchoArenaGamePage/>}/>
             <Route path="/Sidestep2" element={<Sidestep2GamePage/>}/>
-            <Route path="/SecretRealPortfolio" element={<RickRoll/>}/>
+            <Route path="/SecretRealPortfolio" element={<Bruh/>}/>
+            <Route path="/OST" element={<OriginalMusicPage/>}/>
+            <Route path="/Games" element={<GamesPage/>} />
           </Routes>
         </BrowserRouter>
     </div>    

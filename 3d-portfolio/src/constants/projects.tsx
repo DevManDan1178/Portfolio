@@ -1,5 +1,6 @@
 import { useState, useEffect ,type ReactElement } from "react"
 import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../assets"
+import { InvertingDisplay } from "../components/effects/VisualEffects"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
 export const PROJECTS_DESCRIPTION_TEXT_SIZE = 20
@@ -148,7 +149,7 @@ export const projects : Project[] = [
   {
     name : "Sidestep²",
     description : "Small bullet hell game.",
-    tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/Sidestep2")],
+    tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/Sidestep2", "Click to Play ‹PC›")],
     display : GetImageDisplay(sidestep2, "Sidestep²"),
     link : {
       url : "https://devman-dan.itch.io/sidestep",
@@ -190,8 +191,8 @@ export const projects : Project[] = [
     ]
   },
   {
-    name : "Typing Practice App",
-    description : "Small typing practice app made in JavaFX.",
+    name : "Typing Tutor App",
+    description : "Small typing tutor app made in JavaFX.",
     tags : [BaseTags.Java, BaseTags.Git, CategoryTags.Academic],
     display : GetImageDisplay(typingPracticeAssignment, "Typing Practice"),
     link : {
@@ -214,7 +215,7 @@ function GetImageDisplay(image : string, name : string) : ProjectDisplay {
   }
 }
 
-function GetPlayableTag(routePath : string, tagName? : string) : Tag {
+function GetPlayableTag(routePath : string, tagName : string = "Click to Play") : Tag {
   
     const overrideTagSymbol = (tagName : string) => (<span> <br/>
       <span 
@@ -226,7 +227,7 @@ function GetPlayableTag(routePath : string, tagName? : string) : Tag {
     </span>)
     
     return {
-    name : tagName ?? "Click To Play",
+    name : tagName,
     color : "#e0f5c6",
     baseTextSize : 16,
     overrideTagSymbol : overrideTagSymbol
@@ -234,7 +235,7 @@ function GetPlayableTag(routePath : string, tagName? : string) : Tag {
 }
 
 const LINK_TEXT_HIDE_DELAY_DURATION = 2.5
-const LINK_PRESS_DISABLE_DURATION = 0.5
+const LINK_PRESS_DISABLE_DURATION = 0.75
 
 
 function WebsiteDisplay() {
@@ -256,7 +257,7 @@ function WebsiteDisplay() {
     setLinkPressDisabled(true)
   }
 
-  const linkElement = getDefaultLinkElement(onLinkClicked)
+  const linkElement = getLinkElement(onLinkClicked)
   useEffect(() => {
     const timer = setTimeout(() => {
       setLinkPressDisabled(false)
@@ -291,24 +292,31 @@ function WebsiteDisplay() {
   )
 }
 
-export function getDefaultLinkElement(onClick : () => void, linkImage? : string) {
-  return (    
+export function getDefaultLinkElement(linkUrl : string, linkImage? : string) {
+  return getLinkElement(() => window.open(linkUrl, "_blank"), linkImage) 
+}
+
+function getLinkElement(onClick : () => void, linkImage? : string) {
+  return (
+        
     <div className='absolute inset-0 flex justify-end m-3 card-img_hover pointer-events-none '>
       <div
-        className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer pointer-events-auto'
+        className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer pointer-events-auto flex-col group'
         onClick={onClick}
       > 
-        <div className="flex items-center justify-center transition-transform duration-200 hover:scale-125">
-          {linkImage ? (
-            <img
-              className="w-3/5 h-3/5 object-contain"
-              src={linkImage}
-            />
-          ) : (
-            <h1 className="flex items-center justify-center w-3/5 h-3/5 text-center">
-              🔗
-            </h1>
-          )}
+        <div className="relative w-10 h-10 flex items-center justify-center inset-0 rounded-full overflow-hidden">
+            {linkImage ? (
+              <img
+                className="w-3/5 h-3/5 object-contain absolute"
+                src={linkImage} 
+              />
+              )  : (
+              <h1 className="flex items-center justify-center w-3/5 h-3/5 text-center absolute">
+                🔗
+              </h1>
+            )}
+
+            {InvertingDisplay(0.75, false)}
         </div>
       </div> 
     </div> 
@@ -332,6 +340,7 @@ export type BulletPoint = {
 }
 
 export type ProjectDisplay = ({LinkElement} : {LinkElement? : ReactElement}) => ReactElement
+
 export type Link = {
   url : string,
   linkImage? : string

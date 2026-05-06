@@ -4,14 +4,14 @@ export type FileInfo = { gamePath: string; buildName: string };
 
 export default function UnityGamePage({
   titleElement,
-  descriptionList,
+  descriptionElement,
   config,
   canvasDimensions,
   containerId,
   fileInfo,
 }: {
   titleElement : ReactElement,
-  descriptionList: ReactElement[];
+  descriptionElement: ReactElement;
   config: UnityLoaderConfig;
   canvasDimensions: { x: number; y: number };
   containerId: string;
@@ -168,12 +168,7 @@ export default function UnityGamePage({
 
         <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
           <div className="w-full max-w-[80%] text-center">
-            {descriptionList.map((description: ReactElement, index: number) => (
-              <p key={index}>
-                {description}
-                <br />
-              </p>
-            ))}
+            {descriptionElement}
           </div>
         </div>
       </div>

@@ -5,9 +5,11 @@ import { getDefaultLinkElement, type BulletPoint, type Project, MINIMUM_SUBTAG_T
 import { styles } from '../style'
 import { SectionWrapper } from '../hoc'
 import { preTitle, title, subDescription, projects, type Tag } from '../constants/projects'
+import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
 const TITLE_TRANSITION_DELAY = 0.35
-const PROJECTS_APPEARANCE_ANIMATION_Y = 200
+const PROJECTS_APPEARANCE_ANIMATION_Y = 75
+const PROJECT_APPEARANCE_DURATION = 0.45
 
 const PARENT_TAG_STYLE = "hover:bg-white/5 bg-white/10 cursor-pointer"
 
@@ -50,20 +52,20 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
   const [showing, setShowing] = useState<boolean>(false)
   
   return <motion.div 
-     variants={{
-      hidden: {
-        x: 0,
-        y:PROJECTS_APPEARANCE_ANIMATION_Y,
-        opacity: 0,
-      },
-      show: {
+      variants={{
+        hidden: {
+          x: 0,
+          y:PROJECTS_APPEARANCE_ANIMATION_Y,
+          opacity: 0,
+        },
+        show: {
         x: 0,
         y: 0,
         opacity: 1,
         transition: {
           type: "spring",
-          delay: index * 0.5,
-          duration: 0.75,
+          delay: index * PROJECT_APPEARANCE_DURATION,
+          duration: PROJECT_APPEARANCE_DURATION,
           ease: "easeOut",
         },}}}
         className='sm:w-[340px] w-[100%]'
@@ -73,6 +75,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
         onAnimationComplete={() => {
           setShowing(true)
         }}
+        viewport={{ once: true }}
       >
        <Tilt
       tiltMaxAngleX={5}
@@ -84,7 +87,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
           <div className='relative w-full h-full'>
             <Display 
             LinkElement={!!link ? 
-               getDefaultLinkElement(() => window.open(link.url, "_blank"), link.linkImage) : <></>
+               getDefaultLinkElement(link.url, link.linkImage) : <></>
             } 
             />
             
@@ -151,17 +154,19 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
 const Projects = () => {
   return (
     <div>
-        <motion.div 
+        <div> 
+          {/*
           variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
+          viewport={{ once: true }}
           layout
-        >
+          */}
           <p className={styles.sectionSubText}>
-            {preTitle}
+            <AnimatedTextAppearance text={preTitle} startingState={{translateY: 5}}/>
           </p>
           <h2 className={styles.sectionHeadText}>
             {title}
           </h2>   
-        </motion.div> 
+        </div> 
 
       <div className='w-full flex'>
         <motion.p
@@ -182,7 +187,6 @@ const Projects = () => {
             />
           </div>
         ))
-
       }
       </div>
     </div>

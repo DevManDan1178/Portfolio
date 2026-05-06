@@ -1,25 +1,26 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
+import { styles } from "../../../style";
 
 const FILE_PATH = "/games/EchoArena";
 
-const descriptionList: ReactElement[] = [
+const descriptionElement: ReactElement = <span className={styles.subDescriptionText}>
   <span className="text-[18px] text-left w-[85%] tracking-wide leading-loose">
     Echo Arena is a simple survival arena shooter where you must plan your movement carefully.<br />
-  </span>,
+  </span>
   <span className="text-[15px] text-left w-[85%] tracking-wide leading-loose mt-5">
     Every 15 seconds, a new <span className="text-gray-400/80">shadow</span> starts repeating your past actions. <br />
     How long can you survive while avoiding past versions of yourself?
-  </span>,
+  </span>
   <span className="text-[13px] font-pixeloid">
-    <br />
+    <br/><br/>
     Pressing space will initiate a dash.
-    <br />
+    <br/>
     <span className="text-[14px] text-white/35">
-      <br /><br />
+      <br/><br/>
       Music - Retro Platforming by David Feslyan<br />
     </span>
   </span>
-];
+</span>
 
 export default function EchoArenaGamePage() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -109,12 +110,7 @@ export default function EchoArenaGamePage() {
       {/* DESCRIPTION */}
       <div className="shrink-0 w-full flex justify-center text-sm text-zinc-400 py-5">
         <div className="w-full max-w-[80%] text-center">
-          {descriptionList.map((description, index) => (
-            <p key={index}>
-              {description}
-              <br />
-            </p>
-          ))}
+          {descriptionElement}
         </div>
       </div>
     </div>

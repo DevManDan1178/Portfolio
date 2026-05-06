@@ -61,7 +61,7 @@ const Hero = () => {
            <a href='#about' className='w-[100%] items-center justify-center flex  bg-gray-950/50 rounded-3xl'>
               <div className='h-full w-[100%] rounded-2xl border-4 border-secondary flex justify-center p-2 items-center overflow-hidden'>
                 <p className='text-[20px]'>
-                  <AnimatedTextAppearance text={terminalText} timeBetweenLetters={TERMINAL_TEXT_APPEARANCE_DURATION/terminalText.length} delay={TERMINAL_TEXT_APPEARANCE_DELAY} startingState={{translateY: 10}}/>             
+                  <AnimatedTextAppearance appearOnlyOnce text={terminalText} timeBetweenLetters={TERMINAL_TEXT_APPEARANCE_DURATION/terminalText.length} delay={TERMINAL_TEXT_APPEARANCE_DELAY} startingState={{translateY: 10}}/>             
                 </p>
               </div>
             </a> 

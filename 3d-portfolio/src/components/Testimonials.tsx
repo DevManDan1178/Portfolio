@@ -24,8 +24,8 @@ const TestimonialCard = ({index, testimonial} : {index : number, testimonial : T
               delay: 0,
               duration: .65,
               ease: "easeOut",
-            },
-          }}}
+            }}}}
+        viewport={{ once: true }}
         className='bg-black-200 p-10 rounded-3xl w-[300px] md:w-[calc(15%+300px)] '
       >
         <p className='text-white font-black text-[48px]'>"</p>
@@ -59,6 +59,7 @@ const Testimonials = () => {
       <div className={`${styles.padding} bg-tertiary rounded-2xl min-h-[300px]`}>
         <motion.div  
           variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
+          viewport={{ once: true }}
         >
           <p className={styles.sectionSubText}>
             {preTitle}

@@ -2,9 +2,10 @@ import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { styles } from '../style'
 import { SectionWrapper } from '../hoc'
-import { emailDomain, emailUser, preTitle, title, subDescription } from '../constants/contact'
+import { emailDomain, emailUser, preTitle, title, subDescription, GetSocialLinkElement } from '../constants/contact'
 import { SocialLinks } from '../constants/contact'
 import {  useState } from 'react'
+import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
 
 const EMAIL_COPIED_DISPLAY_DURATION = 3
@@ -31,17 +32,18 @@ const Contact = () => {
 
   return (
     <div>
-      <motion.div 
+      <div> 
+        {/*        
         variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
-        layout
-      >
+        viewport={{ once: true }}
+        */}
         <p className={styles.sectionSubText}>
-          {preTitle}
+          <AnimatedTextAppearance text={preTitle} startingState={{translateY: 5}}/>
         </p>
         <h2 className={styles.sectionHeadText}>
           {title}
         </h2>   
-      </motion.div> 
+      </div> 
       <div className='w-full flex'>
         <motion.p
           variants={{show: {y: 0, opacity: 1, transition : {delay: 0.1, duration: 1}},}} 
@@ -56,41 +58,10 @@ const Contact = () => {
         </span>
         <div className='flex items-center justify-center gap-10 mt-[25px]'>
           {Object.entries(SocialLinks).map(([platform, link], index : number) =>  (
-            <div
-              key={index}
-              onClick={() => window.open(link.url, "_blank")}
-              className="flex flex-col items-center justify-center gap-2 group cursor-pointer"
-            >
-            <div className="w-[50px] h-[50px] flex items-center justify-center bg-black rounded-lg relative overflow-hidden border-2 border-white/50">
-              <img
-                src={link.linkIcon}
-                className="w-3/4 relative aspect-square"
-              />
-
-              {/* ripple layer */}
-              <div className=" w-full h-full absolute flex items-center justify-center z-1">
-                <div
-                  className="
-                    w-[0%] h-[0%]
-                    rounded-full
-                    backdrop-invert
-                    group-hover:w-[200%]
-                    group-hover:h-[200%]
-                    transition-all
-                    duration-[0.5s]
-                    ease-in-out
-                  "
-                />
-              </div>
-            </div>
-            {/* LABEL */}
-            <span className="text-white/75 text-xs text-center"> 
-              <b>{link.platform}</b>
-            </span>
-          </div>
+            GetSocialLinkElement(link, index.toString())
         ))}
       </div>
-      <div  className='mt-[25px] flex items-center justify-center w-full'>
+      <div  className='pt-[25px] flex items-center justify-center w-full'>
           <button 
             className=' bg-white/10 hover:bg-white/20 pl-2 pr-2 rounded-xl transition-all transition-duration[0.5s] border-white/30 border-[2px] hover:border-white/20 hover:scale-110'
             onClick={onEmailCopy}
@@ -101,7 +72,7 @@ const Contact = () => {
             <span className='blue-text-gradient font-semibold'>{emailDomain}</span>
             <span className='text-blue-100/60'>]</span> 
           </button>     
-      </div>   
+      </div>  
     </div>
   )
 }

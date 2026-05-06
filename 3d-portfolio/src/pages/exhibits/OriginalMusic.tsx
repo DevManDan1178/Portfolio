@@ -1,0 +1,61 @@
+import { useState } from "react";
+import { musicData } from "../../constants/pages/exhibits/originalMusic";
+import { pages } from "../../constants/pages/pages";
+import { GetPagesExcept } from "../../components/Pages";
+import AudioPlayer from "../../components/effects/AudioPlayer";
+
+export default function OriginalMusicPage() {
+    const Pages = GetPagesExcept(pages.ost, false)
+    const [activeTrack, setActiveTrack] = useState<{categoryIndex: number, trackIndex: number} | null>(null)
+    return (
+        <div>
+            <div className="min-h-screen w-full flex flex-col items-center px-6 py-16 text-white">
+                <h1 className="text-4xl font-bold mb-4">Original Soundtracks</h1>
+                <p className="text-white/70 mb-10 text-center max-w-xl">
+                    They aren't published anywhere (yet?).
+                </p>
+
+                <div className="w-full max-w-3xl flex flex-col gap-12">
+                    {musicData.map((category, cIndex) => (
+                    <div key={category.name}>
+                        {/* Category Title */}
+                        <h2 className="text-2xl font-semibold mb-4 text-blue-100/90">
+                        {category.name}
+                        </h2>
+                        <h3 key={category.name} className="pb-[25px] text-white/90">
+                            {category.description}
+                        </h3>
+
+                        <div className="flex flex-col gap-4">
+                        {category.tracks.map((track, tIndex) =>  {
+                            const isActive = activeTrack?.categoryIndex === cIndex && activeTrack?.trackIndex === tIndex
+                            return <div className={`border border-white/10 rounded-xl p-4 hover:bg-white/10 transition ${isActive ? "bg-blue-100/20" : "bg-white/5"}`}>
+                                <div>
+                                    <h3 className="text-lg font-medium">{track.title}</h3>
+
+                                    {track.description && (
+                                    <p className="text-white/60 text-sm">
+                                        {track.description}
+                                    </p>
+                                    )}
+                                </div>
+
+                                <AudioPlayer
+                                    src={track.file}
+                                    isActive={isActive}
+                                    onPlay={() =>
+                                        setActiveTrack({ categoryIndex: cIndex, trackIndex: tIndex })
+                                    }
+                                    onStop={() => setActiveTrack(null)}
+                                />
+                            </div>
+                        })}
+                        </div>
+                    </div>
+                    ))}
+                </div>
+            </div>
+            <Pages/>
+        </div>
+    );
+}

@@ -16,14 +16,14 @@ const descriptionTimeBetweenLetters = ANIMATED_DESCRIPTION_APPEARANCE_DURATION/(
 
 export const headerIntroElement : ReactElement = <>
     <span>
-        <AnimatedTextAppearance text={headerIntro} timeBetweenLetters={headerTimeBetweenLetters} startingState={{translateY: 100, translateX : 10}} /> 
+        <AnimatedTextAppearance appearOnlyOnce text={headerIntro} timeBetweenLetters={headerTimeBetweenLetters} startingState={{translateY: 100, translateX : 10}} /> 
     </span>
     <span className='text-[#915eff] inline-block'>     
-        <AnimatedTextAppearance text={"Daniel"} timeBetweenLetters={headerTimeBetweenLetters} delay={headerTimeBetweenLetters * headerIntro.length} startingState={{translateY: -100, translateX: -10}} style={{whiteSpace: "nowrap"}} fromLast/> 
+        <AnimatedTextAppearance appearOnlyOnce text={"Daniel"} timeBetweenLetters={headerTimeBetweenLetters} delay={headerTimeBetweenLetters * headerIntro.length} startingState={{translateY: -100, translateX: -10}} style={{whiteSpace: "nowrap"}} fromLast/> 
     </span>
 </>
 
-export const descriptionElement : ReactElement = <AnimatedTextAppearance text={description} timeBetweenLetters={descriptionTimeBetweenLetters} delay={DESCRIPTION_APPEARANCE_DELAY} startingState={{translateY: -20, translateX: -10}} style={{whiteSpace: "normal"}}/> 
+export const descriptionElement : ReactElement = <AnimatedTextAppearance appearOnlyOnce text={description} timeBetweenLetters={descriptionTimeBetweenLetters} delay={DESCRIPTION_APPEARANCE_DELAY} startingState={{translateY: -20, translateX: -10}} style={{whiteSpace: "normal"}}/> 
 
 export const TerminalTexts = {
     TerminalIntroduction : "Clicking me will scroll you down.",

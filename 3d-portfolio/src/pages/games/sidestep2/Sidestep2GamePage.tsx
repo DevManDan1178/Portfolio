@@ -31,16 +31,16 @@ const titleElement = <p className="pb-5 text-center font-bold">
             SIDESTEP²
           </p>
 
-const descriptionList : ReactElement[] = [
+const descriptionElement : ReactElement = <span>
   <span className="text-[18px] text-left w-[85%] tracking-wide leading-loose">
     Sidestep² is a bullet hell inspired by <span style={{color: "#abf8ff"}}> JSAB </span> and <span style={{color: "#d4b85d"}}> LoL Dodge Game</span>.<br/>
-  </span>,
+  </span>
   <span className="text-[18px] text-left w-[85%] tracking-wide leading-loose">
-    It is also my <span className="text-amber-200/90">first ever project</span>. I hope you like it. <span className="text-blue-200/90">:D</span><br/>
-</span>,
+    It is also my <span className="text-orange-200">first ever project</span>. I hope you like it. <span className="text-blue-200/90">:D</span><br/>
+</span>
   <span className="text-[15px] text-left w-[85%] tracking-wide leading-loose mt-5">
     Avoid the <span style={{color: "#ff9991"}}> red </span> and <span style={{color: "#fff49e"}}> yellow </span> projectiles. <br/>
- </span>,
+ </span>
   <span className="text-[13px] font-pixeloid">
     <br/>
     Movement controls can be toggled between keyboard (WASD) and mouse (RMB)
@@ -51,19 +51,20 @@ const descriptionList : ReactElement[] = [
     </span>
     <span className="text-[14px] text-white/35">
       Soundtracks: <br/>
+      Lobby : Elevator Music (MX067_58 - Girl From Petaluma-13858) <br/>
       Level 1: Stayin' Alive - 8 Bit Universe <br/>
-      Level 2: Don't Stay Still - by me :) <br/>
+      Level 2: Wonky Trip - by me <br/>
       Level 3: Samurai - Jim Yosef <br/>
       Level 4: At the Speed of Light - Dimrain47 <br/>
       Level 5: Skystrike - Hinkik <br/>
-      Endless Level : Endless - by me :) <br/>
+      Endless Level : Endless - by me <br/>
     </span>
   </span>
-]
+</span>
 
 export default UnityGamePage({
     titleElement : titleElement,
-    descriptionList : descriptionList,
+    descriptionElement : descriptionElement,
     canvasDimensions : canvasDimensions,
     config : config,
     fileInfo : fileInfo,

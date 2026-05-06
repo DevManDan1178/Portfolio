@@ -5,8 +5,10 @@ import 'react-vertical-timeline-component/style.min.css'
 import {styles} from '../style'
 import { experiences, preTitle, title, subDescription, type Experience } from '../constants/experiences'
 import { SectionWrapper } from '../hoc'
+import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
 
 const TITLE_TRANSITION_DELAY = 0.35
+const DESCRIPTION_TRANSITION_DELAY = 0.25
 
 const ExperienceCard = ({experience} : {experience : Experience}) => {
   const iconInfo = experience.iconInfo
@@ -53,23 +55,26 @@ const ExperienceCard = ({experience} : {experience : Experience}) => {
 const Experience = () => {
   return (
     <>
-      <motion.div 
+      <div> 
+        {/*
         initial="hidden" 
         animate="show" 
         variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY}}}}
-      >
+        viewport={{ once: true }}
+        */}
         <p className={styles.sectionSubText}>
-          {preTitle}
+          <AnimatedTextAppearance text={preTitle} startingState={{translateY: 5}}/>
         </p>
         <h2 className={styles.sectionHeadText}>
           {title}
         </h2>   
-      </motion.div>
+      </div>
         <div className='w-full flex'>
           <motion.p
             initial="hidden" 
             animate="show"
-            variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: TITLE_TRANSITION_DELAY * 0.35}}}}
+            variants={{hidden: {y: -50, opacity: 0, }, show: { y: 0, opacity: 1, transition: { type: "spring", duration: 1.25, delay: DESCRIPTION_TRANSITION_DELAY}}}}
+            viewport={{ once: true }}
             className={styles.subDescriptionText}
           >
             {subDescription}

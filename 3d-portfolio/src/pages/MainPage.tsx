@@ -1,9 +1,11 @@
 import { About, Contact, Experience, Testimonials, Hero, Navbar, Technologies, Projects, StarsCanvas } from "../components";
+import { GetPagesExcept } from "../components/Pages";
+import { pages } from "../constants/pages/pages";
 import { navLinks } from "../constants";
 
 
 export default function MainPage() {
-
+    const Pages = GetPagesExcept(pages.main)
     return  (
         <div className="relative z-0 bg-primary">
             <div className="fixed inset-0 -z-20">
@@ -21,7 +23,7 @@ export default function MainPage() {
             <div id={navLinks.technologies.id}> <Technologies/></div>
             <div id={navLinks.experience.id}><Experience/></div>  
             <div id={navLinks.contact.id}><Contact/></div>
-
+            <Pages/>
         </div>
     )
 }

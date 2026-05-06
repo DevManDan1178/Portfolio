@@ -9,7 +9,7 @@ export type Technology = {
   category : TechnologyCategory
 }
 
-export const preTitle : string = "Stuff I know"
+export const preTitle : string = "Stuff I Use"
 export const title : string = "Tech Stack" //"\u00A0" is an invisible character
 export const subDescription : string = "Development tools I use to build interactive applications."
 export const solvedtitle : string = "Tech Stack"

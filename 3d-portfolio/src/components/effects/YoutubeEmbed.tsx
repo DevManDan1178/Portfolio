@@ -1,19 +1,19 @@
-import type { ReactElement } from "react";
+import type { ReactElement } from "react"
 
-function GetYoutubeEmbed(videoId : string, autoplay = true) : () => (ReactElement) {
-  return () => (
-    <div>
+function GetYoutubeEmbed(videoId : string, autoplay = true, startTime = 0) : () => (ReactElement) {
+  const src = `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&start=${startTime}`
+
+  return function VideoComponent() {
+    return (
       <iframe
         width="560"
         height="315"
-        src={`https://www.youtube.com/embed/${videoId}${autoplay && "?autoplay=1"}`}
-        title="YouTube video player"
-        frameBorder="0"
-        allow={`accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture`}
+        src={src}
+        allow="autoplay; encrypted-media"
         allowFullScreen
       />
-    </div>
-  );
-};
+    )
+  }
+}
 
 export default GetYoutubeEmbed;

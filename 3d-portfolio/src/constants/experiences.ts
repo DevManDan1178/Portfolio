@@ -16,7 +16,7 @@ export type Experience = {
 
 export const preTitle : string = "Stuff I Did"
 export const title : string = "My Journey"
-export const subDescription : string = "Always learning new stuff."
+export const subDescription : string = "Currently a work in progress."
 
 export const experiences : Experience[] = [
   {
