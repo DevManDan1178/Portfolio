@@ -67,7 +67,7 @@ const Testimonials = () => {
         </div>
       </div>
       <div className={`${styles.paddingX} -mt-20 pb-14 flex flex-wrap gap-7`}>
-        {testimonials.map((testimonial, index) => (
+        {testimonials.map((testimonial) => (
           <TestimonialCard
             key={testimonial.name}
             testimonial={testimonial}
