@@ -52,9 +52,6 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
   
   return <motion.div 
       key={index}
-      
-      initial="hidden"
-      animate="show"
       variants={{
                 hidden: {y: PROJECTS_APPEARANCE_ANIMATION_Y, opacity: 0, },
                 show: {y: 0, opacity: 1, transition: { type: "spring", duration: PROJECT_APPEARANCE_DURATION, delay: index * PROJECT_APPEARANCE_DURATION}},
