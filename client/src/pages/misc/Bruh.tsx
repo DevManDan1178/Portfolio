@@ -1,5 +1,6 @@
 import { useState } from "react";
 import GetYoutubeEmbed from "../../components/effects/YoutubeEmbed";
+import SEO from "../../components/effects/SEO";
 
 const VIDEO_ID = "NZzXzymUgEg";
 
@@ -8,7 +9,8 @@ const Bruh = () => {
 
   const VideoComponent = GetYoutubeEmbed(VIDEO_ID, true, 22);
 
-  return (
+  return (<>
+    <SEO title="SECRET PORTFOLIO REAL" description="There's nothing to see here. Really."/>
     <div
       style={{
         height: "100vh",
@@ -27,7 +29,7 @@ const Bruh = () => {
         <VideoComponent />
       )}
     </div>
-  );
+  </>);
 };
 
 export default Bruh;
