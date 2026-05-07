@@ -3,11 +3,14 @@ import { musicData } from "../../constants/pages/exhibits/originalMusic";
 import { pages } from "../../constants/pages/pages";
 import { GetPagesExcept } from "../../components/Pages";
 import AudioPlayer from "../../components/effects/AudioPlayer";
+import SEO from "../../components/effects/SEO";
 
 export default function OriginalMusicPage() {
     const Pages = GetPagesExcept(pages.ost, false)
     const [activeTrack, setActiveTrack] = useState<{categoryIndex: number, trackIndex: number} | null>(null)
-    return (
+ 
+    return (<>
+        <SEO title="OST" description="Some of my original soundtracks"/>
         <div>
             <div className="min-h-screen w-full flex flex-col items-center px-6 py-16 text-white">
                 <h1 className="text-4xl font-bold mb-4">Original Soundtracks</h1>
@@ -57,5 +60,5 @@ export default function OriginalMusicPage() {
             </div>
             <Pages/>
         </div>
-    );
+    </>);
 }

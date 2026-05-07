@@ -1,9 +1,13 @@
 import { gamesData } from "../../constants/pages/exhibits/games";
 import { pages } from "../../constants/pages/pages";
 import { GetPagesExcept } from "../../components/Pages";
+import SEO from "../../components/effects/SEO";
+
 export default function GamesPage() {
   const Pages = GetPagesExcept(pages.games, false)
-  return (
+
+  return (<>
+    <SEO title="Games" description="A small library of games I made"/>
     <div>
       <div className="min-h-screen w-full flex flex-col items-center px-6 py-16 text-white">
         <h1 className="text-4xl font-bold mb-4">Games</h1>
@@ -48,5 +52,5 @@ export default function GamesPage() {
       </div>
       <Pages/>
     </div>
-  );
+  </>);
 }

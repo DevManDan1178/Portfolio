@@ -66,4 +66,5 @@ export default UnityGamePage({
   config : config,
   fileInfo : fileInfo,
   containerId : containerId,
+  seoInfo : {title: "Polygon Tower Defense", description: "Tower defense game with customized upgrades"}
 })

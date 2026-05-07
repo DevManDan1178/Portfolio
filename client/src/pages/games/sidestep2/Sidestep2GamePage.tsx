@@ -69,4 +69,5 @@ export default UnityGamePage({
     config : config,
     fileInfo : fileInfo,
     containerId : containerId,
+    seoInfo : {title : "Sidestep²", description : "Bullet hell game"}
 })

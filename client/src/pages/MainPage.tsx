@@ -2,11 +2,16 @@ import { About, Contact, Experience, Hero, Navbar, Technologies, Projects, Stars
 import { GetPagesExcept } from "../components/Pages";
 import { pages } from "../constants/pages/pages";
 import { navLinks } from "../constants";
+import SEO from "../components/effects/SEO";
 
 
 export default function MainPage() {
+    
     const Pages = GetPagesExcept(pages.main)
-    return  (
+
+    return  (<>
+        <SEO title="DevManDan" description="Welcome to my portfolio!"/>
+        
         <div className="relative z-0 bg-primary">
             <div className="fixed inset-0 -z-20">
                 <StarsCanvas/>
@@ -25,5 +30,5 @@ export default function MainPage() {
             <div id={navLinks.contact.id}><Contact/></div>
             <Pages/>
         </div>
-    )
+    </>)
 }

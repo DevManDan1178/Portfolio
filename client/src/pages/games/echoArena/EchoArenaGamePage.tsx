@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { styles } from "../../../style";
+import SEO from "../../../components/effects/SEO";
 
 const FILE_PATH = "/games/EchoArena";
 
@@ -28,7 +29,7 @@ export default function EchoArenaGamePage() {
 
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
-
+  
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (!event.data) return;
@@ -42,7 +43,6 @@ export default function EchoArenaGamePage() {
         }
       }
     };
-
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
   }, []);
@@ -55,7 +55,8 @@ export default function EchoArenaGamePage() {
     }
   };
 
-  return (
+  return (<>
+    <SEO title="Echo Arena" description="Suvival arena shooter where you must plan your movement carefully"/>
     <div className="w-full h-screen flex flex-col bg-zinc-950 text-white">
       {/* TITLE */}
       <div className="shrink-0 text-3xl font-semibold py-5 text-center font-pixeloid">
@@ -114,5 +115,5 @@ export default function EchoArenaGamePage() {
         </div>
       </div>
     </div>
-  );
+  </>);
 }

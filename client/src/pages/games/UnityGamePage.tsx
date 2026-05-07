@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
+import SEO from "../../components/effects/SEO";
 
-export type FileInfo = { gamePath: string; buildName: string };
+export type FileInfo = {gamePath: string; buildName: string };
+export type SEOInfo = {title : string, description : string}
 
 export default function UnityGamePage({
   titleElement,
@@ -9,13 +11,15 @@ export default function UnityGamePage({
   canvasDimensions,
   containerId,
   fileInfo,
+  seoInfo,
 }: {
   titleElement : ReactElement,
-  descriptionElement: ReactElement;
-  config: UnityLoaderConfig;
-  canvasDimensions: { x: number; y: number };
-  containerId: string;
-  fileInfo: FileInfo;
+  descriptionElement: ReactElement,
+  config: UnityLoaderConfig,
+  canvasDimensions: { x: number, y: number },
+  containerId: string,
+  fileInfo: FileInfo,
+  seoInfo : SEOInfo
 }): () => ReactElement {
   return () => {
     const [loading, setLoading] = useState(true);
@@ -32,7 +36,7 @@ export default function UnityGamePage({
 
     useEffect(() => {
       if (!containerRef.current) return;
-      if (unityInstanceRef.current) return; // ✅ prevents double init
+      if (unityInstanceRef.current) return; 
 
       const canvas = document.createElement("canvas");
       canvas.id = containerId;
@@ -127,7 +131,8 @@ export default function UnityGamePage({
       }
     };
 
-    return (
+    return (<>
+      <SEO title={seoInfo.title} description={seoInfo.description} />
       <div className="w-[100%] h-screen flex flex-col items-center justify-normal p-10 bg-zinc-950 text-white">
         <div className="text-3xl font-semibold">
           {titleElement}
@@ -172,7 +177,7 @@ export default function UnityGamePage({
           </div>
         </div>
       </div>
-    );
+    </>);
   };
 }
 
