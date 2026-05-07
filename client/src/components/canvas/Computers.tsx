@@ -36,7 +36,6 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas, unityInstanceRef, on
     if (!unityCanvas) return;
 
     const raycaster = new Raycaster();
-    const unityInstance = unityInstanceRef.current
     const getInputFunction = (messageFunction: string, affectsFocus : boolean) => (event: MouseEvent) => {
       if (!unityCanvas || event.button !== 0) return;
       
@@ -54,7 +53,7 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas, unityInstanceRef, on
       raycaster.setFromCamera(mouse, camera);
 
       const intersects = raycaster.intersectObjects(scene.children, true);
-
+      const unityInstance = unityInstanceRef.current
       if (!intersects.length) { 
         if (affectsFocus) {
             unityInstance?.SendMessage("GameMaster", "SetPaused")
@@ -72,7 +71,7 @@ const UnityClickForwarder = ({ screenMeshName, unityCanvas, unityInstanceRef, on
 
       const uv = hit.uv;
       if (messageFunction == "OnPointerDown") {
-        console.log("Mouse input onto game screen at:", uv)
+        console.log("Mouse input onto game screen at:", uv, " to unity instance: ", unityInstance)
       }
 
       unityInstance?.SendMessage("InputBridge", messageFunction,`${uv.x},${uv.y}`
@@ -181,6 +180,7 @@ const ComputerCanvas = ({gameEventHandlers} : {gameEventHandlers : RefObject<Gam
   
   useEffect(() => {
     const onUnityInstanceCreated = (unityInstance : any) => {
+      console.log("unity instance created: ", unityInstance)
       unityInstanceRef.current = unityInstance
     }
 
