@@ -51,24 +51,24 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
   const [showing, setShowing] = useState<boolean>(false)
   
   return <motion.div 
-      key={index}
-      variants={{
-                hidden: {y: PROJECTS_APPEARANCE_ANIMATION_Y, opacity: 0, },
-                show: {y: 0, opacity: 1, transition: { type: "spring", duration: PROJECT_APPEARANCE_DURATION, delay: index * PROJECT_APPEARANCE_DURATION}},
-              }}
-        className='sm:w-[320px] w-[200px]'
-        onClick={(_e => {
-            console.log("clicked project ", project.name)
-          })}
-        onAnimationComplete={() => {
-          setShowing(true)
-        }}
-      >
-       <Tilt
-      tiltMaxAngleX={5}
-      tiltMaxAngleY={5}
-      transitionSpeed={1000}
-      className={`bg-slate-700/50 hover:bg-slate-400/35 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
+    key={index}
+    variants={{
+              hidden: {y: PROJECTS_APPEARANCE_ANIMATION_Y, opacity: 0, },
+              show: {y: 0, opacity: 1, transition: { type: "spring", duration: PROJECT_APPEARANCE_DURATION, delay: index * PROJECT_APPEARANCE_DURATION}},
+            }}
+      className='sm:w-[320px] w-[200px]'
+      onClick={(_e => {
+          console.log("clicked project ", project.name)
+        })}
+      onAnimationComplete={() => {
+        setShowing(true)
+      }}
+    >
+      <Tilt
+        tiltMaxAngleX={5}
+        tiltMaxAngleY={5}
+        transitionSpeed={1000}
+        className={`bg-slate-700/50 hover:bg-slate-400/35 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
       >
         <div className='w-[c  alc(100%-30px)] pt-[10px] pb-[10px] group'>
           <div className='relative w-full h-full'>
