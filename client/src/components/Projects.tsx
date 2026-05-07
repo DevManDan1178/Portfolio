@@ -70,7 +70,7 @@ const ProjectCard = ({project , index} : {project : Project, index : number}) =>
         transitionSpeed={1000}
         className={`bg-slate-700/50 hover:bg-slate-400/35 rounded-2xl w-full h-full relative -top-[${-PROJECTS_APPEARANCE_ANIMATION_Y}] items-center justify-center flex pointer-events-${showing ? "auto" : "none"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
       >
-        <div className='w-[c  alc(100%-30px)] pt-[10px] pb-[10px] group'>
+        <div className='w-[c  alc(100%-30px)] pt-[10px] pb-[10px] pl-[10px] pr-[10px] group'>
           <div className='relative w-full h-full'>
             <Display 
             LinkElement={!!link ? 
