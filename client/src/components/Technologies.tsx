@@ -16,8 +16,8 @@ export type TechnologyNode = {
   status : NodeStatus
 }
 
-const TECHNOLOGY_CATEGORY_APPEARANCE_DURATION = 1.25
-const TECHNOLOGY_CATEGORY_APPEARANCE_DELAY = 0.5
+const TECHNOLOGY_CATEGORY_APPEARANCE_DURATION = .75
+const SECOND_TECHNOLOGY_CATEGORY_APPEARANCE_DELAY = 0.25
 const PAIR_SELECTED_HIDE_DELAY : number = 1 * 1000
 const SOLVED_DISPLAY_DELAY : number = 0.5 * 1000
 
@@ -165,19 +165,19 @@ const Technologies = () => {
           </p> 
       </div>
       <div>
-        <div className="mt-10 w-full flex flex-col gap-10">
+        <div className="mt-4 w-full flex flex-col gap-5">
           {Object.entries(groupedTechnologies).map(([category, items], index) => (
             <motion.div 
               variants={{
                 hidden: {x: -50, opacity: 0, },
-                show: {x: 0, opacity: 1, transition: { type: "spring", duration: TECHNOLOGY_CATEGORY_APPEARANCE_DURATION, delay: index * TECHNOLOGY_CATEGORY_APPEARANCE_DELAY}},
+                show: {x: 0, opacity: 1, transition: { type: "spring", duration: TECHNOLOGY_CATEGORY_APPEARANCE_DURATION, delay: index * SECOND_TECHNOLOGY_CATEGORY_APPEARANCE_DELAY}},
               }}
               key={category} 
               className="w-full"
             >
               
               {/* Category title */}
-              <h3 className={`text-white/70 ${styles.techStackCategoryTextStyle} mb-4 tracking-wider`}>
+              <h3 className={`text-white/70 ${styles.techStackCategoryTextStyle} mb-2 tracking-wider`}>
                 <b>{category}</b>
               </h3>
 
@@ -186,7 +186,7 @@ const Technologies = () => {
                 {items.map((tech) => (
                   <div
                     key={tech.name}
-                    className={`flex flex-col items-center gap-2 ${styles.techStackElementStyles.boxWidthStyle} py-2
+                    className={`flex flex-col items-center gap-1 ${styles.techStackElementStyles.boxWidthStyle} 
                      bg-white/25 group hover:bg-white/50 border-[5px] border-white/10 hover:border-black/50 rounded-lg 
                      transition-all duration-300 ease-out`}
                   >

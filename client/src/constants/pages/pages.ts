@@ -17,6 +17,11 @@ export const pages : Record<string, PageInfo> = {
         iconElement : "▶",
         url : "/Games"
     },
+    projects : {
+        name : "/ Projects",
+        iconElement: "🛠",
+        url : "/Projects"
+    },    
     ost : {
         name : "/ OST",
         iconElement : "♪",

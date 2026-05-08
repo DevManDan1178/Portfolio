@@ -30,11 +30,12 @@ export const navLinks : Record<string, NavLink> = {
     title: "Experience",
     showInNavbar : true,
   },
+  /*
   testimonials : {
     id : "testimonials",
     title : "Testimonials",
     showInNavbar : false,
-  },
+  },*/
   contact : {
     id: "contact",
     title: "Contact",

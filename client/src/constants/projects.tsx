@@ -1,126 +1,22 @@
 import { useState, useEffect ,type ReactElement } from "react"
 import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../assets"
+import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "./tags"
 import { InvertingDisplay } from "../components/effects/VisualEffects"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
-export const PROJECTS_DESCRIPTION_TEXT_SIZE = 20
-export const PROJECTS_BULLET_POINTS_TEXT_SIZE = 14
 
-export const SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER = 2
-export const BASE_TAG_SIZE = 20
-export const MINIMUM_SUBTAG_TEXT_SIZE = 14
+
+export const SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER = 1.5
 
 export const defaultTagSymbol = (tagName : string) => `‹${tagName}›`
 
 export const preTitle : string = "Stuff I Made"
 export const title : string = "Projects"
-export const subDescription : string = "Making stuff is fun when you make fun stuff."
-
-const CategoryTags : Record<string, Tag> = {
-  Academic : {
-    name : "Academic",
-    color : "#fff1c9",
-    baseTextSizeModifier : - 2,
-  },
-  TeamProject : {
-    name : "Team Project",
-    color : "#f4e3ff",
-    baseTextSizeModifier :- 2,
-  }
-}
-
-const MiscTags : Record<string, Tag> = {
-  GMTKJam2026 : {
-    name : "GMTK Game Jam 2026",
-    color : "lime-text-gradient",
-    baseTextSizeModifier : 1
-  },
-}
-
-const BaseTags : Record<string, Tag> = {
-  CSharp : {
-    name : "C#",
-    color : "green-text-gradient",
-  },
-  GDScript : {
-    name : "GDScript",
-    color : "light-blue-text-gradient",
-  },
-  Lua : {
-    name : "Lua",
-    color : "dark-blue",
-  },
-  Typescript : {
-    name : "Typescript",
-    color : "blue-text-gradient",
-  },
-  Javascript : {
-    name : "Javascript",
-    color : "yellow-text-gradient",
-  },
-  CSS : {
-    name : "CSS",
-    color : "purple-text-gradient",
-  },
-  GameDev : {
-    name : "Game Development",
-    color : "orange-text-gradient",
-  },
-  WebDev : {
-    name : "Web Development",
-    color : "#ffffa8",
-  },
-  Java : {
-    name : "Java",
-    color : "#f8981d",
-  },
-  Git : {
-    name : "Git",
-    color : "#c7c7c7", 
-  },
-  ThreeJS : {
-    name : "ThreeJS",
-    color : "grey-text-gradient"
-  },
-  MusicComposition : {
-    name : "♪ Composition",
-    color : "#d096ff",
-  } 
-}
-
-const Tags : Record<string, Tag> = {
-  React : {
-    name: "React",
-    color: "light-blue-text-gradient",
-    subTags : [BaseTags.Javascript, BaseTags.Typescript, BaseTags.WebDev],
-  },
-  Tailwind : {
-    name: "Tailwind",
-    color: "pink-text-gradient",
-    subTags : [BaseTags.CSS],
-    hideSubTagsByDefault : true,
-  },
-  Unity : {
-    name : "Unity",
-    color : "grey-text-gradient",
-    subTags : [BaseTags.CSharp, BaseTags.GameDev],
-  },
-  Godot : {
-    name : "Godot",
-    color : "light-blue-text-gradient",
-    subTags : [BaseTags.GDScript, BaseTags.GameDev],
-  },
-  RobloxStudio : {
-    name : "Roblox Studio",
-    color : "blue-text-gradient",
-    subTags : [BaseTags.Lua, BaseTags.GameDev]
-  }
-}
+export const subDescription : string = "Some of my best work."
 
 
-
-export const projects : Project[] = [
-  {
+export const projects : Record<string, Project> = {
+  polygonTD :{
     name : "Polygon Tower Defense",
     description : "Small tower defense game with player-customized upgrading and adding of map elements",
     tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/PolygonTD")],
@@ -132,8 +28,9 @@ export const projects : Project[] = [
     visuals : {
       nameColor : "yellow-text-gradient",
     },
+    featured : true
   },
-  {
+  echoArena :{
     name : "Echo Arena",
     description: "Simple arena shooter game where you must also evade your past movements",
     tags : [Tags.Godot, MiscTags.GMTKJam2026, GetPlayableTag("/EchoArena", "Click to Play ‹PC›")],
@@ -146,7 +43,7 @@ export const projects : Project[] = [
       nameColor : "light-red-text-gradient"
     }
   },
-  {
+  sidestep2 : {
     name : "Sidestep²",
     description : "Small bullet hell game.",
     tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/Sidestep2", "Click to Play ‹PC›")],
@@ -156,7 +53,7 @@ export const projects : Project[] = [
       linkImage : itchIO,
     },
   },
-  {
+  untitled2DShooter : {
     name : "Untitled 2D Shooter",
     description : "Layered multiplayer (2+) horizontal shooter with various abilities, weapons, and cosmetics.",
     tags : [Tags.RobloxStudio],
@@ -167,15 +64,17 @@ export const projects : Project[] = [
     },
     visuals : {
       nameColor : "#caddfc",
-    }
+    },
+    featured : true,
   },
-  {
+  portfolioSite : {
     name : "Interactive Portfolio Experience",
     display : WebsiteDisplay, 
     description : "What more can I say? Look around.",
-    tags : [{...Tags.React, hideSubTagsByDefault: true}, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Git]
+    featured : true,
+    tags : [Tags.React, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Git]
   },
-  {
+  pendulumSimulator : {
     name : "Pendulum Simulator",
     description : "Physics simulator of a simple pendulum",
     tags : [BaseTags.Java, BaseTags.Git, CategoryTags.TeamProject, CategoryTags.Academic],
@@ -190,7 +89,7 @@ export const projects : Project[] = [
       {text: "Implemented rendering"}
     ]
   },
-  {
+  typingTutor : {
     name : "Typing Tutor App",
     description : "Small typing tutor app made in JavaFX.",
     tags : [BaseTags.Java, BaseTags.Git, CategoryTags.Academic],
@@ -200,7 +99,7 @@ export const projects : Project[] = [
       linkImage : github,
     },
   }
-];
+};
 
 
 function GetImageDisplay(image : string, name : string) : ProjectDisplay {
@@ -324,14 +223,6 @@ function getLinkElement(onClick : () => void, linkImage? : string) {
 }
 
 
-export type Tag = {
-  name : string,
-  color : string,
-  subTags? : Tag[]
-  baseTextSizeModifier? : number,
-  overrideTagSymbol? : (tagName : string) => ReactElement | string,
-  hideSubTagsByDefault? : boolean,
-}
 
 export type ImageSource = string | "None"
 
@@ -352,6 +243,7 @@ export type Project = {
   description: string,
   tags: Tag[],
   display : ProjectDisplay,
+  featured? : boolean,
   link? : Link,
   bulletPoints? : BulletPoint[],
   visuals? : {

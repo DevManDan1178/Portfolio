@@ -32,7 +32,7 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
   canvas.style.position = "absolute";
   canvas.style.left = "-10000px";
   canvas.style.visibility = "hidden";
-  canvas.tabIndex = 1;
+  canvas.tabIndex = -1;
 
   _unityCanvas = canvas
   

@@ -6,6 +6,7 @@ import Bruh from "./pages/misc/Bruh";
 import Sidestep2GamePage from "./pages/games/sidestep2/Sidestep2GamePage";
 import OriginalMusicPage from "./pages/exhibits/OriginalMusic";
 import GamesPage from "./pages/exhibits/Games";
+import ProjectsPage from "./pages/exhibits/Projects";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/SecretRealPortfolio" element={<Bruh/>}/>
             <Route path="/OST" element={<OriginalMusicPage/>}/>
             <Route path="/Games" element={<GamesPage/>} />
+            <Route path="/Projects"  element= {<ProjectsPage/>}/>
           </Routes>
         </BrowserRouter>
     </div>    

@@ -53,7 +53,7 @@ const About = () => {
               duration: DESCRIPTION_TRANSITION_DELAY,
               ease: "easeOut",
             },}}}
-        className={`${styles.subDescriptionText}`}
+        className={`${styles.subDescriptionText} pt-[5px]`}
       >
         <span className={styles.aboutDescriptionTextSizeStyle}>
           <SubDescription/>

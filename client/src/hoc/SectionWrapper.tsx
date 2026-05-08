@@ -11,7 +11,7 @@ const SectionWrapper = (Component : any, idName : string, paddingEnabled = true)
             viewport={{once: true, amount: 0.25}}
             className={`${paddingEnabled && styles.padding} max-w-7xl mx-auto relative z-0`}
         >
-            <span className="hash-span" id={idName}>
+            <span className="-m-t-[10px] block" id={idName}>
                 &nbsp;
             </span>
             <Component/>
