@@ -13,7 +13,7 @@ export function ScrollToNavId(navId : string) {
 const Navbar = () => {
   const [toggle, setToggle] = useState<boolean>(false)
   const navbarLinks : NavLink[] =  Object.values(navLinks)
-  const [surfingNavlinkIndex, setSurfingNavlinkIndex] = useState(0)
+  const [_surfingNavlinkIndex, setSurfingNavlinkIndex] = useState(0)
   const surfingNavlinkIndexRef = useRef(0)
   
   const setSurfingNavlinkIdx = (index : number) => { 

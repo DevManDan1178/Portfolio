@@ -37,6 +37,7 @@ const Hero = () => {
       }
     },
   })
+  /*
   function startUnity() {
       const controller = unityControllerRef.current
       if (!controller) {
@@ -46,7 +47,7 @@ const Hero = () => {
       }
       controller.start()
       controller.started = true
-    }
+    }*/
 
   //setTimeout(startUnity, 500) //Avoid starting initially due to lag spike
   return (

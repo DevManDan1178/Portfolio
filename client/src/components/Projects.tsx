@@ -8,7 +8,6 @@ import { motion } from 'framer-motion'
 import { SectionWrapper } from '../hoc'
 import { preTitle, title, subDescription, projects} from '../constants/projects'
 import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
-import { GetLinkDisplay } from './Pages';
 import { pages } from '../constants/pages/pages';
 
 const PROJECTS_APPEARANCE_ANIMATION_Y = 50
@@ -31,7 +30,6 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
       const hasSubTags = tag.subTags && tag.subTags.length > 0
       const showingSubTags = !toggledSubtagIds[key] == !tag.hideSubTagsByDefault
       const textSizeStyle = styles.getProjectTagTextSizeStyle((tag.baseTextSizeModifier ?? 0) - depth * SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER) 
-      console.log((tag.baseTextSizeModifier ?? 0)  - depth * SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, tag.name, textSizeStyle)
       return <span key={key}
           className="cursor-default"
         >
@@ -101,7 +99,6 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
             </div>
             <div className='mt-3 h-full gap-2'>
               {tags.map((tag : Tag) => {  
-                console.log(tag.name, tag.hideSubTagsByDefault)
                 const showingSubTags = !toggledSubtagIds[tag.name] == !tag.hideSubTagsByDefault
                 const hasSubTags = tag.subTags && tag.subTags.length > 0
                 const textSizeStyle = styles.getProjectTagTextSizeStyle(tag.baseTextSizeModifier ?? 0) 
@@ -173,9 +170,6 @@ const Projects = () => {
                       show: {y: 0, opacity: 1, transition: { type: "spring", duration: PROJECT_APPEARANCE_DURATION, delay: index * PROJECT_APPEARANCE_DURATION}},
                     }}
               className='sm:w-[320px] w-[200px]'
-              onClick={(_e => {
-                  console.log("clicked project ", project.name)
-                })}
               onAnimationComplete={() => {
                 setShowing(true)
               }}
