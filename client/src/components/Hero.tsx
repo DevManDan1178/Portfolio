@@ -75,7 +75,7 @@ const Hero = () => {
           }}
           layout
         >
-        <div className='relative h-[80svh] aspect-[12/9] flex justify-start items-center overflow-hidden'>
+        <div className='relative h-[80svh] aspect-[14/9] flex justify-start items-center overflow-hidden'>
           {/* Left border */}
           <div className=' absolute left-0 top-0 w-[2px] h-full bg-gradient-to-t from-white/30 to-transparent z-10' />
 
@@ -83,15 +83,13 @@ const Hero = () => {
           <div className='absolute right-0 top-0 w-[2px] h-full bg-gradient-to-t from-white/30 to-transparent z-10' />
 
           {/* Bottom border */}
-          <div className='absolute bottom-0 left-0 h-[2px] w-[calc(100%-4px)] ml-[2px] mr-[2px] bg-white/30 z-10' />  
-          
-          { 
-            <ComputerCanvas gameEventHandlers={gameEventHandlers} unityControllerRef={unityControllerRef}/>
-          }      
+          <div className='absolute bottom-0 left-0 h-[2px] w-[calc(100%-4px)] ml-[2px] mr-[2px] bg-white/30 z-10' />       
+          <ComputerCanvas gameEventHandlers={gameEventHandlers} unityControllerRef={unityControllerRef}/>
+            
         </div>
       </motion.div>
       <motion.div 
-        className='absolute h-[calc(5svh+25px)] bottom-[calc(2.5svh+15px)] sm:w-[calc(50% + 50px)] w-[calc(40svh+50px+10%)] max-w-xl justify-between items-center flex -translate-x-1/2'
+        className='absolute h-[calc(5svh+25px)] bottom-[calc(7.5svh+15px)] sm:w-[calc(50% + 50px)] w-[calc(40svh+50px+10%)] max-w-xl justify-between items-center flex -translate-x-1/2'
         initial="hidden"
         animate="show"
         variants={{

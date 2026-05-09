@@ -30,14 +30,16 @@ export const headerIntroElement : ReactElement = <>
 
 export const descriptionElement : ReactElement = <AnimatedTextAppearance appearOnlyOnce text={description} timeBetweenLetters={descriptionTimeBetweenLetters} delay={DESCRIPTION_APPEARANCE_DELAY} startingState={{translateY: -20, translateX: -10}} style={{whiteSpace: "normal"}}/> 
 
+const TerminalText = "↓ More About Me ↓"
+
 export const TerminalTexts = {
-    TerminalIntroduction : "Click This to Scroll Down.",
-    LevelSelect : "Click This to Scroll Down.", //"Have fun!",
-    LevelStarted : "Click This to Scroll Down.", //"You got this.",
-    LevelLost : "Click This to Scroll Down.", //"Don't give up! I believe in you.",
-    LevelCleared : "Click This to Scroll Down.", //"GG",
-    Menu : "Click This to Scroll Down.", //"Just chillin?",
-    LastLevelClear : "Click This to Scroll Down.", //"WOW! Congrats. You beat the game!",
-    Paused : "Click This to Scroll Down.", //"Taking a break?",
-    Unpaused : "Click This to Scroll Down.", //"Let's do this"
+    TerminalIntroduction : TerminalText,
+    LevelSelect : TerminalText, //"Have fun!",
+    LevelStarted : TerminalText, //"You got this.",
+    LevelLost : TerminalText, //"Don't give up! I believe in you.",
+    LevelCleared : TerminalText, //"GG",
+    Menu : TerminalText, //"Just chillin?",
+    LastLevelClear : TerminalText, //"WOW! Congrats. You beat the game!",
+    Paused : TerminalText, //"Taking a break?",
+    Unpaused : TerminalText, //"Let's do this"
 }

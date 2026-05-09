@@ -146,7 +146,7 @@ function waitForUnityFirstFrame( canvas: HTMLCanvasElement, cb: () => void) {
 }
 
 
-const Computer = ({isMobile, unityCanvas, updateFrames}: {isMobile: boolean; unityCanvas: HTMLCanvasElement | null; updateFrames: boolean; }) => {
+const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport: boolean; unityCanvas: HTMLCanvasElement | null; updateFrames: boolean; }) => {
   const computer = useGLTF("/desktop_pc/scene.gltf");
   const [unityTexture, setUnityTexture] =
     useState<CanvasTexture | null>(null);
@@ -184,8 +184,8 @@ const Computer = ({isMobile, unityCanvas, updateFrames}: {isMobile: boolean; uni
   return (
     <primitive
       object={computer.scene}
-      scale={isMobile ? 0.65 : 0.75}
-      position={[0, -2.5, isMobile ? -2 : -2.3]}
+      scale={isSmallViewport ? 0.65 : 0.75}
+      position={[0, -2.5, isSmallViewport ? -2 : -2.3]}
       rotation={[0, -0.185, 0]}
     />
   );
@@ -193,7 +193,7 @@ const Computer = ({isMobile, unityCanvas, updateFrames}: {isMobile: boolean; uni
 
 
 const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHandlers: RefObject<GameEventHandlers>; unityControllerRef: RefObject<UnityController | null>; }) => {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isSmallViewport, setIsSmallViewport] = useState(false);
   const [unityCanvas, setUnityCanvas] =
   useState<HTMLCanvasElement | null>(null);
 
@@ -206,11 +206,11 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
 
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 500px)");
-    setIsMobile(mq.matches);
+    const mq = window.matchMedia("(max-width: 750px)");
+    setIsSmallViewport(mq.matches);
 
     const handler = (e: MediaQueryListEvent) =>
-      setIsMobile(e.matches);
+      setIsSmallViewport(e.matches);
 
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
@@ -297,7 +297,7 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
       <Canvas
         tabIndex={-1}
         shadows
-        camera={{ position: [25, 0, 5], fov: 25 }}
+        camera={{ position: [10, 0, 2], fov: 25 }}
         gl={{ preserveDrawingBuffer: true }}
         onFocus={() => {
           scrollTo(0, 0);
@@ -314,13 +314,13 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
             enableZoom
             enablePan={false}
             maxDistance={15}
-            minDistance={7.5}
+            minDistance={6}
             maxPolarAngle={Math.PI / 2}
             minPolarAngle={Math.PI / 2}
           />
 
           <Computer
-            isMobile={isMobile}
+            isSmallViewport={isSmallViewport}
             unityCanvas={unityCanvas}
             updateFrames={updateFrames}
           />
