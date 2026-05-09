@@ -38,7 +38,7 @@ export function GetPageDisplays(pages : PageInfo[], openInNewTab : boolean = tru
 
     return () => window.removeEventListener("resize", checkScreenSize)
     }, [])
-    return pages.map((page : PageInfo, index : number) => (GetLinkDisplay(page.url, page.iconElement, page.name, index, openInNewTab, styles.getLinkDisplayPixelSize(screenSizeType) * 1.5)))
+    return pages.map((page : PageInfo, index : number) => (GetLinkDisplay(page.url, page.iconElement, page.name, index, openInNewTab, styles.getLinkDisplayPixelSize(screenSizeType) * 1.25)))
 }
 
 export function GetLinkDisplay(url : string, iconElement : ReactElement | string, linkName : string, key : number | string, openInNewTab : boolean = true, pixelSize : number = 50) { 
