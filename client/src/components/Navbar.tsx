@@ -87,7 +87,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${styles.paddingX} w-full flex items-center py-2 fixed top-0 z-20 bg-primary`}> 
+      className={`${styles.paddingX} w-full flex flex-col items-center py-2 fixed top-0 z-20 bg-primary`}
+    > 
       <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
         <Link 
           to="/" 
@@ -96,13 +97,7 @@ const Navbar = () => {
             window.scrollTo(0, 0);
           }}
         >
-          {/* 
-          <img 
-          src= {logo} 
-          alt="logo"
-          className="w-9 h-9 object-contain"
-          />
-          */}
+
           <p className='text-white text-[18px] font-bold cursor-pointer flex'> 
             {portfolioHeroHandle}
           </p>
@@ -149,6 +144,13 @@ const Navbar = () => {
           </div>       
         </div>
       </div>
+      <div
+        className="absolute -bottom-6 left-0 w-full h-6 bg-primary pointer-events-none"
+        style={{
+          WebkitMaskImage: "linear-gradient(to bottom, black, transparent)",
+          maskImage: "linear-gradient(to bottom, black, transparent)",
+        }}
+      />
     </nav>
   )
 }
