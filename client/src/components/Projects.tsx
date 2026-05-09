@@ -36,7 +36,7 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
           <span 
             onClick={hasSubTags? getToggleSubTagsCall(key) : () => {}}
             className={`${hasSubTags && styles.parentTagTextStyle} rounded-2xl ${textSizeStyle} ${tag.color} whitespace-nowrap inline-block`}
-            style={{color : tag.color}}
+            style={{color : tag.color, opacity: 0.85}}
           >
             &nbsp;{tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}
           </span>
@@ -55,7 +55,7 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
         tiltMaxAngleX={5}
         tiltMaxAngleY={5}
         transitionSpeed={1000}
-        className={`bg-slate-700/50 hover:bg-slate-400/35 rounded-2xl w-full h-full relative items-center justify-center flex pointer-events-${disableMouseEvents ? "none" : "auto"}  border-[4px] rounded-b-lg rounded-t-lg border-blue-400/15`}
+        className={`bg-gray-800/80 hover:bg-white/10 rounded-2xl w-full h-full relative items-center justify-center flex pointer-events-${disableMouseEvents ? "none" : "auto"}  border-[4px] rounded-b-lg rounded-t-lg border-white/5`}
       >
         <div className='w-[c  alc(100%-30px)] pt-[10px] pb-[10px] pl-[10px] pr-[10px] group'>
           <a 
@@ -77,7 +77,7 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
               {name}
             </h3>
             <p className={`mt-2 ${styles.projectTextStyles.descriptionTextSizeStyle} ${visuals?.descriptionColor ?? ""}`}
-              style={{ color: visuals?.descriptionColor ?? "white" }}
+              style={{ color: visuals?.descriptionColor ?? "white", opacity: 0.8 }}
             >
               {description}
             </p>
@@ -90,7 +90,7 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
                   <p 
                   key={`${index}`}
                   className={`${bulletPoint.color ?? "text-blue-100/90"}${styles.projectTextStyles.bulletPointsTextSizeStyle} mt-[10px]`}
-                  style={{color : bulletPoint.color}}
+                  style={{color : bulletPoint.color, opacity: 0.85}}
                   > 
                     {"• "}{bulletPoint.text}
                   </p>
@@ -109,7 +109,7 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
                     <span 
                       onClick={hasSubTags ? getToggleSubTagsCall(tag.name) : () => {}}
                       className={`${textSizeStyle} whitespace-nowrap ${tag.color} `}
-                      style={{color : tag.color}}
+                      style={{color : tag.color, opacity: 0.85}}
       
                     >
                       {tag.overrideTagSymbol ? tag.overrideTagSymbol(tag.name) : defaultTagSymbol(tag.name)}

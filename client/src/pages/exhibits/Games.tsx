@@ -34,7 +34,7 @@ export default function GamesPage() {
 
               {/* Content */}
               <div className="p-4 flex flex-col gap-2">
-                <h2 className="text-xl font-semibold group-hover:text-purple-200 transition">
+                <h2 className="text-xl font-semibold text-white/75 group-hover:text-white transition">
                   {game.title}
                 </h2>
 

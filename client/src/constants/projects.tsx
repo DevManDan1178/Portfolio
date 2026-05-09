@@ -18,7 +18,7 @@ export const subDescription : string = "Some of my best work."
 export const projects : Record<string, Project> = {
   polygonTD :{
     name : "Polygon Tower Defense",
-    description : "Small tower defense game with player-customized upgrading and adding of map elements",
+    description : "Small tower defense game with player-customized upgrading and addition of map elements",
     tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/PolygonTD")],
     display : GetImageDisplay(polygonTD, "PolygonTD"),
     link : {
@@ -52,6 +52,9 @@ export const projects : Record<string, Project> = {
       url : "https://devman-dan.itch.io/sidestep",
       linkImage : itchIO,
     },
+    visuals: {
+      nameColor: "#f6ffe0"
+    }
   },
   untitled2DShooter : {
     name : "Untitled 2D Shooter",
@@ -63,7 +66,7 @@ export const projects : Record<string, Project> = {
       linkImage : roblox
     },
     visuals : {
-      nameColor : "#caddfc",
+      nameColor : "#e0ebff",
     },
     featured : true,
   },
@@ -72,7 +75,10 @@ export const projects : Record<string, Project> = {
     display : WebsiteDisplay, 
     description : "What more can I say? Look around.",
     featured : true,
-    tags : [Tags.React, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Git]
+    tags : [Tags.React, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Git],
+    visuals: {
+      nameColor: "#e8e0ff"
+    }
   },
   pendulumSimulator : {
     name : "Pendulum Simulator",
@@ -87,7 +93,10 @@ export const projects : Record<string, Project> = {
       {text: "Implemented physics calculations"},
       {text: "Implemented UI for the simulation"},
       {text: "Implemented rendering"}
-    ]
+    ],
+    visuals: {
+      nameColor: "#e6fcea"
+    }
   },
   typingTutor : {
     name : "Typing Tutor App",
@@ -98,6 +107,9 @@ export const projects : Record<string, Project> = {
       url : "https://github.com/DevManDan1178/TypingPractice",
       linkImage : github,
     },
+    visuals : {
+      nameColor : "#fcefe6"
+    }
   }
 };
 
@@ -215,7 +227,7 @@ function getLinkElement(onClick : () => void, linkImage? : string) {
               </h1>
             )}
 
-            {InvertingDisplay(0.75, false)}
+            {InvertingDisplay(0.75, true)}
         </div>
       </div> 
     </div> 

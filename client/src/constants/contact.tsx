@@ -2,13 +2,29 @@ import type { ReactElement } from "react"
 import { github, itchIO, linkedIn, email } from "../assets"
 import { GetLinkDisplay } from "../components/Pages"
 
+export const emailUser = "danielorejuelaliu"
+export const emailDomain = "gmail.com"
 
 export const preTitle = "Get in touch"
 export const title = "Contact"
-export const subDescription = "I’m currently looking for internship opportunities. Feel free to reach out."
+export const subDescription = <span> 
+    I’m currently looking for internship opportunities in 
+    <span className="text-teal-100/75"> game </span>
+    or in 
+    <span className="text-blue-100/75"> software </span>
+    development. Feel free to reach out. <br/> 
+    I will get back to you as soon as possible if you 
+    <a 
+        className="text-white/75 cursor-pointer font-semibold" 
+        href={`mailto:${emailUser + "@" + emailDomain}`}
+        target="_blank"
+    >
+       &nbsp;send me a mail
+    </a>
+    . <br/>
+</span>
 
-export const emailUser = "danielorejuelaliu"
-export const emailDomain = "gmail.com"
+
 
 export const emailElement = <span className="text-[20px]">
     danielorejuelaliu<span className="text-[15px]">@</span>gmail

@@ -9,9 +9,9 @@ const SectionWrapper = (Component : any, idName : string, paddingEnabled = true)
             initial="hidden"
             whileInView="show"
             viewport={{once: true, amount: 0.25}}
-            className={`${paddingEnabled && styles.padding} max-w-7xl mx-auto relative z-0`}
+            className={`${paddingEnabled && styles.padding} max-w-7xl mx-auto relative z-0 justify-start`}
         >
-            <span className="-m-t-[10px] block" id={idName}>
+            <span className={`block ${paddingEnabled && styles.sectionIdMarginY}`} id={idName}>
                 &nbsp;
             </span>
             <Component/>

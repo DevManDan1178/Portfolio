@@ -64,13 +64,13 @@
   background: #ff9f8e; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to top,
-    #ff9886,
-    #ffc1c1
+    #ffc9c9,
+    #ffebeb
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to top,
-    #ff9886,
-    #ffc1c1
+    #ffc9c9,
+    #ffebeb
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -98,13 +98,13 @@
   background: #d6d6d6; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to top,
-    #868686,
+    #d8d8d8,
     #ffffff
     
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to top,
-    #868686,
+    #d8d8d8,
     #ffffff
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   -webkit-background-clip: text;
@@ -115,13 +115,13 @@
   background: #56ccf2; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to top,
-    #a5e9ff,
-    #a0c9ff,
+    #c1d7ff,
+    #d4e7ff,
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to top,
-    #a5e9ff,
-    #a0c9ff
+    #c1d7ff,
+    #d4e7ff,
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -148,12 +148,12 @@
   background: #ec008c; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to top,
-    #ffe986,
+    #fffae1,
     #ffe9ad
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to top,
-    #ffe986,
+    #fffae1,
     #ffe9ad
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   -webkit-background-clip: text;

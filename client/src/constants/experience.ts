@@ -25,7 +25,7 @@ export const experiences : Experience[] = [
     iconInfo : {
       icon : vanierCollege,
       background : "#ff9896",
-      iconScale : 1.5
+      iconScale : 1.75
     },
     date : "Fall 2024 - Winter 2026",
     points : [

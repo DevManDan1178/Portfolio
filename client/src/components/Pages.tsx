@@ -6,11 +6,11 @@ import { styles, GetScreenSizeType, type ScreenSizeType } from '../style'
 
 export function GetPages(pages : PageInfo[], openInNewTab : boolean = true) : () => ReactElement {
   return () => (
-    <div className=''>
-        <span className='flex text-center justify-center text-[15px] font-semibold'>
+    <div className='pb-16'>
+        <span className={`flex text-center justify-center ${styles.otherPagesHeadText} font-semibold`}>
           My Other Pages
         </span>
-        <div className='w-full flex items-center justify-center gap-6 mt-[15px]'>
+        <div className='w-full flex items-center justify-center gap-10'>
             {GetPageDisplays(pages, openInNewTab)}
         </div>       
     </div>
@@ -38,7 +38,7 @@ export function GetPageDisplays(pages : PageInfo[], openInNewTab : boolean = tru
 
     return () => window.removeEventListener("resize", checkScreenSize)
     }, [])
-    return pages.map((page : PageInfo, index : number) => (GetLinkDisplay(page.url, page.iconElement, page.name, index, openInNewTab, styles.getLinkDisplayPixelSize(screenSizeType))))
+    return pages.map((page : PageInfo, index : number) => (GetLinkDisplay(page.url, page.iconElement, page.name, index, openInNewTab, styles.getLinkDisplayPixelSize(screenSizeType) * 1.5)))
 }
 
 export function GetLinkDisplay(url : string, iconElement : ReactElement | string, linkName : string, key : number | string, openInNewTab : boolean = true, pixelSize : number = 50) { 

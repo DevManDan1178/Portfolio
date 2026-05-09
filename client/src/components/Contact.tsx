@@ -63,10 +63,10 @@ const Contact = () => {
           {subDescription}
         </motion.p>
       </div>
-        <span className='flex text-center justify-center mt-[25px] text-[30px] font-semibold'>
+        <span className='flex text-center justify-center mt-[50px] text-[20px] font-semibold'>
           Clicky Stuffs
         </span>
-        <div className='flex items-center justify-center gap-10 mt-[25px]'>
+        <div className='flex items-center justify-center gap-10 mt-[10px]'>
           {Object.entries(SocialLinks).map(([_platform, link], index : number) =>  (
             GetSocialLinkElement(link, index.toString(), true, styles.getLinkDisplayPixelSize(screenSizeType))
         ))}

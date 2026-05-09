@@ -16,14 +16,16 @@ export function GetScreenSizeType() : ScreenSizeType{
 const styles = {
   paddingX: "sm:px-10 px-4",
   paddingY: "sm:py-10 py-4",
-  padding: "sm:px-18 px-6 sm:py-8 py-8",
-
+  padding: "sm:px-[72px] px-[24px] sm:py-[120px] py-[96px]",
+  sectionIdMarginY : "sm:-mt-[96px] -mt-[72px]",
   heroHeadText:
     "font-semibold text-white lg:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] leading-tight mt-1",
   heroSubText:
     "text-white/70 font-normal lg:text-[26px] sm:text-[22px] text-[18px] leading-snug",
   sectionHeadText:
     "text-white font-semibold md:text-[36px] sm:text-[30px] text-[24px] leading-tight",
+  otherPagesHeadText:
+    "text-white font-semibold md:text-[24px] sm:text-[20px] text-[16px] leading-tight md:pb-8 sm:pb-6 pb-4",
   sectionSubText:
      "md:text-[16px] sm:text-[14px] text-[12px] text-white/50 tracking-wide",
   subDescriptionText: 
@@ -51,7 +53,7 @@ const styles = {
   techStackMatchStyle : {
     titleTextSizeStyle : "md:text-[22px] sm:text-[19px] text-[16px] leading-tight",
     subTitleTextSizeStyle : "md:text-[18px] sm:text-[16px] text-[14px] leading-tight",
-    buttonSizeStyle : "md:h-[50px] sm:text-[40px] h-[35px] w-[calc(5%+75px)]",
+    buttonSizeStyle : "md:h-[50px] sm:text-[40px] h-[35px] w-[calc(15%+125px)]",
     buttonTextSizeStyle : "md:text-[22px] sm:text-[18px] text-[16px] leading-tight",
   },
   techStackElementStyles:
@@ -67,12 +69,13 @@ const styles = {
   },
   getLinkDisplayPixelSize : (screenSize : ScreenSizeType) => {
     if (screenSize == "lg") 
-      return 50
-    else if (screenSize == "md")
-      return 45
-    else if (screenSize == "sm")
       return 40
+    else if (screenSize == "md")
+      return 35
+    else //if (screenSize == "sm")
+      return 30
   },
+  
   copyEmailSizeStyle : 
     "md:text-[16px] sm:text-[14px] text-[12px]",
 };

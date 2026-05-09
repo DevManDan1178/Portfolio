@@ -59,7 +59,7 @@ export const BaseTags : Record<string, Tag> = {
   },
   Git : {
     name : "Git",
-    color : "#e6e6e6", 
+    color : "#fcdedc", 
   },
   ThreeJS : {
     name : "ThreeJS",
@@ -67,7 +67,7 @@ export const BaseTags : Record<string, Tag> = {
   },
   MusicComposition : {
     name : "♪ Composition",
-    color : "#e6c7ff",
+    color : "#f2e3ff",
     baseTextSizeModifier : -2
   } 
 }

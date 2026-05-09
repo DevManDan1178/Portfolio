@@ -12,16 +12,16 @@ const ExperienceCard = ({experience} : {experience : Experience}) => {
   const iconInfo = experience.iconInfo
   return (
     <VerticalTimelineElement
-      contentStyle = {{background : '#1d1836', color: '#fff'}}
-      contentArrowStyle = {{borderRight : '7px solid #232631'}}
+      contentStyle = {{ background: '#ffffff1a', color: '#fff', boxShadow: 'none', borderRadius: "8px", border: '4px solid rgba(255,255,255,0.15)' }}
+      contentArrowStyle = {{borderRight : '0px'}}
       date = {experience.date}
-      iconStyle = {{background: iconInfo.background, overflow : "hidden"}}
+      iconStyle = {{background: iconInfo.background, overflow : "clip"}}
       icon = {
         <div className='flex justify-center items-center w-full h-full'>
           <img
             src = {iconInfo.icon}
             alt = {experience.subTitle}
-            className={`w-[${100 * (iconInfo.iconScale ?? 1)}%] h-[${100 * (iconInfo.iconScale ?? 1)}%] object-contain items-center overflow-hidden`}
+            className={`w-full h-full scale-[${iconInfo.iconScale ?? 1}] items-center overflow-hidden`}
           />
         </div>  
       }
