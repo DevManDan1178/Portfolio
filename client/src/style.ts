@@ -17,7 +17,7 @@ const styles = {
   paddingX: "sm:px-10 px-4",
   paddingY: "sm:py-10 py-4",
   padding: "sm:px-[72px] px-[24px] sm:py-[120px] py-[96px]",
-  sectionIdMarginY : "sm:-mt-[96px] -mt-[72px]",
+  sectionIdMarginY : "sm:-mt-[72px] -mt-[52px]",
   heroHeadText:
     "font-semibold text-white lg:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] leading-tight mt-1",
   heroSubText:
