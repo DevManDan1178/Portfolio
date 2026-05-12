@@ -1,7 +1,7 @@
 import { useState, useEffect ,type ReactElement } from "react"
 import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../assets"
 import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "./tags"
-import { InvertingDisplay } from "../components/effects/VisualEffects"
+import { InvertingDisplay, type HoverMode } from "../components/effects/VisualEffects"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
 
@@ -21,10 +21,21 @@ export const projects : Record<string, Project> = {
     description : "Small tower defense game with player-customized upgrading and addition of map elements",
     tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/PolygonTD")],
     display : GetImageDisplay(polygonTD, "PolygonTD"),
-    link : {
-      url: "https://devman-dan.itch.io/polygon-tower-defense",
-      linkImage : itchIO
-    },
+    links : {
+      mainLink: {
+        url: "/PolygonTD",
+        linkIcon : "▶",
+        iconIsStr : true
+      },
+      allLinks: [{
+        url: "/PolygonTD",
+        linkIcon : "▶",
+        iconIsStr : true
+      },
+      {
+        url: "https://devman-dan.itch.io/polygon-tower-defense",
+        linkIcon : itchIO
+    }]},
     visuals : {
       nameColor : "yellow-text-gradient",
     },
@@ -35,10 +46,21 @@ export const projects : Record<string, Project> = {
     description: "Simple arena shooter game where you must also evade your past movements",
     tags : [Tags.Godot, MiscTags.GMTKJam2026, GetPlayableTag("/EchoArena", "Click to Play ‹PC›")],
     display : GetImageDisplay(echoArena, "Echo Arena"),
-    link : {
-      url: "https://devman-dan.itch.io/echo-arena",
-      linkImage : itchIO
-    },
+    links : {
+      mainLink : {
+        url: "/EchoArena",
+        linkIcon : "▶",
+        iconIsStr : true
+      },
+      allLinks : [{
+        url: "/EchoArena",
+        linkIcon : "▶",
+        iconIsStr : true
+      },
+      {
+        url: "https://devman-dan.itch.io/echo-arena",
+        linkIcon : itchIO
+    }]},
     visuals : {
       nameColor : "light-red-text-gradient"
     }
@@ -48,10 +70,21 @@ export const projects : Record<string, Project> = {
     description : "Small bullet hell game.",
     tags : [Tags.Unity, BaseTags.MusicComposition, GetPlayableTag("/Sidestep2", "Click to Play ‹PC›")],
     display : GetImageDisplay(sidestep2, "Sidestep²"),
-    link : {
-      url : "https://devman-dan.itch.io/sidestep",
-      linkImage : itchIO,
-    },
+    links : {
+      mainLink : {
+          url : "/sidestep2",
+          linkIcon : "▶",
+          iconIsStr : true
+      },
+      allLinks:[{
+          url : "/sidestep2",
+          linkIcon : "▶",
+          iconIsStr : true
+      },
+      {
+          url : "https://devman-dan.itch.io/sidestep",
+          linkIcon : itchIO,
+      }]},
     visuals: {
       nameColor: "#f6ffe0"
     }
@@ -61,10 +94,15 @@ export const projects : Record<string, Project> = {
     description : "Layered multiplayer (2+) horizontal shooter with various abilities, weapons, and cosmetics.",
     tags : [Tags.RobloxStudio],
     display : GetImageDisplay(untitled2DShooter, "Untitled 2D Shooter"),
-    link : {
-      url: "https://www.roblox.com/games/15434757878/Untitled-2D-Shooter",
-      linkImage : roblox
-    },
+    links : {
+      mainLink:{
+        url: "https://www.roblox.com/games/15434757878/Untitled-2D-Shooter",
+        linkIcon : roblox
+      },
+      allLinks: [{
+        url: "https://www.roblox.com/games/15434757878/Untitled-2D-Shooter",
+        linkIcon : roblox
+    }]},
     visuals : {
       nameColor : "#e0ebff",
     },
@@ -85,10 +123,16 @@ export const projects : Record<string, Project> = {
     description : "Physics simulator of a simple pendulum",
     tags : [BaseTags.Java, BaseTags.Git, CategoryTags.TeamProject, CategoryTags.Academic],
     display : GetImageDisplay(pendulumSimulator, "Pendulum Simulator"),
-    link : {
-      url: "https://github.com/VanierCollege/PendulumSimulator/",
-      linkImage : github
+    links : {
+      mainLink : {
+        url: "https://github.com/VanierCollege/PendulumSimulator/",
+        linkIcon : github
     },
+      allLinks: [{
+        url: "https://github.com/VanierCollege/PendulumSimulator/",
+        linkIcon : github
+      },
+    ]},
     bulletPoints : [
       {text: "Implemented physics calculations"},
       {text: "Implemented UI for the simulation"},
@@ -103,10 +147,15 @@ export const projects : Record<string, Project> = {
     description : "Small typing tutor app made in JavaFX.",
     tags : [BaseTags.Java, BaseTags.Git, CategoryTags.Academic],
     display : GetImageDisplay(typingPracticeAssignment, "Typing Practice"),
-    link : {
-      url : "https://github.com/DevManDan1178/TypingPractice",
-      linkImage : github,
+    links : {
+      mainLink : {
+        url : "https://github.com/DevManDan1178/TypingPractice",
+        linkIcon : github,
     },
+      allLinks :[{
+        url : "https://github.com/DevManDan1178/TypingPractice",
+        linkIcon : github,
+    }]},
     visuals : {
       nameColor : "#fcefe6"
     }
@@ -115,14 +164,16 @@ export const projects : Record<string, Project> = {
 
 
 function GetImageDisplay(image : string, name : string) : ProjectDisplay {
-  return ({LinkElement}) => {
-    return <><img
+  return ({LinkElements}) => {
+    return <div className="group"><img
       src={image}
       alt={name}
-      className='opacity-70 group-hover:opacity-90 w-full h-full object-cover rounded-2xl brightness-[75%] group-hover:brightness-[100%] transition-[filter] duration-300 ease-in-out'   
+      className='peer items-end justify-end flex opacity-70 group-hover/image:opacity-90 w-full h-full object-cover rounded-2xl brightness-[75%] group-hover/image:brightness-[100%] transition-[filter] duration-300 ease-in-out'   
     />
-      {LinkElement}
-    </>
+      <div className="absolute inset-0 flex justify-end gap-0">
+        {LinkElements}
+      </div>
+    </div>
   }
 }
 
@@ -156,6 +207,7 @@ function WebsiteDisplay() {
   const linkPressTexts = [
     "You're already here.",
     "You're already here!",
+    "Stop clicking!"
   ]
   const onLinkClicked = () => {
     if (linkPressDisabled || linkPressCount > linkPressTexts.length) {
@@ -168,7 +220,7 @@ function WebsiteDisplay() {
     setLinkPressDisabled(true)
   }
 
-  const linkElement = getLinkElement(onLinkClicked)
+  const linkElement = getLinkElement(onLinkClicked, undefined, "group")
   useEffect(() => {
     setTimeout(() => {
       setLinkPressDisabled(false)
@@ -188,9 +240,9 @@ function WebsiteDisplay() {
 
   return (
     <div
-      className="w-full h-full relative "
+      className="w-full h-full relative"
     >
-      {GetImageDisplay(portfolioSite, "Portfolio Site")({LinkElement : linkElement})}
+      {GetImageDisplay(portfolioSite, "Portfolio Site")({LinkElements : [linkElement]})}
       {linkPressCount > 0 &&
         <>
           <h3 className="w-full absolute inset-0 flex items-center justify-center text-center text-[30px] bg-black/50 ">
@@ -203,31 +255,31 @@ function WebsiteDisplay() {
   )
 }
 
-export function getDefaultLinkElement(linkUrl : string, linkImage? : string) {
-  return getLinkElement(() => window.open(linkUrl, "_blank"), linkImage) 
+export function getDefaultLinkElement(link? : Link, hoverMode? : HoverMode) {
+  return getLinkElement(() => window.open(link?.url, "_blank"), link, hoverMode)
 }
 
-function getLinkElement(onClick : () => void, linkImage? : string) {
+function getLinkElement(onClick : () => void, link? : Link, hoverMode? : HoverMode) {
+  const linkIcon = link?.linkIcon
   return (
-        
-    <div className='absolute inset-0 flex justify-end m-3 card-img_hover pointer-events-none '>
+    <div className='relative inset-0 flex justify-end m-3 card-img_hover pointer-events-none z-10' key={"LinkElement-" + (link?.url ?? ".") }>
       <div
         className='black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer pointer-events-auto flex-col group'
         onClick={onClick}
       > 
         <div className="relative w-10 h-10 flex items-center justify-center inset-0 rounded-full overflow-hidden">
-            {linkImage ? (
+            {linkIcon && !link.iconIsStr ? (
               <img
                 className="w-3/5 h-3/5 object-contain absolute"
-                src={linkImage} 
+                src={linkIcon} 
               />
               )  : (
               <h1 className="flex items-center justify-center w-3/5 h-3/5 text-center absolute">
-                🔗
+                {linkIcon ?? "🔗"}  
               </h1>
             )}
 
-            {InvertingDisplay(0.75, true)}
+            {InvertingDisplay(0.75, hoverMode)}
         </div>
       </div> 
     </div> 
@@ -243,11 +295,12 @@ export type BulletPoint = {
   color? : string,
 }
 
-export type ProjectDisplay = ({LinkElement} : {LinkElement? : ReactElement}) => ReactElement
+export type ProjectDisplay = ({LinkElements} : {LinkElements? : ReactElement[]}) => ReactElement
 
 export type Link = {
   url : string,
-  linkImage? : string
+  linkIcon? : string,
+  iconIsStr? : boolean
 }
 
 export type Project = {
@@ -256,7 +309,10 @@ export type Project = {
   tags: Tag[],
   display : ProjectDisplay,
   featured? : boolean,
-  link? : Link,
+  links? : {
+    allLinks : Link[],
+    mainLink : Link
+  },
   bulletPoints? : BulletPoint[],
   visuals? : {
     nameColor? : string,
