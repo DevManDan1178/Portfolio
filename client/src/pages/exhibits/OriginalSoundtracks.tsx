@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { musicData } from "../../constants/pages/exhibits/originalMusic";
+import { ostData } from "../../constants/pages/exhibits/originalSoundtracks";
 import { pages } from "../../constants/pages/pages";
 import { GetPagesExcept } from "../../components/Pages";
 import AudioPlayer from "../../components/effects/AudioPlayer";
 import SEO from "../../components/effects/SEO";
 
-export default function OriginalMusicPage() {
+export default function OriginalSoundtracksPage() {
     const Pages = GetPagesExcept(pages.ost, false)
     const [activeTrack, setActiveTrack] = useState<{categoryIndex: number, trackIndex: number} | null>(null)
  
@@ -15,11 +15,11 @@ export default function OriginalMusicPage() {
             <div className="min-h-screen w-full flex flex-col items-center px-6 py-16 text-white">
                 <h1 className="text-4xl font-bold mb-4">Original Soundtracks</h1>
                 <p className="text-white/70 mb-10 text-center max-w-xl">
-                    They aren't published anywhere.
+                    A collection of some of my compositions
                 </p>
 
                 <div className="w-full max-w-3xl flex flex-col gap-12">
-                    {musicData.map((category, cIndex) => (
+                    {ostData.map((category, cIndex) => (
                     <div key={category.name}>
                         {/* Category Title */}
                         <h2 className="text-2xl font-semibold mb-4 text-blue-100/90">

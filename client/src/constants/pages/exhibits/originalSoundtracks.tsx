@@ -10,7 +10,7 @@ type Category = {
   tracks: Track[],
 };
 
-export const musicData: Category[] = [
+export const ostData: Category[] = [
   {
     name: "Polygon Tower Defense OST",
     description : "Soundtrack for Polygon Tower Defense",
