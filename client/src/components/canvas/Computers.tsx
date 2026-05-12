@@ -336,7 +336,7 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
         </Suspense>
 
         <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <directionalLight position={[10, 10, 5]} intensity={2} />
         <pointLight position={[2.5, 2.5, 0]} intensity={15} distance={50} />
 
         <Preload all />

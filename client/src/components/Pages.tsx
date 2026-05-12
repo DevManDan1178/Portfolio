@@ -8,7 +8,7 @@ export function GetPages(pages : PageInfo[], openInNewTab : boolean = true) : ()
   return () => (
     <div className='pb-16'>
         <span className={`flex text-center justify-center ${styles.otherPagesHeadText} font-semibold`}>
-          My Other Pages
+          Other Pages
         </span>
         <div className='w-full flex items-center justify-center gap-10'>
             {GetPageDisplays(pages, openInNewTab)}
@@ -65,7 +65,7 @@ export function GetLinkDisplay(url : string, iconElement : ReactElement | string
                 {iconElement}
             </span>
 
-            {InvertingDisplay(0.5, true, true)}
+            {InvertingDisplay(0.5, "group", true)}
 
         </div>
         
