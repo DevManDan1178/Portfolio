@@ -1,50 +1,107 @@
-import { useRef, Suspense } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Points, PointMaterial, Preload } from '@react-three/drei'
-import * as random from 'maath/random'
-import type  { Points as ThreePoints } from 'three'
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
+import { TextureLoader, Points } from 'three'
+import { useEffect, useMemo, useRef } from 'react'
 
-const X_ROTATION_VELOCITY = -0.1
-const Y_ROTATION_VELOCITY = 0.075
+const PARTICLE_TEXTURE_PATH = '/images/Star.png'
 
-const Stars = (props : any) => {
-  const ref = useRef<ThreePoints>(null!)
-  const sphere = random.inSphere(new Float32Array(3000), {radius : 5})
+const ROTATION_SPEED_Y = (Math.random() - 0.5) * 0.015
+const ROTATION_SPEED_X = (Math.random() - 0.5) * 0.01
 
-  useFrame((_state, delta) => {
-    ref.current.rotation.x += delta * X_ROTATION_VELOCITY
-    ref.current.rotation.y += delta * Y_ROTATION_VELOCITY
-  })  
+const MOUSE_STRENGTH = 0.25
+
+function Particles() {
+  const texture = useLoader(TextureLoader, PARTICLE_TEXTURE_PATH)
+
+  const pointsRef = useRef<Points>(null!)
+
+  const mouse = useRef({
+    x: 0,
+    y: 0,
+  })
+
+  useEffect(() => {
+    if (window.innerWidth < 768) return
+
+    const handleMouseMove = (e: MouseEvent) =>
+    {
+      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1
+      mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+
+    return () =>
+    {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
+
+  const positions = useMemo(() =>
+  {
+    const isMobile = window.innerWidth < 768
+    const count = isMobile ? 80 : 180
+
+    const arr = new Float32Array(count * 3)
+
+    for (let i = 0; i < count * 3; i++)
+    {
+      arr[i] = (Math.random() - 0.5) * 14
+    }
+
+    return arr
+  }, [])
+
+  useFrame((_, delta) => {
+    if (!pointsRef.current) return
+
+
+    pointsRef.current.rotation.y += delta * ROTATION_SPEED_Y
+    pointsRef.current.rotation.x += delta * ROTATION_SPEED_X
+
+
+    pointsRef.current.rotation.y +=
+      (mouse.current.x * MOUSE_STRENGTH) * 0.002
+
+    pointsRef.current.rotation.x +=
+      (mouse.current.y * MOUSE_STRENGTH) * 0.002
+  })
 
   return (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={sphere} stride={3} frustumCulled {...props}>
-        <PointMaterial
-          transparent
-          color="#f272c8"
-          opacity={.95}
-          size={0.01}
-          sizeAttenuation
-          depthWrite={false}
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
         />
+      </bufferGeometry>
 
-      </Points>
-    </group>
+      <pointsMaterial
+        map={texture}
+        color="#ffffff"
+        size={0.125}
+        transparent
+        opacity={0.25}
+        depthWrite={false}
+        sizeAttenuation
+      />
+    </points>
   )
 }
 
-const StarsCanvas = () => {
+export default function BackgroundCircles() {
   return (
-    <div className='w-full h-full absolute inset-0 z-[-1]'>
-      <Canvas camera={{position:[0, 0, 0]}}>
-        <Suspense fallback={null}>
-          <Stars/>
-        </Suspense>
-        <Preload all/>
+    <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden will-change-transform">
+      <Canvas
+        camera={{ position: [0, 0, 5] }}
+        dpr={[1, 1]}
+        gl={{
+         antialias: false,
+          alpha: true,
+         powerPreference: 'high-performance',
+        }}
+      >
+        <Particles />
       </Canvas>
     </div>
   )
 }
-
-
-export default StarsCanvas
