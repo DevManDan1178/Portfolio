@@ -21,7 +21,7 @@ export function SubDescription() {
       <span className="text-[22px]">
         {showSmiley ?<span className="text-white items-center flex justify-center text-[20px]">	
           <button onClick={() => {scrollTo(0, 0), setShowSmiley(false)}} className="border-2 border-white-100/20 rounded-lg">
-            &nbsp;⊂(◉‿◉)つ <span className="text-[10px]">Hello! Click on my PC and play my game.</span> <span className="text-[20px]">↑</span> &nbsp;
+            &nbsp;⊂(◉‿◉)つ <span className="text-[10px]">Hey! Click on my PC and play my game.</span> <span className="text-[20px]">↑</span> &nbsp;
           </button>
           </span> : <br/> }
       </span>

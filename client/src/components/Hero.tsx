@@ -53,10 +53,14 @@ const Hero = () => {
   return (
     <div className='relative w-full min-h-[100svh] mx-auto z-10 overflow-hidden flex flex-col items-center justify-start'>
       <div className={`${styles.paddingX} absolute inset-0 py-2 top-[40px] max-w-7xl mx-auto flex flex-row items-start gap-5`}>
+        {/* 
          <div className='flex flex-col justify-center items-center mt-5'>
-          <div className='w-5 h-5 rounded-full bg-[#915eff]'/>
-          <div className='w-1 sm:h-80 h-40 violet-gradient'/>
+          
+          <div className='w-5 h-5 rounded-full bg-[#4d78ee]'/>
+          <div className='w-1 sm:h-80 h-40 blue-gradient'/>
+          
         </div>
+        */}
         <div>
           <h2 className={`${styles.heroHeadText} text-white`}>
             {headerIntroElement}

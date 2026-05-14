@@ -13,7 +13,7 @@ type Category = {
 export const ostData: Category[] = [
   {
     name: "Polygon Tower Defense OST",
-    description : "Soundtrack for Polygon Tower Defense",
+    description : "My original soundtracks in Polygon Tower Defense",
     tracks: [
       {
         title : "Not Boss Music",
@@ -44,7 +44,7 @@ export const ostData: Category[] = [
   },
   {
     name: "Sidestep² OST",
-    description : "My original soundtracks for Sidestep²",
+    description : "My original soundtracks in Sidestep²",
     tracks: [
       {
         title: "Wonky Trip",

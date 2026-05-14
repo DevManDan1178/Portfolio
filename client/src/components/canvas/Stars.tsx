@@ -5,9 +5,9 @@ import { useEffect, useMemo, useRef } from 'react'
 const PARTICLE_TEXTURE_PATH = '/images/Star.png'
 
 const ROTATION_SPEED_Y = (Math.random() - 0.5) * 0.015
-const ROTATION_SPEED_X = (Math.random() - 0.5) * 0.01
+const ROTATION_SPEED_X = (Math.random() - 0.5) * 0.015
 
-const MOUSE_STRENGTH = 0.25
+const MOUSE_STRENGTH = 0.025
 
 function Particles() {
   const texture = useLoader(TextureLoader, PARTICLE_TEXTURE_PATH)
@@ -25,7 +25,7 @@ function Particles() {
     const handleMouseMove = (e: MouseEvent) =>
     {
       mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1
-      mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1
+      mouse.current.y = (e.clientY / window.innerHeight) * 2 + 1
     }
 
     window.addEventListener('mousemove', handleMouseMove)
@@ -36,16 +36,33 @@ function Particles() {
     }
   }, [])
 
-  const positions = useMemo(() =>
-  {
+  const positions = useMemo(() => {
     const isMobile = window.innerWidth < 768
     const count = isMobile ? 80 : 180
 
     const arr = new Float32Array(count * 3)
 
-    for (let i = 0; i < count * 3; i++)
-    {
-      arr[i] = (Math.random() - 0.5) * 14
+    const minRadius = 4
+    const maxRadius = 8
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3
+
+      // random direction (unit sphere)
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.acos(2 * Math.random() - 1)
+
+      const xDir = Math.sin(phi) * Math.cos(theta)
+      const yDir = Math.sin(phi) * Math.sin(theta)
+      const zDir = Math.cos(phi)
+
+      // random distance in a band (shell)
+      const radius =
+        minRadius + Math.random() * (maxRadius - minRadius)
+
+      arr[i3] = xDir * radius
+      arr[i3 + 1] = yDir * radius
+      arr[i3 + 2] = zDir * radius
     }
 
     return arr
@@ -80,7 +97,7 @@ function Particles() {
         color="#ffffff"
         size={0.125}
         transparent
-        opacity={0.25}
+        opacity={0.125}
         depthWrite={false}
         sizeAttenuation
       />

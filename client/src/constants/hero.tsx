@@ -20,11 +20,11 @@ const headerTimeBetweenLetters = ANIMATED_HEADER_APPEARANCE_DURATION/(headerIntr
 const descriptionTimeBetweenLetters = ANIMATED_DESCRIPTION_APPEARANCE_DURATION/(description.length)
 
 export const headerIntroElement : ReactElement = <>
-    <span>
+    <span className="text-white/95">
         <AnimatedTextAppearance appearOnlyOnce text={headerIntro} timeBetweenLetters={headerTimeBetweenLetters} startingState={{translateY: 100, translateX : 10}} /> 
     </span>
-    <span className='text-[#915eff] inline-block'>     
-        <AnimatedTextAppearance appearOnlyOnce text={"Daniel"} timeBetweenLetters={headerTimeBetweenLetters} startingState={{translateY: -100, translateX: -10}} style={{whiteSpace: "nowrap"}} fromLast/> 
+    <span className='text-[#c2d4ff] inline-block'>     
+        <AnimatedTextAppearance appearOnlyOnce text={"Daniel"} timeBetweenLetters={headerTimeBetweenLetters} startingState={{translateY: -100, translateX: -10}} style={{whiteSpace: "nowrap",}} fromLast/> 
     </span>
 </>
 
@@ -40,6 +40,6 @@ export const TerminalTexts = {
     LevelCleared : TerminalText, //"GG",
     Menu : TerminalText, //"Just chillin?",
     LastLevelClear : TerminalText, //"WOW! Congrats. You beat the game!",
-    Paused : TerminalText, //"Taking a break?",
+    Paused : "↓ (Game Paused) ↓", //"Taking a break?",
     Unpaused : TerminalText, //"Let's do this"
 }
