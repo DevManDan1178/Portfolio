@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <optional>
 
+#include "storage/file_helper.hpp"
 #include "network/security/rate_limiter.hpp"
 #include "network/communication/http_parser.hpp"
 #include "data_structures/thread_safe/thread_safe_unordered_map.hpp"
@@ -31,19 +32,19 @@ constexpr std::string_view GLOBAL_URLS_DIRECTORY = "/global_urls/";
 constexpr std::string_view LEADERBOARDS_DIRECTORY = "/leaderboards/";
 constexpr std::string_view NAMEBOARDS_DIRECTORY = "/nameboards/";
 
-const std::filesystem::path DATA_DIRECTORY = std::filesystem::current_path() / "data";
-const std::filesystem::path PORTFOLIO_FILE = DATA_DIRECTORY / "portfolio.json";
-
 class portfolio_server : public request_server_base {
     private:
+        const std::filesystem::path DATA_DIRECTORY = std::filesystem::current_path() / "data";
+        const std::filesystem::path PORTFOLIO_FILE = file_helper::get_file_path(DATA_DIRECTORY, "portfolio.json");
+        
         std::string api_key;
-
     protected:
         thread_safe_unordered_map<std::string, leaderboard<int_score>> leaderboards;
         thread_safe_unordered_map<std::string, nameboard> nameboards;
         thread_safe_unordered_map<std::string, std::string> global_urls;
 
         thread_safe_unordered_map<std::string, rate_limiter> rate_limiters;
+        
 
     public:
         portfolio_server(
@@ -56,103 +57,14 @@ class portfolio_server : public request_server_base {
             rate_limiters.try_emplace(NAMEBOARDS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
         }
  
-        void save() {
-            json data;
-
-            data[GLOBAL_URLS_KEY] = json::object();
-            global_urls.for_each(
-                [&](const auto& key, auto& value) {
-                    data[GLOBAL_URLS_KEY][key] = value;
-                }
-            );
-
-            data[LEADERBOARDS_KEY] = json::array();
-            leaderboards.for_each(
-                [&](const auto& key, auto& board) {
-                    board.save();
-                    data[LEADERBOARDS_KEY].push_back(key);
-                }
-            );
-
-
-            data[NAMEBOARDS_KEY] = json::array();
-            nameboards.for_each(
-                [&](const auto& key, auto& board) {
-                    board.save();
-                    data[NAMEBOARDS_KEY].push_back(key);
-                }
-            );
-
-            std::ofstream out(PORTFOLIO_FILE);
-
-            if (!out) {
-                throw std::runtime_error("Unable to save portfolio");
-            }
-
-            out << data.dump(4);
-        }
-        
-        void load() {
-
-            const char* key = std::getenv("API_KEY");
-            
-            if (!key) {
-                throw std::runtime_error("Missing API_KEY");
-            }
-
-            api_key = key;
-
-            std::ifstream in(PORTFOLIO_FILE);
-
-            if (!in) {
-                return; // first run, no data yet
-            }
-
-            json data;
-            in >> data;
-
-
-            if (data.contains(LEADERBOARDS_KEY)) {
-                for (const auto& item : data[LEADERBOARDS_KEY]) {
-
-                    std::string key = item.get<std::string>();
-
-                    leaderboards.try_emplace(
-                        DATA_DIRECTORY,
-                        key,
-                        key
-                    );
-                }
-            }
-
-
-            if (data.contains(NAMEBOARDS_KEY)) {
-                for (const auto& item : data[NAMEBOARDS_KEY]) {
-
-                    std::string key = item.get<std::string>();
-
-                    nameboards.try_emplace(
-                        DATA_DIRECTORY,
-                        key,
-                        key
-                    );
-                }
-            }
-
-            if (data.contains(GLOBAL_URLS_KEY)) {
-                for (auto& [key, item] : data[GLOBAL_URLS_KEY].items()) {
-                    global_urls.insert(key, item);
-                }
-            }
-        }
 
     protected:
         locked_value<leaderboard<int_score>> get_leaderboard(const std::string& key) {
-            return leaderboards.try_emplace_locked(key, DATA_DIRECTORY, key, NAMEBOARD_MAX_LENGTHS).first;
+            return leaderboards.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, LEADERBOARDS_SUBDIRECTORY_NAME, key), LEADERBOARD_MAX_LENGTHS).first;
         }
 
-        locked_value<nameboard> get_nameboard(const std::string& key) {
-            return nameboards.try_emplace_locked(key, DATA_DIRECTORY, key, LEADERBOARD_MAX_LENGTHS).first;
+        locked_value<nameboard> get_nameboard(const std::string& key) {      
+            return nameboards.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, NAMEBOARDS_SUBDIRECTORY_NAME, key), NAMEBOARD_MAX_LENGTHS).first;
         }
 
         std::optional<std::size_t> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
@@ -406,5 +318,101 @@ class portfolio_server : public request_server_base {
 
             std::cerr << "rate limits consumed \n";
             return true;
+        }
+
+    public:
+    void save() {
+            log_debug() << "saving";
+            json data;
+
+            data[GLOBAL_URLS_KEY] = json::object();
+            global_urls.for_each(
+                [&](const auto& key, auto& value) {
+                    data[GLOBAL_URLS_KEY][key] = value;
+                }
+            );
+
+            data[LEADERBOARDS_KEY] = json::array();
+            leaderboards.for_each(
+                [&](const auto& key, auto& board) {
+                    board.save();
+                    data[LEADERBOARDS_KEY].push_back(key);
+                }
+            );
+
+
+            data[NAMEBOARDS_KEY] = json::array();
+            nameboards.for_each(
+                [&](const auto& key, auto& board) {
+                    board.save();
+                    data[NAMEBOARDS_KEY].push_back(key);
+                }
+            );
+
+            std::ofstream out(PORTFOLIO_FILE);
+
+            if (!out) {
+                throw std::runtime_error("Unable to save portfolio");
+            }
+
+            out << data.dump(4);
+        }
+    protected:
+        void load() {
+            const char* key = std::getenv("API_KEY");
+            
+            if (!key) {
+                throw std::runtime_error("Missing API_KEY");
+            }
+
+            api_key = key;
+
+            log_debug() << "Api key set to "<< api_key;
+            
+            std::ifstream in(PORTFOLIO_FILE);
+
+            if (!in) {
+                return; // first run, no data yet
+            }
+            log_debug() << "Parsing json";
+            json data;
+            in >> data;
+
+            try {
+                if (data.contains(LEADERBOARDS_KEY)) {
+                for (const auto& item : data[LEADERBOARDS_KEY]) {
+
+                        std::string key = item.get<std::string>();
+
+                        leaderboards.try_emplace(
+                            key,
+                            file_helper::get_file_path(DATA_DIRECTORY, LEADERBOARDS_SUBDIRECTORY_NAME, key), 
+                            LEADERBOARD_MAX_LENGTHS
+                        );
+                    }
+                }
+
+
+                if (data.contains(NAMEBOARDS_KEY)) {
+                    for (const auto& item : data[NAMEBOARDS_KEY]) {
+
+                        std::string key = item.get<std::string>();
+
+                        nameboards.try_emplace(
+                            key,
+                            file_helper::get_file_path(DATA_DIRECTORY, NAMEBOARDS_SUBDIRECTORY_NAME, key), 
+                            NAMEBOARD_MAX_LENGTHS
+                        );
+                    }
+                }
+
+                if (data.contains(GLOBAL_URLS_KEY)) {
+                    for (auto& [key, item] : data[GLOBAL_URLS_KEY].items()) {
+                        global_urls.insert(key, item);
+                    }
+                } 
+            } catch (const std::exception& e) {
+                log_debug() << "Error loading server : " << e.what();
+            } 
         }
 };
