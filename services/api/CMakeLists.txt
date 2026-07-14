@@ -21,7 +21,7 @@ add_executable(api
 target_compile_features(api PRIVATE cxx_std_20)
 
 target_link_libraries(api PRIVATE
-    server-simple::server-simple
+    server-simple
 )
 
 target_include_directories(api PRIVATE
