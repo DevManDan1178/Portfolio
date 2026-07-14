@@ -1,0 +1,3 @@
+[submodule "libraries/server-simple"]
+	path = libraries/server-simple
+	url = https://github.com/DevManDan1178/server-simple
