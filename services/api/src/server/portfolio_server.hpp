@@ -316,12 +316,12 @@ class portfolio_server : public request_server_base {
                 return false;
             }
 
-            std::cerr << "rate limits consumed \n";
             return true;
         }
 
     public:
-    void save() {
+
+        void save() {
             log_debug() << "saving";
             json data;
 
@@ -367,8 +367,6 @@ class portfolio_server : public request_server_base {
 
             api_key = key;
 
-            log_debug() << "Api key set to "<< api_key;
-            
             std::ifstream in(PORTFOLIO_FILE);
 
             if (!in) {
