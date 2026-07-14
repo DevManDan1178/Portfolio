@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <optional>
 
+#include "network/security/rate_limiter.hpp"
 #include "network/communication/http_parser.hpp"
 #include "data_structures/thread_safe/thread_safe_unordered_map.hpp"
 #include "data_structures/global_boards/leaderboard.hpp"
@@ -19,6 +20,12 @@ constexpr const size_t LEADERBOARD_MAX_LENGTHS = 1000;
 constexpr const char* GLOBAL_URLS_KEY = "global_urls";
 constexpr const char* LEADERBOARDS_KEY = "leaderboards";
 constexpr const char* NAMEBOARDS_KEY = "nameboards";
+
+constexpr const double INITIAL_RATE_TOKENS = 50;
+constexpr const double RATE_REFILL_RATE = 1;
+
+constexpr const double GET_REQUEST_COST = 1.0;
+constexpr const double POST_REQUEST_COST = 3.0;
 
 constexpr std::string_view GLOBAL_URLS_DIRECTORY = "/global_urls/";
 constexpr std::string_view LEADERBOARDS_DIRECTORY = "/leaderboards/";
@@ -36,11 +43,19 @@ class portfolio_server : public request_server_base {
         thread_safe_unordered_map<std::string, nameboard> nameboards;
         thread_safe_unordered_map<std::string, std::string> global_urls;
 
-    public:
-        portfolio_server(unsigned short port, size_t worker_count = 4) : request_server_base(port, worker_count) {
-            load();
-        }
+        thread_safe_unordered_map<std::string, rate_limiter> rate_limiters;
 
+    public:
+        portfolio_server(
+            unsigned short port, 
+            size_t worker_count = 4
+        ) : request_server_base(port, worker_count) {
+            load();
+            rate_limiters.try_emplace(GLOBAL_URLS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
+            rate_limiters.try_emplace(LEADERBOARDS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
+            rate_limiters.try_emplace(NAMEBOARDS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
+        }
+ 
         void save() {
             json data;
 
@@ -195,18 +210,19 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
-        void handle_post_request(const boost_http_request& request, boost_http_response& response) {
+        void handle_post_request(const std::string client_ip, const boost_http_request& request, boost_http_response& response) {
             std::string path = std::string(request.target());
             const std::string& body = request.body();
             
             if (path.starts_with(GLOBAL_URLS_DIRECTORY)) {
                 std::string url_key = path.substr(GLOBAL_URLS_DIRECTORY.size());
                 global_urls.insert(url_key, body);
+
             } else if (path.starts_with(LEADERBOARDS_DIRECTORY)) {
                 std::string leaderboard_key = path.substr(std::string(LEADERBOARDS_DIRECTORY).size());
                 if (!handle_leaderboard_set(leaderboard_key, body, response)) {
                     return;
-                }
+                }   
             
             } else if (path.starts_with(NAMEBOARDS_DIRECTORY)) {
                 std::string nameboard_key = path.substr(std::string(NAMEBOARDS_DIRECTORY).size());
@@ -271,24 +287,52 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
-        void handle_get_request(const boost_http_request& request, boost_http_response& response) {
+        void handle_get_request(
+            const std::string client_ip,
+            const boost_http_request& request,
+            boost_http_response& response
+        ) {
             std::string target = std::string(request.target());
             auto query_pos = target.find('?');
             std::string path = target.substr(0, query_pos);
 
             if (path.starts_with(GLOBAL_URLS_DIRECTORY)) {
+                if (!consume_rate_limit(GLOBAL_URLS_KEY, client_ip, GET_REQUEST_COST, response)) {
+                    return;
+                }
+
                 std::string url_key = path.substr(std::string(GLOBAL_URLS_DIRECTORY).size());
-                response.body() = global_urls.get(url_key);
-            }  else if (path.starts_with(LEADERBOARDS_DIRECTORY)) {
+
+                try {
+                    response.body() = global_urls.get(url_key);
+                }
+                catch (const std::exception& e) {
+                    http_parser::set_response_not_found(response, "Key not found");
+                    return;
+                }
+
+            } else if (path.starts_with(LEADERBOARDS_DIRECTORY)) {
+                if (!consume_rate_limit(LEADERBOARDS_KEY, client_ip, GET_REQUEST_COST, response)) {
+                    return;
+                }
+
                 std::string leaderboard_key = path.substr(std::string(LEADERBOARDS_DIRECTORY).size());
+
                 if (!handle_leaderboard_get(leaderboard_key, target, response)) {
                     return;
                 }
+
             } else if (path.starts_with(NAMEBOARDS_DIRECTORY)) {
+                if (!consume_rate_limit(NAMEBOARDS_KEY, client_ip, GET_REQUEST_COST, response)) {
+                    return;
+                }
+
                 std::string nameboard_key = path.substr(std::string(NAMEBOARDS_DIRECTORY).size());
+
                 if (!handle_nameboard_get(nameboard_key, target, response)) {
                     return;
-                }   
+                }
+
             } else {
                 http_parser::set_response_not_found(response);
                 return;
@@ -297,28 +341,24 @@ class portfolio_server : public request_server_base {
             response.result(boost::beast::http::status::ok);
         }
 
-        virtual boost_http_response process_client_request(const boost_http_request request) {
+        virtual boost_http_response process_client_request(const std::string client_ip, const boost_http_request request) {
             boost_http_response response;
               
             if (!check_api_key(request)) {
-                response.result(boost::beast::http::status::unauthorized);
-                response.set(boost::beast::http::field::content_type, "text/plain");
-                response.body() = "Invalid API key";
+                http_parser::set_response_unauthorized(response, "Invalid API key");
                 response.prepare_payload();
                 return response;
             }
             
             switch (request.method()) {
                 case boost::beast::http::verb::get:
-                    handle_get_request(request, response);
+                    handle_get_request(client_ip, request, response);
                     break;
 
                 case boost::beast::http::verb::post:
-                    handle_post_request(request, response);
+                    handle_post_request(client_ip, request, response);
                     break;
-
-                default:
-                
+                default:    
                     break;
             }
             response.set(boost::beast::http::field::access_control_allow_origin, "*");
@@ -341,5 +381,30 @@ class portfolio_server : public request_server_base {
             std::string expected = "Bearer " + api_key;
 
             return header->value() == expected;
+        }
+
+        bool consume_rate_limit(
+            const std::string& limiter_key,
+            const std::string& client_ip,
+            double cost,
+            boost_http_response& response
+        ) {
+            auto limiter = rate_limiters.get_locked(limiter_key);
+
+            std::cerr << "rate limiter: " << limiter_key << "\n";
+
+            if (!limiter) {
+                std::cerr << "MISSING RATE LIMITER\n";
+                throw std::runtime_error("Missing rate limiter");
+            }
+
+            if (!limiter->consume(client_ip, cost)) {
+                http_parser::set_response_bad_request(response, "Rate limit exceeded");
+                response.result(boost::beast::http::status::too_many_requests);
+                return false;
+            }
+
+            std::cerr << "rate limits consumed \n";
+            return true;
         }
 };
