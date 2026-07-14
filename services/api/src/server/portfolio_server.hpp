@@ -2,6 +2,9 @@
 #include <string_view>
 #include <format>
 #include <stdexcept>
+#include <filesystem>
+#include <optional>
+
 #include "network/communication/http_parser.hpp"
 #include "data_structures/thread_safe/thread_safe_unordered_map.hpp"
 #include "data_structures/global_boards/leaderboard.hpp"
@@ -10,7 +13,8 @@
 
 using int_score = uint32_t;
 
-constexpr const char* PORTFOLIO_FILE = "data/portfolio.json";
+constexpr const size_t NAMEBOARD_MAX_LENGTHS = 10000;
+constexpr const size_t LEADERBOARD_MAX_LENGTHS = 1000;
 
 constexpr const char* GLOBAL_URLS_KEY = "global_urls";
 constexpr const char* LEADERBOARDS_KEY = "leaderboards";
@@ -20,15 +24,22 @@ constexpr std::string_view GLOBAL_URLS_DIRECTORY = "/global_urls/";
 constexpr std::string_view LEADERBOARDS_DIRECTORY = "/leaderboards/";
 constexpr std::string_view NAMEBOARDS_DIRECTORY = "/nameboards/";
 
+const std::filesystem::path DATA_DIRECTORY = std::filesystem::current_path() / "data";
+const std::filesystem::path PORTFOLIO_FILE = DATA_DIRECTORY / "portfolio.json";
 
 class portfolio_server : public request_server_base {
+    private:
+        std::string api_key;
+
     protected:
         thread_safe_unordered_map<std::string, leaderboard<int_score>> leaderboards;
         thread_safe_unordered_map<std::string, nameboard> nameboards;
         thread_safe_unordered_map<std::string, std::string> global_urls;
 
     public:
-        portfolio_server(unsigned short port, size_t worker_count = 4) : request_server_base(port, worker_count) {}
+        portfolio_server(unsigned short port, size_t worker_count = 4) : request_server_base(port, worker_count) {
+            load();
+        }
 
         void save() {
             json data;
@@ -67,6 +78,15 @@ class portfolio_server : public request_server_base {
         }
         
         void load() {
+
+            const char* key = std::getenv("API_KEY");
+            
+            if (!key) {
+                throw std::runtime_error("Missing API_KEY");
+            }
+
+            api_key = key;
+
             std::ifstream in(PORTFOLIO_FILE);
 
             if (!in) {
@@ -83,6 +103,7 @@ class portfolio_server : public request_server_base {
                     std::string key = item.get<std::string>();
 
                     leaderboards.try_emplace(
+                        DATA_DIRECTORY,
                         key,
                         key
                     );
@@ -96,6 +117,7 @@ class portfolio_server : public request_server_base {
                     std::string key = item.get<std::string>();
 
                     nameboards.try_emplace(
+                        DATA_DIRECTORY,
                         key,
                         key
                     );
@@ -111,35 +133,44 @@ class portfolio_server : public request_server_base {
 
     protected:
         locked_value<leaderboard<int_score>> get_leaderboard(const std::string& key) {
-            return leaderboards.try_emplace_locked(key, key).first;
+            return leaderboards.try_emplace_locked(key, DATA_DIRECTORY, key, NAMEBOARD_MAX_LENGTHS).first;
         }
 
         locked_value<nameboard> get_nameboard(const std::string& key) {
-            return nameboards.try_emplace_locked(key, key).first;
+            return nameboards.try_emplace_locked(key, DATA_DIRECTORY, key, LEADERBOARD_MAX_LENGTHS).first;
         }
 
-        void add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
-            get_leaderboard(key)->submit_score(name, score);
+        std::optional<std::size_t> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
+            return get_leaderboard(key)->submit_score(name, score);
         }
 
-        void add_nameboard_entry(const std::string& key, const std::string& name) {
-            get_nameboard(key)->add_name(name);
+        std::optional<std::size_t> add_nameboard_entry(const std::string& key, const std::string& name) {
+            return get_nameboard(key)->add_name(name);
+        }
+
+        void set_response_body_as_added_index(boost_http_response& response, std::optional<std::size_t> added_index) {
+            json result;
+            if (added_index.has_value()) {
+                result["index"] = *added_index;
+            } else {
+                result["index"] = nullptr;
+            }
+            http_parser::set_response_json(response, result);
         }
 
         bool handle_nameboard_set(const std::string& key, const std::string& body, boost_http_response& response) {
             try {
                 json data = json::parse(body);
                 std::string name = data["name"].get<std::string>();
-                add_nameboard_entry(key, name);
+                std::optional<std::size_t> added_index = add_nameboard_entry(key, name);
+                set_response_body_as_added_index(response, added_index);
             }
             catch (const json::parse_error& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid JSON";
+                http_parser::set_response_bad_request(response, "Invalid JSON");
                 return false;
             }
             catch (const json::exception& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid entry format";
+                http_parser::set_response_bad_request(response, "Invalid entry format");
                 return false;
             }
             return true;
@@ -150,18 +181,15 @@ class portfolio_server : public request_server_base {
                 json data = json::parse(body);
                 std::string name = data["name"].get<std::string>();
                 int_score score = data["score"].get<int_score>();
-                add_leaderboard_entry(key, name, score);
+                std::optional<std::size_t> added_index = add_leaderboard_entry(key, name, score);
+                set_response_body_as_added_index(response, added_index);
             }
             catch (const json::parse_error& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid JSON";
-                
+                http_parser::set_response_bad_request(response, "Invalid JSON");
                 return false;
             }
             catch (const json::exception& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid entry format";
-                
+                http_parser::set_response_bad_request(response, "Invalid entry format");
                 return false;
             } 
             return true;
@@ -187,13 +215,11 @@ class portfolio_server : public request_server_base {
                 }
                 
             } else {
-                response.result(boost::beast::http::status::not_found);
-                response.body() = "404 Not Found";
+                http_parser::set_response_not_found(response);
                 return;
             }
 
             response.result(boost::beast::http::status::ok);
-            response.body() = "OK";
         }
 
         bool handle_leaderboard_get(const std::string& key, const std::string& body,  boost_http_response& response) {
@@ -202,24 +228,19 @@ class portfolio_server : public request_server_base {
                 int start = data["start"].get<int>();
                 int end = data["end"].get<int>();
                 if (start < 0 || end < 0) {
-                    response.result(boost::beast::http::status::bad_request);
-                    response.body() = "Invalid start and end bounds";
+                    http_parser::set_response_bad_request(response, "Invalid start and end bounds");
                     return false;
                 }
                 auto lb = get_leaderboard(key);
                 std::vector<leaderboard_entry<int_score>> entries = lb->get_range_from_top(size_t(start), size_t(end));
-                response.body() = json(entries).dump();
+                http_parser::set_response_json(response, json(entries));
             }
             catch (const json::parse_error& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid JSON";
-                
+                http_parser::set_response_bad_request(response, "Invalid JSON");    
                 return false;
             }
             catch (const json::exception& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid entry format";
-                
+                http_parser::set_response_bad_request(response, "Invalid entry format");
                 return false;
             } 
             return true;
@@ -231,8 +252,7 @@ class portfolio_server : public request_server_base {
                 int start = data["start"].get<int>();
                 int end = data["end"].get<int>();
                 if (start < 0 || end < 0) {
-                    response.result(boost::beast::http::status::bad_request);
-                    response.body() = "Invalid start and end bounds";
+                    http_parser::set_response_bad_request(response, "Invalid start and end bounds");
                     return false;
                 }
 
@@ -241,15 +261,11 @@ class portfolio_server : public request_server_base {
                 response.body() = json(entries).dump();
             }
             catch (const json::parse_error& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid JSON";
-                
+                http_parser::set_response_bad_request(response, "Invalid JSON");
                 return false;
             }
             catch (const json::exception& e) {
-                response.result(boost::beast::http::status::bad_request);
-                response.body() = "Invalid entry format";
-                
+                http_parser::set_response_bad_request(response, "Invalid entry format");            
                 return false;
             } 
             return true;
@@ -274,8 +290,8 @@ class portfolio_server : public request_server_base {
                     return;
                 }   
             } else {
-                response.result(boost::beast::http::status::not_found);
-                response.body() = "404 Not Found";
+                http_parser::set_response_not_found(response);
+                return;
             }
 
             response.result(boost::beast::http::status::ok);
@@ -283,7 +299,15 @@ class portfolio_server : public request_server_base {
 
         virtual boost_http_response process_client_request(const boost_http_request request) {
             boost_http_response response;
-            response.set(boost::beast::http::field::content_type, "text/plain");
+              
+            if (!check_api_key(request)) {
+                response.result(boost::beast::http::status::unauthorized);
+                response.set(boost::beast::http::field::content_type, "text/plain");
+                response.body() = "Invalid API key";
+                response.prepare_payload();
+                return response;
+            }
+            
             switch (request.method()) {
                 case boost::beast::http::verb::get:
                     handle_get_request(request, response);
@@ -297,7 +321,25 @@ class portfolio_server : public request_server_base {
                 
                     break;
             }
+            response.set(boost::beast::http::field::access_control_allow_origin, "*");
+            response.set(boost::beast::http::field::access_control_allow_methods, "GET, POST, OPTIONS");
+            response.set(
+                boost::beast::http::field::access_control_allow_headers,
+                "Content-Type, Authorization"
+            );
             response.prepare_payload();
             return response;
+        }
+
+        bool check_api_key(const boost_http_request& request) {
+            auto header = request.find("Authorization");
+
+            if (header == request.end()) {
+                return false;
+            }
+
+            std::string expected = "Bearer " + api_key;
+
+            return header->value() == expected;
         }
 };
