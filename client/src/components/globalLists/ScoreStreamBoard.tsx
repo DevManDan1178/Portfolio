@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { type NameboardCategory, type NameboardEntry } from "../../../../shared/types/nameboard"
-import { getNameboardEntries } from "../../api/nameboard";
+import { type ScoreStreamCategory, type ScoreStreamEntry } from "../../../../shared/types/scoreStreams";
+import { getScoreStreamEntries } from "../../api/scoreStream";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000; // Seconds to milliseconds
 
-export function Nameboard({ title, category, count }: { title : string, category: NameboardCategory, count: number }) {
-    const [entries, setEntries] = useState<NameboardEntry[]>([]);
+export function ScoreStreamBoard({ title, category, count }: { title: string, category: ScoreStreamCategory, count: number }) {
+    const [entries, setEntries] = useState<ScoreStreamEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -26,7 +26,7 @@ export function Nameboard({ title, category, count }: { title : string, category
             hasMoreRef.current = true;
 
             try {
-                const data = await getNameboardEntries(
+                const data = await getScoreStreamEntries(
                     category,
                     0,
                     count
@@ -41,7 +41,7 @@ export function Nameboard({ title, category, count }: { title : string, category
                 }
             } catch (err) {
                 if (!cancelled) {
-                    setError("Failed to load nameboard.");
+                    setError("Failed to load leaderboard.");
                     console.error(err);
                 }
             } finally {
@@ -59,7 +59,6 @@ export function Nameboard({ title, category, count }: { title : string, category
     }, [category, count]);
 
     const loadMore = useCallback(async () => {
-        console.log(loadingMoreRef.current, !hasMoreRef.current)
         if (loadingMoreRef.current || !hasMoreRef.current) return;
 
         loadingMoreRef.current = true;
@@ -67,8 +66,8 @@ export function Nameboard({ title, category, count }: { title : string, category
 
         try {
             const start = entriesLengthRef.current;
-            const end = start + count - 1;
-            const data = await getNameboardEntries(category, start, end);
+            const end = start + count;
+            const data = await getScoreStreamEntries(category, start, end);
 
             setEntries((prev) => [...prev, ...data]);
             entriesLengthRef.current += data.length;
@@ -94,7 +93,7 @@ export function Nameboard({ title, category, count }: { title : string, category
                 loadMore();
             }
         };
-        console.log("scroll listener attached", el);
+
         el.addEventListener("scroll", handleScroll);
 
         // Also check immediately in case content doesn't fill the container
@@ -121,19 +120,19 @@ export function Nameboard({ title, category, count }: { title : string, category
 
             {!loading && !error && (
                 <div>
-                    
                     <div
                         ref={scrollRef}
                         className="max-h-96 overflow-y-auto"
                     >
                         <table className="w-full border-collapse">
                             <tbody>
-                                 <tr className="text-neutral-500 text-xs uppercase tracking-wider">
-                                    <th className="py-0 text-left font-medium"></th>
+                                <tr className="text-neutral-500 text-xs uppercase tracking-wider">
+                                    <th className="py-0 text-left font-medium w-60"></th>
                                     <th className="py-0 text-right font-medium"></th>
-                                </tr>
+                                    <th className="py-0 text-right font-medium"></th>
+                                </tr>  
                             </tbody>
-                           
+                            
                             <tbody>
                                 {entries.map((entry, index) => (
                                     <tr
@@ -145,16 +144,18 @@ export function Nameboard({ title, category, count }: { title : string, category
                                         <td className="px-5 py-3 text-neutral-100 truncate max-w-[1px]">
                                             {entry.name}
                                         </td>
-                                        
+                                        <td className="px-5 py-3 text-neutral-200 text-sm text-right whitespace-nowrap font-semibold">
+                                            {entry.score}
+                                        </td>
                                         <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
                                             {(() => {
-                                                const date : Date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
+                                                const date: Date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
                                                 return (
                                                     <div className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
                                                         <div>
                                                             {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
                                                         </div>
-                                                        
+
                                                         <div className="text-neutral-600 text-xs text-right whitespace-nowrap">
                                                             {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
                                                         </div>
