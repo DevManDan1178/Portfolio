@@ -18,7 +18,7 @@ using int_score = uint32_t;
 constexpr const size_t NAMEBOARD_MAX_LENGTHS = 10000;
 constexpr const size_t LEADERBOARD_MAX_LENGTHS = 1000;
 
-constexpr const char* GLOBAL_URLS_KEY = "global_urls";
+constexpr const char* GLOBAL_URLS_KEY = "global-urls";
 constexpr const char* LEADERBOARDS_KEY = "leaderboards";
 constexpr const char* NAMEBOARDS_KEY = "nameboards";
 
@@ -28,7 +28,7 @@ constexpr const double RATE_REFILL_RATE = 1;
 constexpr const double GET_REQUEST_COST = 1.0;
 constexpr const double POST_REQUEST_COST = 3.0;
 
-constexpr std::string_view GLOBAL_URLS_DIRECTORY = "/global_urls/";
+constexpr std::string_view GLOBAL_URLS_DIRECTORY = "/global-urls/";
 constexpr std::string_view LEADERBOARDS_DIRECTORY = "/leaderboards/";
 constexpr std::string_view NAMEBOARDS_DIRECTORY = "/nameboards/";
 
