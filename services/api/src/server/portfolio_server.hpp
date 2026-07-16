@@ -76,7 +76,7 @@ class portfolio_server : public request_server_base {
         }
 
         locked_value<score_stream<int_score>> get_score_stream(const std::string& key) {
-            return score_streams.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, SCORE_STREAMS_DIRECTORY.substr(1), key), LEADERBOARD_MAX_LENGTHS).first;
+            return score_streams.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, SCORE_STREAM_SUBDIRECTORY_NAME), LEADERBOARD_MAX_LENGTHS).first;
         }
 
         std::optional<std::size_t> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
@@ -501,11 +501,7 @@ class portfolio_server : public request_server_base {
 
                         score_streams.try_emplace(
                             key,
-                            file_helper::get_file_path(
-                                DATA_DIRECTORY,
-                                SCORE_STREAMS_DIRECTORY.substr(1),
-                                key
-                            ),
+                            file_helper::get_file_path(DATA_DIRECTORY, SCORE_STREAM_SUBDIRECTORY_NAME, key),
                             LEADERBOARD_MAX_LENGTHS
                         );
                     }
