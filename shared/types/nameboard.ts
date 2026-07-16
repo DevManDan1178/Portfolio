@@ -3,7 +3,6 @@ export type NameboardEntry = {
     timestamp : number,
 }
 export type NameboardCategory = 
-    | "PolygonTD"
-    | "Stack Matching";
+    | "PolygonTD";
 
 export type NameboardInputEntry = Omit<NameboardEntry, "timestamp">
