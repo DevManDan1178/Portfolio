@@ -1,0 +1,13 @@
+export type ScoreStreamCategory =
+    | "Stack Matching";
+
+export type ScoreStreamEntry = {
+    name: string;
+    timestamp: number;
+    score: number;
+};
+
+export type ScoreStreamInputEntry = Omit<
+    ScoreStreamEntry,
+    "timestamp"
+>;
