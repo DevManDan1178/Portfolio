@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
-import { styles } from '../style'
-import { SectionWrapper } from '../hoc'
-import { testimonials, preTitle, title, type Testimonial } from '../constants/testimonials'
+import { styles } from '../../style'
+import { SectionWrapper } from '../../hoc'
+import { testimonials, preTitle, title, type Testimonial } from '../../constants/testimonials'
 
 const TestimonialCard = ({testimonial} : {testimonial : Testimonial}) => {
   const {statement, name, designation, image} = {...testimonial}

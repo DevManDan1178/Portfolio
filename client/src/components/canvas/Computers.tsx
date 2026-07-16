@@ -18,7 +18,7 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import { MOUSE, SRGBColorSpace } from "three";
-import CanvasLoader from "../Loader";
+import CanvasLoader from "../page/Loader";
 import PolygonTD, {
   RESOLUTION,
   RESOLUTION_SCALE,

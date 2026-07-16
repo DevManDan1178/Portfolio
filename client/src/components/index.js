@@ -1,12 +1,12 @@
 import { EarthCanvas, BallCanvas, ComputersCanvas, StarsCanvas } from './canvas';
-import Hero from './Hero';
-import Navbar from './Navbar';
-import About from './About';
-import Technologies from './Technologies';
-import Experience from './Experience';
-import Projects from './Projects';
-import Testimonials from './Testimonials';
-import Contact from './Contact.jsx';
+import Hero from './page/Hero.js';
+import Navbar from './page/Navbar.js';
+import About from './page/About.js';
+import Technologies from './page/Technologies.js';
+import Experience from './page/Experience.js';
+import Projects from './page/Projects.js';
+import Testimonials from './page/Testimonials.js';
+import Contact from './page/Contact.js';
 
 export {
   Hero,

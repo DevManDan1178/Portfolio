@@ -1,10 +1,10 @@
 import { Suspense, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Decal, OrbitControls, Preload, useTexture } from '@react-three/drei'
-import CanvasLoader from '../Loader'
+import CanvasLoader from '../page/Loader'
 import { MOUSE, Vector3, Spherical} from 'three'
 import { animated, useSpring } from '@react-spring/three'
-import type { NodeStatus, TechnologyNode } from '../Technologies'
+import type { NodeStatus, TechnologyNode } from '../page/Technologies'
 
 const CAMERA_TARGET_DISTANCE : number = 100
 const BALL_DISTANCE_FROM_CAMERA : number = 8.5

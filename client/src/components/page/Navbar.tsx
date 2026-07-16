@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { styles } from '../style'
-import { menu, close } from '../assets'
-import { navLinks, type NavLink , portfolioHeroHandle} from '../constants'
+import { styles } from '../../style'
+import { menu, close } from '../../assets'
+import { navLinks, type NavLink , portfolioHeroHandle} from '../../constants'
 
 export function ScrollToNavId(navId : string) {
     document.getElementById(navId)?.scrollIntoView({

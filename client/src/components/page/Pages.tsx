@@ -1,8 +1,8 @@
 
 import { useEffect, type ReactElement, useState } from 'react'
-import { InvertingDisplay } from './effects/VisualEffects'
-import { pages, type PageInfo } from '../constants/pages/pages'
-import { styles, GetScreenSizeType, type ScreenSizeType } from '../style'
+import { InvertingDisplay } from '../effects/VisualEffects'
+import { pages, type PageInfo } from '../../constants/pages/pages'
+import { styles, GetScreenSizeType, type ScreenSizeType } from '../../style'
 
 export function GetPages(pages : PageInfo[], openInNewTab : boolean = true) : () => ReactElement {
   return () => (

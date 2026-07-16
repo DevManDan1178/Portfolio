@@ -1,14 +1,14 @@
 
 import { useState } from 'react' 
-import { styles } from '../style';
-import { getDefaultLinkElement, type BulletPoint, type Project, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, defaultTagSymbol } from '../constants/projects';
-import { type Tag } from '../constants/tags';
+import { styles } from '../../style';
+import { getDefaultLinkElement, type BulletPoint, type Project, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, defaultTagSymbol } from '../../constants/projects';
+import { type Tag } from '../../constants/tags';
 import Tilt from 'react-parallax-tilt'
 import { motion } from 'framer-motion'
-import { SectionWrapper } from '../hoc'
-import { preTitle, title, subDescription, projects} from '../constants/projects'
-import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
-import { pages } from '../constants/pages/pages';
+import { SectionWrapper } from '../../hoc'
+import { preTitle, title, subDescription, projects} from '../../constants/projects'
+import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
+import { pages } from '../../constants/pages/pages';
 
 const PROJECTS_APPEARANCE_ANIMATION_Y = 50
 const PROJECT_APPEARANCE_DURATION = 0.5

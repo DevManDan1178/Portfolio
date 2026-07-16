@@ -1,11 +1,12 @@
 import { useRef, useState} from 'react'
 import useSound from 'use-sound'
-import { BallCanvas } from './canvas'
-import { SectionWrapper } from '../hoc'
-import { preTitle, technologies, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText } from '../constants/technologies'
+import { BallCanvas } from '../canvas'
+import { SectionWrapper } from '../../hoc'
+import { preTitle, technologies, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText } from '../../constants/technologies'
 import { motion } from 'framer-motion'
-import { styles } from '../style'
-import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
+import { styles } from '../../style'
+import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
+import { Nameboard } from '../globalLists/Nameboard'
 
 export type NodeStatus = {
   solved : boolean,
@@ -222,7 +223,7 @@ const Technologies = () => {
               {solved ? solvedButtonText : (aborted ? abortedButtonText : abortingButtonText)}
             </p>
           </button>
-        </div> 
+        </div>
       </div>  
     </div>
   )

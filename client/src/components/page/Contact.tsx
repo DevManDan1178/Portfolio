@@ -1,10 +1,10 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { SectionWrapper } from '../hoc'
-import { emailDomain, emailUser, preTitle, title, subDescription, GetSocialLinkElement } from '../constants/contact'
-import { SocialLinks } from '../constants/contact'
-import AnimatedTextAppearance from './effects/AnimatedTextAppearance'
-import { type ScreenSizeType, GetScreenSizeType, styles } from '../style'
+import { SectionWrapper } from '../../hoc'
+import { emailDomain, emailUser, preTitle, title, subDescription, GetSocialLinkElement } from '../../constants/contact'
+import { SocialLinks } from '../../constants/contact'
+import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
+import { type ScreenSizeType, GetScreenSizeType, styles } from '../../style'
 
 
 const EMAIL_COPIED_DISPLAY_DURATION = 3
