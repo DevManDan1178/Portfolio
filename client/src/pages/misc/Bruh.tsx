@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GetYoutubeEmbed from "../../components/effects/YoutubeEmbed";
-import SEO from "../../components/effects/SEO";
+import SEO from "../../components/misc/SEO";
 
 const VIDEO_ID = "NZzXzymUgEg";
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
-import SEO from "../../components/effects/SEO";
+import SEO from "../../components/misc/SEO";
 
 export type FileInfo = {gamePath: string; buildName: string };
 export type SEOInfo = {title : string, description : string}

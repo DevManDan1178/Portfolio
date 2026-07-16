@@ -1,7 +1,7 @@
 import { gamesData } from "../../constants/pages/exhibits/games";
 import { pages } from "../../constants/pages/pages";
-import { GetPagesExcept } from "../../components/Pages";
-import SEO from "../../components/effects/SEO";
+import { GetPagesExcept } from "../../components/page/Pages";
+import SEO from "../../components/misc/SEO";
 
 export default function GamesPage() {
   const Pages = GetPagesExcept(pages.games, false)

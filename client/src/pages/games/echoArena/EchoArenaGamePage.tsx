@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { styles } from "../../../style";
-import SEO from "../../../components/effects/SEO";
+import SEO from "../../../components/misc/SEO";
 
 const FILE_PATH = "/games/EchoArena";
 

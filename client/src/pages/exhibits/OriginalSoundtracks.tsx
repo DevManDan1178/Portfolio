@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ostData } from "../../constants/pages/exhibits/originalSoundtracks";
 import { pages } from "../../constants/pages/pages";
-import { GetPagesExcept } from "../../components/Pages";
+import { GetPagesExcept } from "../../components/page/Pages";
 import AudioPlayer from "../../components/effects/AudioPlayer";
-import SEO from "../../components/effects/SEO";
+import SEO from "../../components/misc/SEO";
 
 export default function OriginalSoundtracksPage() {
     const Pages = GetPagesExcept(pages.ost, false)

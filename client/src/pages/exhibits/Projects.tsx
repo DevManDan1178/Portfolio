@@ -1,9 +1,9 @@
 
 import { projects } from "../../constants";
-import SEO from "../../components/effects/SEO";
+import SEO from "../../components/misc/SEO";
 import { pages } from "../../constants/pages/pages";
-import { GetPagesExcept, } from "../../components/Pages";
-import { ProjectCard } from "../../components/Projects";
+import { GetPagesExcept, } from "../../components/page/Pages";
+import { ProjectCard } from "../../components/page/Projects";
 
 
 export default function ProjectsPage() {

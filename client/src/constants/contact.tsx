@@ -1,6 +1,6 @@
 import type { ReactElement } from "react"
 import { github, itchIO, linkedIn, email } from "../assets"
-import { GetLinkDisplay } from "../components/Pages"
+import { GetLinkDisplay } from "../components/page/Pages"
 
 export const emailUser = "danielorejuelaliu"
 export const emailDomain = "gmail.com"

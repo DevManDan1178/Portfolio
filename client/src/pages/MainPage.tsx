@@ -1,8 +1,8 @@
 import { About, Contact, Experience, Hero, Navbar, Technologies, Projects, StarsCanvas } from "../components";
-import { GetPagesExcept } from "../components/Pages";
+import { GetPagesExcept } from "../components/page/Pages";
 import { pages } from "../constants/pages/pages";
 import { navLinks } from "../constants";
-import SEO from "../components/effects/SEO";
+import SEO from "../components/misc/SEO";
 
 
 export default function MainPage() {
