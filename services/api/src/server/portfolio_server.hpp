@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <optional>
 
+#include "data_structures/global_boards/score_stream.hpp"
 #include "storage/file_helper.hpp"
 #include "network/security/rate_limiter.hpp"
 #include "network/communication/http_parser.hpp"
@@ -21,8 +22,9 @@ constexpr const size_t LEADERBOARD_MAX_LENGTHS = 1000;
 constexpr const char* GLOBAL_URLS_KEY = "global-urls";
 constexpr const char* LEADERBOARDS_KEY = "leaderboards";
 constexpr const char* NAMEBOARDS_KEY = "nameboards";
+constexpr const char* SCORE_STREAMS_KEY = "score-streams";
 
-constexpr const double INITIAL_RATE_TOKENS = 50;
+constexpr const double INITIAL_RATE_TOKENS = 20;
 constexpr const double RATE_REFILL_RATE = 1;
 
 constexpr const double GET_REQUEST_COST = 1.0;
@@ -31,6 +33,7 @@ constexpr const double POST_REQUEST_COST = 3.0;
 constexpr std::string_view GLOBAL_URLS_DIRECTORY = "/global-urls/";
 constexpr std::string_view LEADERBOARDS_DIRECTORY = "/leaderboards/";
 constexpr std::string_view NAMEBOARDS_DIRECTORY = "/nameboards/";
+constexpr std::string_view SCORE_STREAMS_DIRECTORY = "/score-streams/";
 
 class portfolio_server : public request_server_base {
     private:
@@ -41,6 +44,7 @@ class portfolio_server : public request_server_base {
     protected:
         thread_safe_unordered_map<std::string, leaderboard<int_score>> leaderboards;
         thread_safe_unordered_map<std::string, nameboard> nameboards;
+        thread_safe_unordered_map<std::string, score_stream<int_score>> score_streams;
         thread_safe_unordered_map<std::string, std::string> global_urls;
 
         thread_safe_unordered_map<std::string, rate_limiter> rate_limiters;
@@ -49,12 +53,16 @@ class portfolio_server : public request_server_base {
     public:
         portfolio_server(
             unsigned short port, 
-            size_t worker_count = 4
-        ) : request_server_base(port, worker_count) {
+            size_t worker_count = 4,
+            double max_ip_rate_tokens = DEFAULT_MAX_IP_RATE_TOKENS, 
+            double ip_token_refill_rate = DEFAULT_IP_TOKEN_REFILL_RATE
+        ) : request_server_base(port, worker_count, max_ip_rate_tokens, ip_token_refill_rate) 
+            {
             load();
             rate_limiters.try_emplace(GLOBAL_URLS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
             rate_limiters.try_emplace(LEADERBOARDS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
             rate_limiters.try_emplace(NAMEBOARDS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
+            rate_limiters.try_emplace(SCORE_STREAMS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
         }
  
 
@@ -67,12 +75,20 @@ class portfolio_server : public request_server_base {
             return nameboards.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, NAMEBOARDS_SUBDIRECTORY_NAME, key), NAMEBOARD_MAX_LENGTHS).first;
         }
 
+        locked_value<score_stream<int_score>> get_score_stream(const std::string& key) {
+            return score_streams.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, SCORE_STREAMS_DIRECTORY.substr(1), key), LEADERBOARD_MAX_LENGTHS).first;
+        }
+
         std::optional<std::size_t> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
             return get_leaderboard(key)->submit_score(name, score);
         }
 
         std::optional<std::size_t> add_nameboard_entry(const std::string& key, const std::string& name) {
             return get_nameboard(key)->add_name(name);
+        }
+
+        void add_score_stream_entry(const std::string& key, const std::string& name, int_score score) {
+            get_score_stream(key)->submit_score(name, score);
         }
 
         void set_response_body_as_added_index(boost_http_response& response, std::optional<std::size_t> added_index) {
@@ -122,6 +138,25 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
+        bool handle_score_stream_set(const std::string& key, const std::string& body, boost_http_response& response) {
+            try {
+                json data = json::parse(body);
+
+                std::string name = data["name"].get<std::string>();
+                int_score score = data["score"].get<int_score>();
+
+                add_score_stream_entry(key, name, score);
+            } catch (const json::parse_error& e) {
+                http_parser::set_response_bad_request(response, "Invalid JSON");
+                return false;
+            } catch (const json::exception& e) {
+                http_parser::set_response_bad_request(response, "Invalid entry format");
+                return false;
+            }
+
+            return true;
+        }
+
         void handle_post_request(const std::string client_ip, const boost_http_request& request, boost_http_response& response) {
             std::string path = std::string(request.target());
             const std::string& body = request.body();
@@ -141,7 +176,13 @@ class portfolio_server : public request_server_base {
                 if (!handle_nameboard_set(nameboard_key, body, response)) {
                     return;
                 }
-                
+            
+            } else if (path.starts_with(SCORE_STREAMS_DIRECTORY)) {
+                std::string score_stream_key = path.substr(std::string(SCORE_STREAMS_DIRECTORY).size());
+                if (!handle_score_stream_set(score_stream_key, body, response)) {
+                    return;
+                }
+
             } else {
                 http_parser::set_response_not_found(response);
                 return;
@@ -199,11 +240,45 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
-        void handle_get_request(
-            const std::string client_ip,
-            const boost_http_request& request,
-            boost_http_response& response
-        ) {
+        bool handle_score_stream_get(const std::string& key, const std::string& query, boost_http_response& response) {
+            try {
+                json data = http_parser::parse_query(query);
+
+                int start = data["start"].get<int>();
+                int end = data["end"].get<int>();
+
+                if (start < 0 || end < 0) {
+                    http_parser::set_response_bad_request(
+                        response,
+                        "Invalid start and end bounds"
+                    );
+                    return false;
+                }
+
+
+                auto sb = get_score_stream(key);
+
+                std::vector<score_stream_entry<int_score>> entries =
+                    sb->get_in_bounds(
+                        size_t(start),
+                        size_t(end)
+                    );
+
+                http_parser::set_response_json(response, json(entries));
+            }
+            catch (const json::parse_error& e) {
+                http_parser::set_response_bad_request(response, "Invalid JSON");
+                return false;
+            }
+            catch (const json::exception& e) {
+                http_parser::set_response_bad_request(response, "Invalid entry format");
+                return false;
+            }
+
+            return true;
+        }
+
+        void handle_get_request(const std::string client_ip, const boost_http_request& request, boost_http_response& response) {
             std::string target = std::string(request.target());
             auto query_pos = target.find('?');
             std::string path = target.substr(0, query_pos);
@@ -244,7 +319,14 @@ class portfolio_server : public request_server_base {
                 if (!handle_nameboard_get(nameboard_key, target, response)) {
                     return;
                 }
-
+            } else if (path.starts_with(SCORE_STREAMS_DIRECTORY)) {
+                if (!consume_rate_limit(SCORE_STREAMS_KEY, client_ip, GET_REQUEST_COST, response)) {
+                    return;
+                }
+                std::string score_stream_key = path.substr(std::string(SCORE_STREAMS_DIRECTORY).size());
+                if (!handle_score_stream_get(score_stream_key, target, response)) {
+                    return;
+                }
             } else {
                 http_parser::set_response_not_found(response);
                 return;
@@ -348,6 +430,14 @@ class portfolio_server : public request_server_base {
                     data[NAMEBOARDS_KEY].push_back(key);
                 }
             );
+            
+            data[SCORE_STREAMS_KEY] = json::array();
+            score_streams.for_each(
+                [&](const auto& key, auto& board) {
+                    board.save();
+                    data[SCORE_STREAMS_KEY].push_back(key);
+                }
+            );
 
             std::ofstream out(PORTFOLIO_FILE);
 
@@ -400,6 +490,23 @@ class portfolio_server : public request_server_base {
                             key,
                             file_helper::get_file_path(DATA_DIRECTORY, NAMEBOARDS_SUBDIRECTORY_NAME, key), 
                             NAMEBOARD_MAX_LENGTHS
+                        );
+                    }
+                }
+
+                if (data.contains(SCORE_STREAMS_KEY)) {
+                    for (const auto& item : data[SCORE_STREAMS_KEY]) {
+
+                        std::string key = item.get<std::string>();
+
+                        score_streams.try_emplace(
+                            key,
+                            file_helper::get_file_path(
+                                DATA_DIRECTORY,
+                                SCORE_STREAMS_DIRECTORY.substr(1),
+                                key
+                            ),
+                            LEADERBOARD_MAX_LENGTHS
                         );
                     }
                 }
