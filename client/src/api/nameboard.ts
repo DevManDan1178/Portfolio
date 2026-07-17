@@ -1,14 +1,15 @@
-import type { NameboardCategory } from "../../../shared/types/nameboard";
+import type { NameboardCategory, NameboardSortOrder } from "../../../shared/types/api/globalBoards/nameboard";
+import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards"
 
 export async function getNameboardEntries(
     category: NameboardCategory,
     start: number,
-    end: number
+    end: number,
+    sortOrder : NameboardSortOrder = "Newest",
 ) {
-    console.log("fetching from ",  `/api/nameboard?category=${encodeURIComponent(category)}&start=${start}&end=${end}`)
-    const response = await fetch(
-        `/api/nameboard?category=${encodeURIComponent(category)}&start=${start}&end=${end}`
-    );
+    const queryURL = `/api/nameboard?category=${encodeURIComponent(category)}&start=${start}&end=${end}${sortOrder == "Oldest" && reverseOrderQueryParameter}`;
+    console.log("fetching from ",  queryURL)
+    const response = await fetch(queryURL);
 
     if (!response.ok) {
         throw new Error("Failed to fetch leaderboard");

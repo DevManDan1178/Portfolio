@@ -1,14 +1,15 @@
-import type { ScoreStreamCategory } from "../../../shared/types/scoreStreams";
+import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
+import type { ScoreStreamCategory, ScoreStreamSortOrder } from "../../../shared/types/api/globalBoards/scoreStreams";
 
 export async function getScoreStreamEntries(
     category: ScoreStreamCategory,
     start: number,
-    end: number
+    end: number,
+    sortOrder: ScoreStreamSortOrder
 ) {
-    console.log("fetching from ",  `/api/score-stream?category=${encodeURIComponent(category)}&start=${start}&end=${end}`)
-    const response = await fetch(
-        `/api/score-stream?category=${encodeURIComponent(category)}&start=${start}&end=${end}`
-    );
+    const queryURL = `/api/score-stream?category=${encodeURIComponent(category)}&start=${start}&end=${end}${sortOrder == "Oldest" && reverseOrderQueryParameter}`;
+    console.log("fetching from ", queryURL )
+    const response = await fetch(queryURL);
 
     if (!response.ok) {
         throw new Error("Failed to fetch score stream");
