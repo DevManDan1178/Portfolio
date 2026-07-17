@@ -20,7 +20,7 @@ function App() {
             <Route path="/Sidestep2" element={<Sidestep2GamePage/>}/>
             <Route path="/SecretRealPortfolio" element={<Bruh/>}/>
             <Route path="/OST" element={<OriginalSoundtracksPage/>}/>
-            <Route path="/Games" element={<GamesPage/>} />
+            <Route path="/Play" element={<GamesPage/>} />
             <Route path="/Projects"  element= {<ProjectsPage/>}/>
           </Routes>
         </BrowserRouter>

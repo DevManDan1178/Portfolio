@@ -13,9 +13,9 @@ export const pages : Record<string, PageInfo> = {
         url : "/"
     },
     games : {
-        name : "/ Games",
+        name : "/ Play",
         iconElement : "▶",
-        url : "/Games"
+        url : "/Play"
     },
     projects : {
         name : "/ Projects",
