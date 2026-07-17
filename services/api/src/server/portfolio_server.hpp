@@ -35,12 +35,14 @@ constexpr std::string_view LEADERBOARDS_DIRECTORY = "/leaderboards/";
 constexpr std::string_view NAMEBOARDS_DIRECTORY = "/nameboards/";
 constexpr std::string_view SCORE_STREAMS_DIRECTORY = "/score-streams/";
 
+constexpr std::string_view GLOBAL_BOARDS_FROM_BOTTOM_QUERY = "from-bottom=true";
+
 class portfolio_server : public request_server_base {
     private:
-        const std::filesystem::path DATA_DIRECTORY = std::filesystem::current_path() / "data";
-        const std::filesystem::path PORTFOLIO_FILE = file_helper::get_file_path(DATA_DIRECTORY, "portfolio.json");
-        
         std::string api_key;
+        
+        const std::filesystem::path DATA_DIRECTORY = std::filesystem::current_path() / "data";
+        const std::filesystem::path PORTFOLIO_FILE = file_helper::get_file_path(DATA_DIRECTORY, "portfolio.json"); 
     protected:
         thread_safe_unordered_map<std::string, leaderboard<int_score>> leaderboards;
         thread_safe_unordered_map<std::string, nameboard> nameboards;
@@ -191,7 +193,7 @@ class portfolio_server : public request_server_base {
             response.result(boost::beast::http::status::ok);
         }
 
-        bool handle_leaderboard_get(const std::string& key, const std::string& body,  boost_http_response& response) {
+        bool handle_leaderboard_get(const std::string& key, const std::string& body,  boost_http_response& response, bool from_bottom = false) {
             try {
                 json data = http_parser::parse_query(body);
                 int start = data["start"].get<int>();
@@ -201,7 +203,10 @@ class portfolio_server : public request_server_base {
                     return false;
                 }
                 auto lb = get_leaderboard(key);
-                std::vector<leaderboard_entry<int_score>> entries = lb->get_range_from_top(size_t(start), size_t(end));
+                std::vector<leaderboard_entry<int_score>> entries = from_bottom ?
+                    lb->get_range_from_bottom(size_t(start), size_t(end)) : 
+                    lb->get_range_from_top(size_t(start), size_t(end));
+
                 http_parser::set_response_json(response, json(entries));
             }
             catch (const json::parse_error& e) {
@@ -215,7 +220,7 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
-        bool handle_nameboard_get(const std::string& key, const std::string& query,  boost_http_response& response) {
+        bool handle_nameboard_get(const std::string& key, const std::string& query,  boost_http_response& response, bool from_bottom = false) {
             try {
                 json data = http_parser::parse_query(query);
                 int start = data["start"].get<int>();
@@ -226,7 +231,9 @@ class portfolio_server : public request_server_base {
                 }
 
                 auto nb = get_nameboard(key);
-                std::vector<entry> entries = nb->get_in_bounds(size_t(start), size_t(end));
+                std::vector<entry> entries = from_bottom ?
+                    nb->get_in_range_from_bottom(size_t(start), size_t(end)) :
+                    nb->get_in_range_from_top(size_t(start), size_t(end));
                 response.body() = json(entries).dump();
             }
             catch (const json::parse_error& e) {
@@ -240,7 +247,7 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
-        bool handle_score_stream_get(const std::string& key, const std::string& query, boost_http_response& response) {
+        bool handle_score_stream_get(const std::string& key, const std::string& query, boost_http_response& response, bool from_bottom = false) {
             try {
                 json data = http_parser::parse_query(query);
 
@@ -258,11 +265,9 @@ class portfolio_server : public request_server_base {
 
                 auto sb = get_score_stream(key);
 
-                std::vector<score_stream_entry<int_score>> entries =
-                    sb->get_in_bounds(
-                        size_t(start),
-                        size_t(end)
-                    );
+                std::vector<score_stream_entry<int_score>> entries = from_bottom ? 
+                    sb->get_in_range_from_bottom(size_t(start), size_t(end)) :
+                    sb->get_in_range_from_top(size_t(start), size_t(end));
 
                 http_parser::set_response_json(response, json(entries));
             }
@@ -282,6 +287,7 @@ class portfolio_server : public request_server_base {
             std::string target = std::string(request.target());
             auto query_pos = target.find('?');
             std::string path = target.substr(0, query_pos);
+            bool from_bottom = target.substr(query_pos + 1).find(GLOBAL_BOARDS_FROM_BOTTOM_QUERY) != std::string::npos;
 
             if (path.starts_with(GLOBAL_URLS_DIRECTORY)) {
                 if (!consume_rate_limit(GLOBAL_URLS_KEY, client_ip, GET_REQUEST_COST, response)) {
@@ -305,7 +311,7 @@ class portfolio_server : public request_server_base {
 
                 std::string leaderboard_key = path.substr(std::string(LEADERBOARDS_DIRECTORY).size());
 
-                if (!handle_leaderboard_get(leaderboard_key, target, response)) {
+                if (!handle_leaderboard_get(leaderboard_key, target, response, from_bottom)) {
                     return;
                 }
 
@@ -316,7 +322,7 @@ class portfolio_server : public request_server_base {
 
                 std::string nameboard_key = path.substr(std::string(NAMEBOARDS_DIRECTORY).size());
 
-                if (!handle_nameboard_get(nameboard_key, target, response)) {
+                if (!handle_nameboard_get(nameboard_key, target, response, from_bottom)) {
                     return;
                 }
             } else if (path.starts_with(SCORE_STREAMS_DIRECTORY)) {
@@ -324,7 +330,7 @@ class portfolio_server : public request_server_base {
                     return;
                 }
                 std::string score_stream_key = path.substr(std::string(SCORE_STREAMS_DIRECTORY).size());
-                if (!handle_score_stream_get(score_stream_key, target, response)) {
+                if (!handle_score_stream_get(score_stream_key, target, response, from_bottom)) {
                     return;
                 }
             } else {
@@ -384,9 +390,6 @@ class portfolio_server : public request_server_base {
             boost_http_response& response
         ) {
             auto limiter = rate_limiters.get_locked(limiter_key);
-
-            std::cerr << "rate limiter: " << limiter_key << "\n";
-
             if (!limiter) {
                 std::cerr << "MISSING RATE LIMITER\n";
                 throw std::runtime_error("Missing rate limiter");
@@ -416,8 +419,8 @@ class portfolio_server : public request_server_base {
 
             data[LEADERBOARDS_KEY] = json::array();
             leaderboards.for_each(
-                [&](const auto& key, auto& board) {
-                    board.save();
+                [&](const auto& key, auto& leaderboard) {
+                    leaderboard.save();
                     data[LEADERBOARDS_KEY].push_back(key);
                 }
             );
@@ -425,16 +428,16 @@ class portfolio_server : public request_server_base {
 
             data[NAMEBOARDS_KEY] = json::array();
             nameboards.for_each(
-                [&](const auto& key, auto& board) {
-                    board.save();
+                [&](const auto& key, auto& nameboard) {
+                    nameboard.save();
                     data[NAMEBOARDS_KEY].push_back(key);
                 }
             );
             
             data[SCORE_STREAMS_KEY] = json::array();
             score_streams.for_each(
-                [&](const auto& key, auto& board) {
-                    board.save();
+                [&](const auto& key, auto& score_stream) {
+                    score_stream.save();
                     data[SCORE_STREAMS_KEY].push_back(key);
                 }
             );
