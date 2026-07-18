@@ -1,1 +1,4 @@
 build/
+data/
+.env
+main.cpp
