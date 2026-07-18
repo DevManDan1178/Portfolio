@@ -8,8 +8,11 @@ export type ScoreStreamEntry = {
 };
 
 export type ScoreStreamSortOrder = "Newest" | "Oldest";
+export const defaultScoreStreamSortOrder : ScoreStreamSortOrder = "Newest";
 
 export type ScoreStreamInputEntry = Omit<
     ScoreStreamEntry,
     "timestamp"
 >;
+
+export const scoreStreamApiURLPath = "/api/score-stream";

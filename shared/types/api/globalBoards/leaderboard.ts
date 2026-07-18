@@ -4,6 +4,7 @@ export type LeaderboardCategory =
     | "Test"
 
 export type LeaderboardSortOrder = "Top" | "Bottom"
+export const defaultLeaderboardSortOrder : LeaderboardSortOrder = "Top";
 
 export type LeaderboardEntry = {
     name: string;
@@ -15,3 +16,5 @@ export type LeaderboardInputEntry = Omit<
     LeaderboardEntry,
     "timestamp"
 >;
+
+export const leaderboardApiURLPath = "/api/leaderboard";

@@ -3,9 +3,12 @@ export type NameboardEntry = {
     timestamp : number,
 }
 
-export type NameboardSortOrder = "Newest" | "Oldest";
+export type NameboardSortOrder =  "Oldest" | "Newest";
+export const defaultNameboardSortOrder : NameboardSortOrder = "Oldest";
 
 export type NameboardCategory = 
     | "PolygonTD";
 
 export type NameboardInputEntry = Omit<NameboardEntry, "timestamp">
+
+export const nameboardApiURLPath = "/api/nameboard";

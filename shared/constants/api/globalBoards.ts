@@ -1,0 +1,1 @@
+export const reverseOrderQueryParameter = "from-bottom"; //query with `&[...]=true` to query for start to end from the opposite order of a leaderboard/nameboard/scoreStream
