@@ -22,9 +22,9 @@ import CanvasLoader from "../page/Loader";
 import PolygonTD, {
   RESOLUTION,
   RESOLUTION_SCALE,
-  type GameEventHandlers,
 } from "./PolygonTD";
-import { type UnityInstance } from "../../pages/games/UnityGamePage";
+import { type UnityInstance } from "../games/UnityGame"; 
+import type { GameEventLinkers } from "../../../types/exhibits/games";
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
 
@@ -192,7 +192,7 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
 };
 
 
-const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHandlers: RefObject<GameEventHandlers>; unityControllerRef: RefObject<UnityController | null>; }) => {
+const ComputerCanvas = ({ gameEventLinkers, unityControllerRef }: {gameEventLinkers: RefObject<GameEventLinkers>; unityControllerRef: RefObject<UnityController | null>; }) => {
   const [isSmallViewport, setIsSmallViewport] = useState(false);
   const [unityCanvas, setUnityCanvas] =
   useState<HTMLCanvasElement | null>(null);
@@ -241,7 +241,7 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
     const getCanvas = PolygonTD(
       RESOLUTION.width * RESOLUTION_SCALE,
       RESOLUTION.height * RESOLUTION_SCALE,
-      gameEventHandlers.current,
+      gameEventLinkers.current,
       onUnityInstanceCreated
     );
 
