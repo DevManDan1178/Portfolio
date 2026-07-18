@@ -8,6 +8,8 @@ import close from "./icons/close.svg"
 import git from "./techStack/tools/git.png"
   // IDE
 import vsCode from "./techStack/tools/VSCode.png"
+  // Building
+import cMake from "./techStack/tools/CMake.webp"
 
 // Game Engines
 import unity from "./techStack/tools/Unity.png"
@@ -47,11 +49,12 @@ import linkedIn from "./images/links/Linkedin.png"
 import email from "./icons/email.png"
 
 
-// Other
-import nodejs from "./other/techStack/nodejs.png"
-import reactjs from "./other/techStack/reactjs.png"
-import tailwind from "./other/techStack/tailwind.png"
-import threejs from "./other/techStack/threejs.png"
+// Other (frameworks / libraries)
+import dotnet from "./techStack/other/dotnet.svg"
+import nodejs from "./techStack/other/nodejs.png"
+import reactjs from "./techStack/other/reactjs.png"
+import tailwind from "./techStack/other/tailwind.png"
+import threejs from "./techStack/other/threejs.png"
 
 // Experience
 import vanierCollege from "./images/experience/VanierCollege.png"
@@ -60,6 +63,8 @@ import vanierCollege from "./images/experience/VanierCollege.png"
 import star from "./images/effects/Star.png"
 
 export {
+  dotnet,
+  cMake,
   cpp,
   github,
   menu,
