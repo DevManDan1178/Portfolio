@@ -1,4 +1,5 @@
-import type { UnityInstance } from "../../pages/games/UnityGamePage";
+import type { UnityInstance } from "../games/UnityGame";
+import type { GameEventLinkers } from "../../../types/exhibits/games"
 
 const CONTAINER_ID = "unity-canvas";
 const GAME_PATH = "/games/PolygonTD";
@@ -18,7 +19,7 @@ var _unityCanvas : HTMLCanvasElement
 var _unityInstance : any 
 
 // Pure function that creates Unity canvas and returns a lambda to get it
-export default function PolygonTD(width: number, height: number, gameEventHandlers : GameEventHandlers, onUnityInstanceCreated : (unityInstance : any) => void): () => HTMLCanvasElement {
+export default function PolygonTD(width: number, height: number, gameEventLinkers : GameEventLinkers, onUnityInstanceCreated : (unityInstance : any) => void): () => HTMLCanvasElement {
   if (_unityCanvas) {
     return () => _unityCanvas
   }
@@ -63,29 +64,12 @@ export default function PolygonTD(width: number, height: number, gameEventHandle
       unityInstance.SendMessage("InputBridge", "SetRealInputReaderDisabled", "true")
       unityInstance.SendMessage("InputBridge", "SetCanQuit", "false")
       
-      window.addEventListener("PolygonTD-pause-toggled", (e : any) => {
-        const paused = e.detail
-        gameEventHandlers.OnPauseToggled(paused)
-      })
-      window.addEventListener("PolygonTD-level-starting", (e : any) => {
-        const levelNumber = e.detail
-        gameEventHandlers.OnLevelStarted(levelNumber)
-      })
-      window.addEventListener("PolygonTD-level-lost", (e : any) => {
-        const levelNumber = e.detail
-        gameEventHandlers.OnLevelLost(levelNumber)
-      })
-      window.addEventListener("PolygonTD-level-cleared", (e : any) => {
-        const levelNumber = e.detail
-        gameEventHandlers.OnLevelCleared(levelNumber)
-      })
-      window.addEventListener("PolygonTD-player-level-progression", (e : any) => {
-        const levelNumber = e.detail
-        gameEventHandlers.OnLevelProgressChanged(levelNumber)
-      })
-      window.addEventListener("PolygonTD-scene-change", (e : any) => {
-        const sceneName = e.detail
-        gameEventHandlers.OnSceneChanged(sceneName)
+      gameEventLinkers.forEach((gameEventLinker) => {
+        const {gameEventName, handler} = gameEventLinker;
+        window.addEventListener(gameEventName, (e : any) => {
+            const detail = e.detail
+            handler(detail)
+        })
       })
       window.addEventListener("beforeunload", () => {
         unityInstance?.Quit?.();
