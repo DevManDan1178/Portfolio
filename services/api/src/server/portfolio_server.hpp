@@ -98,7 +98,7 @@ class portfolio_server : public request_server_base {
             if (added_index.has_value()) {
                 result["index"] = *added_index;
             } else {
-                result["index"] = nullptr;
+                result["index"] = -1;
             }
             http_parser::set_response_json(response, result);
         }
