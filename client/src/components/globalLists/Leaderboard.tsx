@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { type LeaderboardCategory, type LeaderboardEntry } from "../../../../shared/types/leaderboard";
+import { defaultLeaderboardSortOrder, type LeaderboardCategory, type LeaderboardEntry, type LeaderboardSortOrder } from "../../../../shared/types/api/globalBoards/leaderboard";
 import { getLeaderboardEntries } from "../../api/leaderboard";
+import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000; // Seconds to milliseconds
 
 const getPlacementBadge = (index: number) => {
     const placementNumber: number = index + 1;
-    const placementStyle: string = (() => {
+    const placementTextStyle: string = (() => {
         switch (placementNumber) {
             case 1:
                 return "text-yellow-400";
@@ -22,15 +23,37 @@ const getPlacementBadge = (index: number) => {
         }
     })();
 
-    return (
-        <td className={`px-5 py-3 font-semibold ${placementStyle}`}>
+    return (    
+        <div className={`${placementTextStyle} font-semibold`}>
             #{placementNumber}
-        </td>
+        </div>
     );
 };
 
-export function Leaderboard({ title, category, count }: { title: string, category: LeaderboardCategory, count: number }) {
-    const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+export type LeaderboardProps = GlobalBoardPropsBase & { 
+    category: LeaderboardCategory, 
+    subTitles? : GlobalBoardSubTitlePropsBase & {
+        score: string,
+        placement: string
+    }
+    sortOrder? : LeaderboardSortOrder,
+    entriesState? : EntriesState<LeaderboardEntry>
+}
+
+export function Leaderboard({ 
+    title, 
+    category, 
+    count, 
+    subTitles = {
+        placement: "Rank",
+        name: "Name",
+        score: "Score",
+        timestamp: "Achieved at"
+    },
+    sortOrder = defaultLeaderboardSortOrder,
+    entriesState = useState<LeaderboardEntry[]>([])
+} : LeaderboardProps) {
+    const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -92,7 +115,7 @@ export function Leaderboard({ title, category, count }: { title: string, categor
         try {
             const start = entriesLengthRef.current;
             const end = start + count;
-            const data = await getLeaderboardEntries(category, start, end);
+            const data = await getLeaderboardEntries(category, start, end, sortOrder);
 
             setEntries((prev) => [...prev, ...data]);
             entriesLengthRef.current += data.length;
@@ -149,17 +172,14 @@ export function Leaderboard({ title, category, count }: { title: string, categor
                         ref={scrollRef}
                         className="max-h-96 overflow-y-auto"
                     >
-                        <table className="w-full border-collapse">
+                        <table className="w-full border-collapse table-fixed">
                             <tbody>
                                 <tr className="text-neutral-500 text-xs uppercase tracking-wider">
-                                    <th className="py-0 text-left font-medium w-16"></th>
-                                    <th className="py-0 text-left font-medium"></th>
-                                    <th className="py-0 text-right font-medium"></th>
-                                    <th className="py-0 text-right font-medium"></th>
+                                    <th className="px-5 py-0 text-left font-medium w-[15%]">{subTitles.placement}</th>
+                                    <th className="px-5 py-0 text-center font-medium w-[30%]">{subTitles.name}</th>
+                                    <th className="px-5 py-0 text-center font-medium w-[25%]">{subTitles.score}</th>
+                                    <th className="px-5 py-0 text-right font-medium w-[20%]">{subTitles.timestamp}</th>
                                 </tr> 
-                            </tbody>
-                            
-                            <tbody>
                                 {entries.map((entry, index) => (
                                     <tr
                                         key={`${entry.name}-${entry.timestamp}-${index}`}
@@ -167,18 +187,21 @@ export function Leaderboard({ title, category, count }: { title: string, categor
                                             index < 3 ? "bg-neutral-800/20" : ""
                                         }`}
                                     >
-                                        {getPlacementBadge(index)}
-                                        <td className="px-5 py-3 text-neutral-100 truncate max-w-[1px]">
+                                        <td className={`px-5 py-3  text-left`}>
+                                            {getPlacementBadge(index)}
+                                        </td>
+                                        
+                                        <td className="px-5 py-3 text-center text-neutral-100 truncate">
                                             {entry.name}
                                         </td>
-                                        <td className="px-5 py-3 text-neutral-200 text-sm text-right whitespace-nowrap font-semibold">
+                                        <td className="px-5 py-3 text-neutral-200 text-sm text-center whitespace-nowrap font-semibold">
                                             {entry.score}
                                         </td>
                                         <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
                                             {(() => {
                                                 const date: Date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
                                                 return (
-                                                    <div className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
+                                                    <div className="px-5 py-3 text-neutral-300 text-sm text-right whitespace-nowrap">
                                                         <div>
                                                             {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
                                                         </div>

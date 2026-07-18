@@ -1,11 +1,29 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { type NameboardCategory, type NameboardEntry } from "../../../../shared/types/nameboard"
+import { defaultNameboardSortOrder, type NameboardCategory, type NameboardEntry, type NameboardSortOrder } from "../../../../shared/types/api/globalBoards/nameboard"
 import { getNameboardEntries } from "../../api/nameboard";
+import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000; // Seconds to milliseconds
 
-export function Nameboard({ title, category, count }: { title : string, category: NameboardCategory, count: number }) {
-    const [entries, setEntries] = useState<NameboardEntry[]>([]);
+export type NameboardProps = GlobalBoardPropsBase & { 
+    category: NameboardCategory, 
+    subTitles? : GlobalBoardSubTitlePropsBase,
+    sortOrder? : NameboardSortOrder,
+    entriesState? : EntriesState<NameboardEntry>
+}
+
+export function Nameboard({ 
+    title, 
+    category, 
+    count, 
+    subTitles = {
+        name: "Name", 
+        timestamp: "Achieved at"
+    },
+    sortOrder = defaultNameboardSortOrder, 
+    entriesState = useState<NameboardEntry[]>([])
+} : NameboardProps) {
+    const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -26,11 +44,7 @@ export function Nameboard({ title, category, count }: { title : string, category
             hasMoreRef.current = true;
 
             try {
-                const data = await getNameboardEntries(
-                    category,
-                    0,
-                    count
-                );
+                const data = await getNameboardEntries(category, 0, count, sortOrder);
 
                 if (!cancelled) {
                     setEntries(data);
@@ -128,13 +142,10 @@ export function Nameboard({ title, category, count }: { title : string, category
                     >
                         <table className="w-full border-collapse">
                             <tbody>
-                                 <tr className="text-neutral-500 text-xs uppercase tracking-wider">
-                                    <th className="py-0 text-left font-medium"></th>
-                                    <th className="py-0 text-right font-medium"></th>
+                                <tr className="text-neutral-500 text-xs uppercase tracking-wider">
+                                    <th className="px-10 py-0 text-left font-medium  w-[60%]">{subTitles.name}</th>
+                                    <th className="px-10 py-0 text-center font-medium  w-[40%]">{subTitles.timestamp}</th>
                                 </tr>
-                            </tbody>
-                           
-                            <tbody>
                                 {entries.map((entry, index) => (
                                     <tr
                                         key={`${entry.name}-${entry.timestamp}-${index}`}
@@ -142,20 +153,20 @@ export function Nameboard({ title, category, count }: { title : string, category
                                             index < 3 ? "bg-neutral-800/20" : ""
                                         }`}
                                     >
-                                        <td className="px-5 py-3 text-neutral-100 truncate max-w-[1px]">
+                                        <td className="px-10 py-3 text-left text-neutral-100 font-bold truncate">
                                             {entry.name}
                                         </td>
                                         
-                                        <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
+                                        <td className="px-5 py-3 text-neutral-300 text-sm text-center whitespace-nowrap">
                                             {(() => {
                                                 const date : Date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
                                                 return (
-                                                    <div className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
+                                                    <div className="px-5 py-3 text-neutral-500 text-sm whitespace-nowrap">
                                                         <div>
                                                             {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
                                                         </div>
                                                         
-                                                        <div className="text-neutral-600 text-xs text-right whitespace-nowrap">
+                                                        <div className="text-neutral-600 text-xs whitespace-nowrap">
                                                             {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
                                                         </div>
                                                     </div>

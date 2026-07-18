@@ -1,11 +1,32 @@
-import { useEffect, useState, useCallback, useRef } from "react";
-import { type ScoreStreamCategory, type ScoreStreamEntry } from "../../../../shared/types/scoreStreams";
+import { useEffect, useState, useCallback, useRef} from "react";
+import { defaultScoreStreamSortOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamSortOrder } from "../../../../shared/types/api/globalBoards/scoreStreams";
 import { getScoreStreamEntries } from "../../api/scoreStream";
+import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards"
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000; // Seconds to milliseconds
 
-export function ScoreStreamBoard({ title, category, count }: { title: string, category: ScoreStreamCategory, count: number }) {
-    const [entries, setEntries] = useState<ScoreStreamEntry[]>([]);
+export type ScoreStreamBoardProps = GlobalBoardPropsBase & { 
+    category: ScoreStreamCategory, 
+    subTitles? : GlobalBoardSubTitlePropsBase & {
+        score: string
+    }
+    sortOrder? : ScoreStreamSortOrder,
+    entriesState? : EntriesState<ScoreStreamEntry>
+};
+
+export function ScoreStreamBoard({ 
+    title, 
+    category, 
+    count, 
+    subTitles = {
+        name: "Name", 
+        score: "Score", 
+        timestamp: "Achieved at"
+    },
+    sortOrder = defaultScoreStreamSortOrder,
+    entriesState = useState<ScoreStreamEntry[]>([]),
+} : ScoreStreamBoardProps) {
+    const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -26,11 +47,7 @@ export function ScoreStreamBoard({ title, category, count }: { title: string, ca
             hasMoreRef.current = true;
 
             try {
-                const data = await getScoreStreamEntries(
-                    category,
-                    0,
-                    count
-                );
+                const data = await getScoreStreamEntries(category, 0, count, sortOrder);
 
                 if (!cancelled) {
                     setEntries(data);
@@ -67,7 +84,7 @@ export function ScoreStreamBoard({ title, category, count }: { title: string, ca
         try {
             const start = entriesLengthRef.current;
             const end = start + count;
-            const data = await getScoreStreamEntries(category, start, end);
+            const data = await getScoreStreamEntries(category, start, end, sortOrder);
 
             setEntries((prev) => [...prev, ...data]);
             entriesLengthRef.current += data.length;
@@ -120,20 +137,20 @@ export function ScoreStreamBoard({ title, category, count }: { title: string, ca
 
             {!loading && !error && (
                 <div>
+                    <table className="w-full border-collapse">
+                        
+                    </table>
                     <div
                         ref={scrollRef}
                         className="max-h-96 overflow-y-auto"
                     >
-                        <table className="w-full border-collapse">
+                        <table className="w-full border-collapse table-fixed">
                             <tbody>
                                 <tr className="text-neutral-500 text-xs uppercase tracking-wider">
-                                    <th className="py-0 text-left font-medium w-60"></th>
-                                    <th className="py-0 text-right font-medium"></th>
-                                    <th className="py-0 text-right font-medium"></th>
-                                </tr>  
-                            </tbody>
-                            
-                            <tbody>
+                                    <th className="px-5 py-0 text-left font-medium w-[40%]">{subTitles.name}</th>
+                                    <th className="px-5 py-0 text-center font-medium w-[25%]">{subTitles.score}</th>
+                                    <th className="px-5 py-0 text-right font-medium w-[35%]">{subTitles.timestamp}</th>
+                                </tr>
                                 {entries.map((entry, index) => (
                                     <tr
                                         key={`${entry.name}-${entry.timestamp}-${index}`}
@@ -141,26 +158,30 @@ export function ScoreStreamBoard({ title, category, count }: { title: string, ca
                                             index < 3 ? "bg-neutral-800/20" : ""
                                         }`}
                                     >
-                                        <td className="px-5 py-3 text-neutral-100 truncate max-w-[1px]">
-                                            {entry.name}
+                                        <td className="px-5 py-3 text-left">
+                                            <div className="truncate text-neutral-100">
+                                                {entry.name}
+                                            </div>
                                         </td>
-                                        <td className="px-5 py-3 text-neutral-200 text-sm text-right whitespace-nowrap font-semibold">
+
+                                        <td className="px-5 py-3 text-neutral-200 text-sm text-center font-semibold truncate">
                                             {entry.score}
                                         </td>
-                                        <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
+
+                                        <td className="px-5 py-3 text-center">
                                             {(() => {
                                                 const date: Date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
                                                 return (
-                                                    <div className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
+                                                    <div className="text-neutral-300 text-sm text-right whitespace-nowrap truncate">
                                                         <div>
                                                             {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
                                                         </div>
 
-                                                        <div className="text-neutral-600 text-xs text-right whitespace-nowrap">
+                                                        <div className="text-neutral-600 text-xs text-right">
                                                             {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
                                                         </div>
                                                     </div>
-                                                )
+                                                );
                                             })()}
                                         </td>
                                     </tr>
