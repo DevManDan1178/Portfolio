@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <filesystem>
 #include <optional>
+#include <tuple>
 
 #include "data_structures/global_boards/score_stream.hpp"
 #include "storage/file_helper.hpp"
@@ -13,6 +14,7 @@
 #include "data_structures/global_boards/leaderboard.hpp"
 #include "data_structures/global_boards/nameboard.hpp"
 #include "network/servers/request_server_base.hpp"
+
 
 using int_score = uint32_t;
 
@@ -81,34 +83,45 @@ class portfolio_server : public request_server_base {
             return score_streams.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, SCORE_STREAM_SUBDIRECTORY_NAME), LEADERBOARD_MAX_LENGTHS).first;
         }
 
-        std::optional<std::size_t> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
-            return get_leaderboard(key)->submit_score(name, score);
-        }
-
-        std::optional<std::size_t> add_nameboard_entry(const std::string& key, const std::string& name) {
-            return get_nameboard(key)->add_name(name);
-        }
-
-        void add_score_stream_entry(const std::string& key, const std::string& name, int_score score) {
-            get_score_stream(key)->submit_score(name, score);
-        }
-
-        void set_response_body_as_added_index(boost_http_response& response, std::optional<std::size_t> added_index) {
-            json result;
-            if (added_index.has_value()) {
-                result["index"] = *added_index;
-            } else {
-                result["index"] = -1;
+        std::tuple<int, int> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
+            auto lb = get_leaderboard(key);
+            std::optional<std::size_t> inserted_idx = lb->submit_score(name, score);
+            if (inserted_idx.has_value()) {
+                return {static_cast<int>(inserted_idx.value()), static_cast<int>(lb->size())};
             }
+            return {-1, static_cast<int>(lb->size())};
+        }
+
+        std::tuple<int, int> add_nameboard_entry(const std::string& key, const std::string& name) {
+            auto nb = get_nameboard(key);
+            std::optional<std::size_t> inserted_idx = nb->add_name(name);
+            if (inserted_idx.has_value()) {
+                return {static_cast<int>(inserted_idx.value()), static_cast<int>(nb->size())};
+            }
+            return {-1, static_cast<int>(nb->size())};
+        }
+
+        size_t add_score_stream_entry(const std::string& key, const std::string& name, int_score score) {
+            auto ss = get_score_stream(key);
+            ss->submit_score(name, score);
+            return ss->size();
+        }
+
+        void set_response_body_as_added_index(boost_http_response& response, int index, int total_size) {
+            json result;
+            result["index"] = index;
+            result["index_from_bottom"] = index >= 0 ? total_size - 1 - index : -1;
+            
             http_parser::set_response_json(response, result);
         }
 
-        bool handle_nameboard_set(const std::string& key, const std::string& body, boost_http_response& response) {
+        bool handle_nameboard_post(const std::string& key, const std::string& body, boost_http_response& response) {
             try {
                 json data = json::parse(body);
                 std::string name = data["name"].get<std::string>();
-                std::optional<std::size_t> added_index = add_nameboard_entry(key, name);
-                set_response_body_as_added_index(response, added_index);
+                auto [inserted_idx, total_size] = add_nameboard_entry(key, name);
+                
+                set_response_body_as_added_index(response, inserted_idx, total_size);
             }
             catch (const json::parse_error& e) {
                 http_parser::set_response_bad_request(response, "Invalid JSON");
@@ -121,13 +134,13 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
-        bool handle_leaderboard_set(const std::string& key, const std::string& body, boost_http_response& response) {
+        bool handle_leaderboard_post(const std::string& key, const std::string& body, boost_http_response& response) {
             try {
                 json data = json::parse(body);
                 std::string name = data["name"].get<std::string>();
                 int_score score = data["score"].get<int_score>();
-                std::optional<std::size_t> added_index = add_leaderboard_entry(key, name, score);
-                set_response_body_as_added_index(response, added_index);
+                auto [inserted_idx, total_size] = add_leaderboard_entry(key, name, score);
+                set_response_body_as_added_index(response, inserted_idx, total_size);
             }
             catch (const json::parse_error& e) {
                 http_parser::set_response_bad_request(response, "Invalid JSON");
@@ -140,14 +153,15 @@ class portfolio_server : public request_server_base {
             return true;
         }
 
-        bool handle_score_stream_set(const std::string& key, const std::string& body, boost_http_response& response) {
+        bool handle_score_stream_post(const std::string& key, const std::string& body, boost_http_response& response) {
             try {
                 json data = json::parse(body);
 
                 std::string name = data["name"].get<std::string>();
                 int_score score = data["score"].get<int_score>();
 
-                add_score_stream_entry(key, name, score);
+                size_t score_stream_size = add_score_stream_entry(key, name, score);
+                set_response_body_as_added_index(response, static_cast<int>(score_stream_size), static_cast<int>(score_stream_size));
             } catch (const json::parse_error& e) {
                 http_parser::set_response_bad_request(response, "Invalid JSON");
                 return false;
@@ -160,28 +174,32 @@ class portfolio_server : public request_server_base {
         }
 
         void handle_post_request(const std::string client_ip, const boost_http_request& request, boost_http_response& response) {
-            std::string path = std::string(request.target());
+            std::string target = std::string(request.target());
+            auto query_pos = target.find('?');
+            std::string path = target.substr(0, query_pos);
+
             const std::string& body = request.body();
-            
+
+ 
             if (path.starts_with(GLOBAL_URLS_DIRECTORY)) {
                 std::string url_key = path.substr(GLOBAL_URLS_DIRECTORY.size());
                 global_urls.insert(url_key, body);
 
             } else if (path.starts_with(LEADERBOARDS_DIRECTORY)) {
                 std::string leaderboard_key = path.substr(std::string(LEADERBOARDS_DIRECTORY).size());
-                if (!handle_leaderboard_set(leaderboard_key, body, response)) {
+                if (!handle_leaderboard_post(leaderboard_key, body, response)) {
                     return;
                 }   
             
             } else if (path.starts_with(NAMEBOARDS_DIRECTORY)) {
                 std::string nameboard_key = path.substr(std::string(NAMEBOARDS_DIRECTORY).size());
-                if (!handle_nameboard_set(nameboard_key, body, response)) {
+                if (!handle_nameboard_post(nameboard_key, body, response)) {
                     return;
                 }
             
             } else if (path.starts_with(SCORE_STREAMS_DIRECTORY)) {
                 std::string score_stream_key = path.substr(std::string(SCORE_STREAMS_DIRECTORY).size());
-                if (!handle_score_stream_set(score_stream_key, body, response)) {
+                if (!handle_score_stream_post(score_stream_key, body, response)) {
                     return;
                 }
 
