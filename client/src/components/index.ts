@@ -1,4 +1,4 @@
-import { EarthCanvas, BallCanvas, ComputersCanvas, StarsCanvas } from './canvas';
+import { EarthCanvas, TechGrid, ComputersCanvas, StarsCanvas } from './canvas/index.js';
 import Hero from './page/Hero.js';
 import Navbar from './page/Navbar.js';
 import About from './page/About.js';
@@ -18,7 +18,7 @@ export {
   Testimonials,
   Contact,
   EarthCanvas, 
-  BallCanvas, 
+  TechGrid, 
   ComputersCanvas, 
   StarsCanvas
 }
