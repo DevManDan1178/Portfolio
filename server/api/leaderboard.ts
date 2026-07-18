@@ -1,5 +1,6 @@
 import { getLeaderboardEntries, addLeaderboardEntry, } from "../src/routes/leaderboard";
-import { type LeaderboardCategory } from "../../shared/types/leaderboard";
+import { defaultLeaderboardSortOrder, LeaderboardSortOrder, type LeaderboardCategory } from "../../shared/types/api/globalBoards/leaderboard";
+import { reverseOrderQueryParameter } from "../../shared/constants/api/globalBoards";
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);
@@ -17,11 +18,13 @@ export default async function handler(request: Request) {
         if (request.method === "GET") {
             const start = Number(url.searchParams.get("start") ?? 0);
             const end = Number(url.searchParams.get("end") ?? 10);
-
+            
+            const sortOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultLeaderboardSortOrder);
             const entries = await getLeaderboardEntries(
                 category as LeaderboardCategory,
                 start,
-                end
+                end,
+                sortOrder as LeaderboardSortOrder
             );
 
             return Response.json(entries);

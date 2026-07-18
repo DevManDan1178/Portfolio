@@ -1,5 +1,6 @@
 import { getNameboardEntries, addNameboardEntry, } from "../src/routes/nameboard";
-import { type NameboardCategory } from "../../shared/types/nameboard";
+import { defaultNameboardSortOrder, type NameboardCategory, NameboardSortOrder } from "../../shared/types/api/globalBoards/nameboard";
+import { reverseOrderQueryParameter } from "../../shared/constants/api/globalBoards";
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);
@@ -17,11 +18,12 @@ export default async function handler(request: Request) {
         if (request.method === "GET") {
             const start = Number(url.searchParams.get("start") ?? 0);
             const end = Number(url.searchParams.get("end") ?? 10);
-
+            const sortOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultNameboardSortOrder);
             const entries = await getNameboardEntries(
                 category as NameboardCategory,
                 start,
-                end
+                end,
+                sortOrder as NameboardSortOrder
             );
 
             return Response.json(entries);
