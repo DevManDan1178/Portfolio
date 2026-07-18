@@ -1,5 +1,5 @@
 import { getURLEntry, setURLEntry, } from "../src/routes/globalURL";
-import { type URLCategory } from "../../shared/types/globalURL";
+import { type URLCategory } from "../../shared/types/api/globalURL";
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);

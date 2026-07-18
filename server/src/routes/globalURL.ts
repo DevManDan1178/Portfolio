@@ -1,4 +1,4 @@
-import {type URLCategory, type URLEntry} from "../../../shared/types/globalURL"
+import {type URLCategory, type URLEntry} from "../../../shared/types/api/globalURL"
 import getEnvironmentVariables from "../environment";
 
 const URLKeys : Record<URLCategory, string> = {
