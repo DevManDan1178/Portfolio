@@ -2,10 +2,12 @@ import { useRef, useState} from 'react'
 import useSound from 'use-sound'
 import { BallCanvas } from '../canvas'
 import { SectionWrapper } from '../../hoc'
-import { preTitle, technologies, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText } from '../../constants/technologies'
+import { preTitle, techStack, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText, technologies } from '../../constants/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../../style'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
+import { ScoreStreamBoard } from '../globalLists/ScoreStreamBoard'
+import { Leaderboard } from '../globalLists/Leaderboard'
 import { Nameboard } from '../globalLists/Nameboard'
 
 export type NodeStatus = {
@@ -21,6 +23,9 @@ const TECHNOLOGY_CATEGORY_APPEARANCE_DURATION = .75
 const SECOND_TECHNOLOGY_CATEGORY_APPEARANCE_DELAY = 0.25
 const PAIR_SELECTED_HIDE_DELAY : number = 1 * 1000
 const SOLVED_DISPLAY_DELAY : number = 0.5 * 1000
+
+
+
 
 const Technologies = () => {
   const [playSelectSound] = useSound('/sounds/match2Minigame/BallFlip.wav', {volume: 0.3})
@@ -139,14 +144,6 @@ const Technologies = () => {
     playGameFlipSound()
   }
 
-  const groupedTechnologies = technologies.reduce((accumulator, technology) => {
-    if (!accumulator[technology.category]){ 
-      accumulator[technology.category] = []
-    }
-    accumulator[technology.category].push(technology);
-    return accumulator;
-  }, {} as Record<string, Technology[]>);
-
   return (
     <div className='mb-[75px]'>
       <div> {/*
@@ -167,7 +164,7 @@ const Technologies = () => {
       </div>
       <div>
         <div className="mt-4 w-full flex flex-col gap-5">
-          {Object.entries(groupedTechnologies).map(([category, items], index) => (
+          {Object.entries(techStack).map(([category, items], index) => (
             <motion.div 
               variants={{
                 hidden: {x: -50, opacity: 0, },
