@@ -1,7 +1,9 @@
 import { type ReactElement } from "react";
-import UnityGamePage, { type FileInfo } from "../UnityGamePage";
+import UnityGame from "../../../components/games/UnityGame";
+import SEO, {type SEOInfo } from "../../../components/misc/SEO";
+import { type FileInfo } from "../../../components/games/UnityGame";
 import { styles } from "../../../style";
-
+import  type { GameEventLinkers } from "../../../../types/exhibits/games";
 
 const GAME_PATH = "/games/PolygonTD";
 const BUILD_NAME = "WebBuild_1.2.6";
@@ -59,12 +61,46 @@ const descriptionElement : ReactElement = <span className={styles.sectionSubText
   </span>
 </span>
 
-export default UnityGamePage({
-  titleElement : titleElement,
-  descriptionElement : descriptionElement,
-  canvasDimensions : canvasDimensions,
-  config : config,
-  fileInfo : fileInfo,
-  containerId : containerId,
-  seoInfo : {title: "Polygon Tower Defense", description: "Tower defense game with customized upgrades"}
-})
+const seoInfo : SEOInfo = {
+  title: "Polygon Tower Defense", 
+  description: "Tower defense game with customized upgrades"
+}
+
+const gameEventLinkers : GameEventLinkers = [];
+export default function() {
+  return (
+        <>
+          <SEO
+            title={seoInfo.title}
+            description={seoInfo.description}
+            image={seoInfo.image}
+            url={seoInfo.url}
+          />
+  
+          <div className="w-full h-screen flex flex-col items-center p-10 bg-zinc-950 text-white">
+            <div className="text-3xl font-semibold">
+              {titleElement}
+            </div>
+  
+            <div className="w-full flex flex-col items-center">
+              <UnityGame
+                className="w-[calc(50%+125px)]"
+                config={config}
+                canvasDimensions={canvasDimensions}
+                containerId={containerId}
+                fileInfo={fileInfo}
+                gameEventLinkers={gameEventLinkers}
+                showFullscreenButton
+              />
+            </div>
+  
+            <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
+              <div className="w-full max-w-[80%] text-center">
+                {descriptionElement}
+              </div>
+            </div>
+          </div>
+        </>
+      );
+}
+
