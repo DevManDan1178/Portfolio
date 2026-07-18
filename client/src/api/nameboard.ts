@@ -1,4 +1,4 @@
-import type { NameboardCategory, NameboardSortOrder } from "../../../shared/types/api/globalBoards/nameboard";
+import { defaultNameboardSortOrder, nameboardApiURLPath, type NameboardCategory, type NameboardSortOrder } from "../../../shared/types/api/globalBoards/nameboard";
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards"
 
 export async function getNameboardEntries(
@@ -7,7 +7,7 @@ export async function getNameboardEntries(
     end: number,
     sortOrder : NameboardSortOrder = "Newest",
 ) {
-    const queryURL = `/api/nameboard?category=${encodeURIComponent(category)}&start=${start}&end=${end}${sortOrder == "Oldest" && reverseOrderQueryParameter}`;
+    const queryURL = `${nameboardApiURLPath}?category=${encodeURIComponent(category)}&start=${start}&end=${end}&${reverseOrderQueryParameter}=${sortOrder != defaultNameboardSortOrder}`;
     console.log("fetching from ",  queryURL)
     const response = await fetch(queryURL);
 

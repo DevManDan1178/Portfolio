@@ -1,5 +1,5 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
-import type { ScoreStreamCategory, ScoreStreamSortOrder } from "../../../shared/types/api/globalBoards/scoreStreams";
+import { defaultScoreStreamSortOrder, scoreStreamApiURLPath, type ScoreStreamCategory, type ScoreStreamSortOrder } from "../../../shared/types/api/globalBoards/scoreStreams";
 
 export async function getScoreStreamEntries(
     category: ScoreStreamCategory,
@@ -7,7 +7,7 @@ export async function getScoreStreamEntries(
     end: number,
     sortOrder: ScoreStreamSortOrder
 ) {
-    const queryURL = `/api/score-stream?category=${encodeURIComponent(category)}&start=${start}&end=${end}${sortOrder == "Oldest" && reverseOrderQueryParameter}`;
+    const queryURL = `${scoreStreamApiURLPath}?category=${encodeURIComponent(category)}&start=${start}&end=${end}&${reverseOrderQueryParameter}=${sortOrder != defaultScoreStreamSortOrder}`;
     console.log("fetching from ", queryURL )
     const response = await fetch(queryURL);
 
