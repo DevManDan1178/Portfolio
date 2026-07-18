@@ -1,12 +1,9 @@
 import type { ReactElement } from "react";
-import { javascript, typescript, html, reactjs, tailwind, nodejs, git, threejs, unity, godot, cSharp, lua, robloxStudio, java, vsCode, } from "../assets";
-
-export type TechnologyCategory = "Game Development" | "Programming Languages" | "Web Development" | "Tools"
+import { javascript, typescript, html, reactjs, tailwind, nodejs, git, threejs, unity, godot, cSharp, lua, robloxStudio, java, vsCode, cMake, cpp, dotnet, } from "../assets";
 
 export type Technology = {
   name : string,
   icon : string,
-  category : TechnologyCategory
 }
 
 export const preTitle : string = "Stuff I Use"
@@ -16,86 +13,42 @@ export const abortingButtonText : ReactElement = <span className="text-lime-100/
 export const abortedButtonText : string = "Play"
 export const solvedButtonText : string = "Play Again!"
 
-export const technologies : Technology[] = [
-  {
-    name: "HTML 5",
-    icon: html,
-    category : "Web Development"
-  },
-  {
-    name: "React JS",
-    icon: reactjs,
-    category : "Web Development"
-  },
-  {
-    name: "Tailwind CSS",
-    icon: tailwind,
-    category : "Web Development"
-  },
-  {
-    name: "Node JS",
-    icon: nodejs,
-    category : "Web Development"
-  },
-  {
-    name: "Three JS",
-    icon: threejs,
-    category : "Web Development"
-  },
+export const techStack: Record<string, Technology[]> = {
+  "Front-end Web Development": [
+    { name: "HTML 5", icon: html },
+    { name: "React", icon: reactjs },
+    { name: "Three JS", icon: threejs },
+  ],
 
-  {
-    name : "Unity",
-    icon: unity,
-    category : "Game Development"
-  },
-  {
-    name : "Godot",
-    icon: godot,
-    category : "Game Development"
-  },
-  {
-    name : "Roblox Studio",
-    icon : robloxStudio,
-    category : "Game Development"
-  },
-  {
-    name : "Java",
-    icon : java,
-    category : "Programming Languages"
-  },
-    {
-    name: "JavaScript",
-    icon: javascript,
-    category : "Programming Languages"
-  },
-  {
-    name: "TypeScript",
-    icon: typescript,
-    category : "Programming Languages"
-  },
-  {
-    name : "C#",
-    icon : cSharp,
-    category : "Programming Languages"
-  },
-  {
-    name : "Lua",
-    icon : lua,
-    category : "Programming Languages"
-  },
-  {
-    name : "VS Code",
-    icon : vsCode,
-    category : "Tools"
-  },
-  {
-    name: "Git",
-    icon: git,
-    category : "Tools"
-  },
+  "Game Development": [
+    { name: "Unity", icon: unity },
+    { name: "Godot", icon: godot },
+    { name: "Roblox Studio", icon: robloxStudio },
+  ],
 
-];
+  "Runtimes & Frameworks": [
+    { name: ".NET", icon: dotnet },
+    { name: "Node JS", icon: nodejs },
+    { name: "Tailwind CSS", icon: tailwind },
+  ],
 
+  "Programming Languages": [
+    { name: "C#", icon: cSharp },
+    { name: "C++", icon: cpp },
+    { name: "Java", icon: java },
+    { name: "TypeScript", icon: typescript },
+    { name: "Lua", icon: lua },
+    { name: "JavaScript", icon: javascript },
+  ],
+
+  Tools: [
+    { name: "VS Code", icon: vsCode },
+    { name: "Git", icon: git },
+    { name: "CMake", icon: cMake },
+  ],
+}
+
+export const technologies : Technology[] = Object.values(techStack).flat()
 /*
 export const subDescription : ReactElement = <span>
   <span className="text-[25px] text-red-200/80"> Oops. My tech stack collapsed...  <br/> </span>
