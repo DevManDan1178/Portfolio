@@ -3,17 +3,20 @@ import leaderboardHandler from "./api/leaderboard";
 import nameboardHandler from "./api/nameboard"
 import scoreStreamHandler from "./api/scoreStream"
 import "dotenv/config";
+import { leaderboardApiURLPath } from "../shared/types/api/globalBoards/leaderboard";
+import { scoreStreamApiURLPath } from "../shared/types/api/globalBoards/scoreStreams";
+import { nameboardApiURLPath } from "../shared/types/api/globalBoards/nameboard";
 
 const app = express();
 
 app.use(express.json());
 
-app.all("/api/leaderboard", async (req, res) => {
+app.all(`${leaderboardApiURLPath}`, async (req, res) => {
     const response = await leaderboardHandler(
         new Request(`http://${req.headers.host}${req.url}`, {
             method: req.method,
             headers: req.headers as Record<string, string>,
-            body: req.method === "GET" ? undefined : JSON.stringify(req.body),
+            body: JSON.stringify(req.body),
         })
     );
 
@@ -22,12 +25,12 @@ app.all("/api/leaderboard", async (req, res) => {
     res.status(response.status).json(data);
 });
 
-app.all("/api/nameboard", async (req, res) => {
+app.all(`${nameboardApiURLPath}`, async (req, res) => {
     const response = await nameboardHandler(
         new Request(`http://${req.headers.host}${req.url}`, {
             method: req.method,
             headers: req.headers as Record<string, string>,
-            body: req.method === "GET" ? undefined : JSON.stringify(req.body),
+            body: JSON.stringify(req.body),
         })
     );
 
@@ -36,12 +39,12 @@ app.all("/api/nameboard", async (req, res) => {
     res.status(response.status).json(data);
 });
 
-app.all("/api/score-stream", async (req, res) => {
+app.all(`${scoreStreamApiURLPath}`, async (req, res) => {
     const response = await scoreStreamHandler(
         new Request(`http://${req.headers.host}${req.url}`, {
             method: req.method,
             headers: req.headers as Record<string, string>,
-            body: req.method === "GET" ? undefined : JSON.stringify(req.body),
+            body: JSON.stringify(req.body),
         })
     );
 
