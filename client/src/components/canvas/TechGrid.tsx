@@ -70,7 +70,6 @@ const Ball = ({ icon, position, rotationY, status, onClick } : {icon : string, p
 }
 
 const getBallPositions : (totalIndices : number) => Vector3[] = (totalIndices : number) => {
-
   const getPosition = (x : number, y : number) => {
     const targetPosition = new Vector3(0, 0, -CAMERA_TARGET_DISTANCE)
     const theta = x * BALL_ANGLE_STEP; // horizontal rotation
@@ -128,7 +127,10 @@ const getDecalRotationYForBallAtPosition : (ballPosition : Vector3) => (number) 
   return Math.atan2(dir.x, dir.z) + Math.PI;
 };
 
-const BallCanvas = ({ technologies, getOnClick } : {technologies : TechnologyNode[], getOnClick : (index : number) => (() => (void))}) => {
+export default function(
+  { technologies, getOnClick } : {technologies : TechnologyNode[], 
+  getOnClick : (index : number) => (() => (void))
+}) {
   const [ballPositions, setBallPositions] = useState<Vector3[]>(getBallPositions(technologies.length))
   const maxCameraAngleX = Math.round(ballPositions.length / (2 * BALL_SIDE_ROWS + 1)) * BALL_ANGLE_STEP * 0.5
   const maxCameraAngleY = BALL_SIDE_ROWS * BALL_ANGLE_STEP
@@ -174,5 +176,3 @@ const BallCanvas = ({ technologies, getOnClick } : {technologies : TechnologyNod
       <Preload all />
   </Canvas>
   )}
-
-export default BallCanvas
