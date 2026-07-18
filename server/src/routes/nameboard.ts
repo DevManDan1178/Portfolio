@@ -1,6 +1,7 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
 import { defaultNameboardSortOrder, type NameboardCategory, type NameboardEntry, type NameboardInputEntry,  NameboardSortOrder} from "../../../shared/types/api/globalBoards/nameboard"
 import getEnvironmentVariables from "../environment";
+import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 
 const nameboardKeys : Record<NameboardCategory, string> = {
     "PolygonTD": "polygon-td",
@@ -13,14 +14,14 @@ export async function getNameboardEntries(
     start : number, 
     end : number,
     sortOrder: NameboardSortOrder
-) :  Promise<NameboardEntry[]> {
+) :  Promise<NameboardEntry[] | undefined> {
     if (start < 0 || end < 0) {
         console.log("Invalid start and/or end - getNameboardEntres: ", start, end)
-        return [];
+        return;
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return [];
+        return;
     }
     const {requestURLBase, API_KEY} = environmentVariables;
     const categoryKey = nameboardKeys[category];
@@ -29,7 +30,7 @@ export async function getNameboardEntries(
         `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${sortOrder != defaultNameboardSortOrder}`;
     
     try {
-        const response = await fetch(requestURL, {
+        const response = await fetchWithTimeout(requestURL, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
@@ -42,7 +43,7 @@ export async function getNameboardEntries(
                 response.status,
                 await response.text()
             );
-            return [];
+            return;
         }
 
         const data = await response.json();
@@ -51,7 +52,7 @@ export async function getNameboardEntries(
         return data as NameboardEntry[];
     } catch (error) {
         console.log("Failed to fetch nameboard entries:", error);
-        return [];
+        return;
     }
 }
 
@@ -66,7 +67,7 @@ export async function addNameboardEntry(category : NameboardCategory, entry : Na
     const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}`;
 
     try {
-        const response = await fetch(requestURL, {
+        const response = await fetchWithTimeout(requestURL, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${API_KEY}`,

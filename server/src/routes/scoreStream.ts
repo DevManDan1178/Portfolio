@@ -1,6 +1,7 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
 import { defaultScoreStreamSortOrder, ScoreStreamSortOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamInputEntry } from "../../../shared/types/api/globalBoards/scoreStreams"
 import getEnvironmentVariables from "../environment";
+import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 
 const scoreStreamKeys : Record<ScoreStreamCategory, string> = {
     "Stack Matching": "stack-matching"
@@ -13,14 +14,14 @@ export async function getScoreStreamEntries(
     start : number, 
     end : number,
     sortOrder: ScoreStreamSortOrder
-) :  Promise<ScoreStreamEntry[]> {
+) :  Promise<ScoreStreamEntry[] | undefined> {
     if (start < 0 || end < 0) {
         console.log("Invalid start and/or end - getScoreStreamEntres: ", start, end)
-        return [];
+        return;
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return [];
+        return;
     }
     const {requestURLBase, API_KEY} = environmentVariables;
 
@@ -30,7 +31,7 @@ export async function getScoreStreamEntries(
         `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${sortOrder != defaultScoreStreamSortOrder}`;
     
     try {
-        const response = await fetch(requestURL, {
+        const response = await fetchWithTimeout(requestURL, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
@@ -43,7 +44,7 @@ export async function getScoreStreamEntries(
                 response.status,
                 await response.text()
             );
-            return [];
+            return;
         }
 
         const data = await response.json();
@@ -51,7 +52,7 @@ export async function getScoreStreamEntries(
         return data as ScoreStreamEntry[];
     } catch (error) {
         console.log("Failed to fetch scoreStream entries:", error);
-        return [];
+        return;
     }
 }
 
@@ -66,7 +67,7 @@ export async function addScoreStreamEntry(category : ScoreStreamCategory, entry 
     const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}`;
 
     try {
-        const response = await fetch(requestURL, {
+        const response = await fetchWithTimeout(requestURL, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${API_KEY}`,

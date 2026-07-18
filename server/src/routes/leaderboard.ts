@@ -2,11 +2,12 @@ import { defaultLeaderboardSortOrder, LeaderboardSortOrder } from "../../../shar
 import { type LeaderboardCategory, type LeaderboardEntry, type LeaderboardInputEntry } from "../../../shared/types/api/globalBoards/leaderboard"
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards"
 import getEnvironmentVariables from "../environment";
+import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 
 const leaderboardKeys : Record<LeaderboardCategory, string> = {
     "Echo Arena": "echo-arena",
     "Sidestep2": "sidestep-2",
-    "Test": "test-board",
+    "Stack Matching": "stack-matching",
 };
 
 const requestSectionKey = "leaderboards";
@@ -18,14 +19,14 @@ export async function getLeaderboardEntries(
     start : number, 
     end : number,
     sortOrder: LeaderboardSortOrder
-) :  Promise<LeaderboardEntry[]> {
+) :  Promise<LeaderboardEntry[] | undefined> {
     if (start < 0 || end < 0) {
         console.log("Invalid start and/or end - getLeaderboardEntres: ", start, end)
-        return [];
+        return;
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return [];
+        return;
     }
     const {requestURLBase, API_KEY} = environmentVariables;
 
@@ -34,7 +35,7 @@ export async function getLeaderboardEntries(
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
         `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${sortOrder != defaultLeaderboardSortOrder}`;
     try {
-        const response = await fetch(requestURL, {
+        const response = await fetchWithTimeout(requestURL, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
@@ -47,15 +48,15 @@ export async function getLeaderboardEntries(
                 response.status,
                 await response.text()
             );
-            return [];
+            return;
         }
 
         const data = await response.json();
-        console.log("fetched leaderboard data:", categoryKey, " - ", data);
+        console.log("fetched leaderboard data:", category, categoryKey, " - ", data);
         return data as LeaderboardEntry[];
     } catch (error) {
         console.log("Failed to fetch leaderboard entries:", error);
-        return [];
+        return;
     }
 }
 
@@ -70,7 +71,7 @@ export async function addLeaderboardEntry(category : LeaderboardCategory, entry 
     const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}`;
 
     try {
-        const response = await fetch(requestURL, {
+        const response = await fetchWithTimeout(requestURL, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
