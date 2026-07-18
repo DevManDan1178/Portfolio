@@ -53,7 +53,7 @@ const styles = {
   techStackMatchStyle : {
     titleTextSizeStyle : "md:text-[22px] sm:text-[19px] text-[16px] leading-tight",
     subTitleTextSizeStyle : "md:text-[18px] sm:text-[16px] text-[14px] leading-tight",
-    buttonSizeStyle : "md:h-[50px] sm:text-[40px] h-[35px] w-[calc(15%+125px)]",
+    buttonHeightStyle : "md:h-[50px] h-[35px]",
     buttonTextSizeStyle : "md:text-[22px] sm:text-[18px] text-[16px] leading-tight",
   },
   techStackElementStyles:
