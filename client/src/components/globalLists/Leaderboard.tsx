@@ -1,15 +1,18 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, type ReactNode } from "react";
 import { defaultLeaderboardSortOrder, type LeaderboardCategory, type LeaderboardEntry, type LeaderboardSortOrder } from "../../../../shared/types/api/globalBoards/leaderboard";
-import { getLeaderboardEntries } from "../../api/leaderboard";
+import { getLeaderboardEntries, submitLeaderboardScore } from "../../api/leaderboard";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
 
-const DATE_ADJUSTMENT_FACTOR: number = 1000; // Seconds to milliseconds
+const DATE_ADJUSTMENT_FACTOR: number = 1000;
 
-const INITIAL_LOAD_FAIL_TEXT = "Failed to load entries";
-const LOAD_MORE_FAIL_TEXT = "Failed to load more entries."
+const INITIAL_LOAD_FAIL_TEXT : string = "Failed to load data";
+const LOAD_MORE_FAIL_TEXT : string = "Failed to load more entries.";
+
+const LOAD_MORE_DISTANCE_FROM_BOTTOM : number = 16
 
 const getPlacementBadge = (index: number) => {
     const placementNumber: number = index + 1;
+
     const placementTextStyle: string = (() => {
         switch (placementNumber) {
             case 1:
@@ -26,27 +29,28 @@ const getPlacementBadge = (index: number) => {
         }
     })();
 
-    return (    
+    return (
         <div className={`${placementTextStyle} font-semibold`}>
             #{placementNumber}
         </div>
     );
 };
 
-export type LeaderboardProps = GlobalBoardPropsBase & { 
-    category: LeaderboardCategory, 
-    subTitles? : GlobalBoardSubTitlePropsBase & {
+export type LeaderboardProps = GlobalBoardPropsBase & {
+    category: LeaderboardCategory,
+    subTitles?: GlobalBoardSubTitlePropsBase & {
         score: string,
         placement: string
     }
-    sortOrder? : LeaderboardSortOrder,
-    entriesState? : EntriesState<LeaderboardEntry>
+    sortOrder?: LeaderboardSortOrder,
+    entriesState?: EntriesState<LeaderboardEntry>,
+    scoreFilterFunction? : (score : number) => string
 }
 
-export function Leaderboard({ 
-    title, 
-    category, 
-    count, 
+export function Leaderboard({
+    title,
+    category,
+    count,
     subTitles = {
         placement: "Rank",
         name: "Name",
@@ -54,8 +58,9 @@ export function Leaderboard({
         timestamp: "Achieved at"
     },
     sortOrder = defaultLeaderboardSortOrder,
-    entriesState = useState<LeaderboardEntry[]>([])
-} : LeaderboardProps) {
+    entriesState = useState<LeaderboardEntry[]>([]),
+    scoreFilterFunction = (score : number) => `${score}`
+}: LeaderboardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
     const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -67,50 +72,44 @@ export function Leaderboard({
     const hasMoreRef = useRef(true);
     const entriesLengthRef = useRef(0);
 
-    useEffect(() => {
-        let cancelled = false;
+    const loadEntries = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        setHasMore(true);
 
-        async function load() {
-            setLoading(true);
-            setError(null);
-            setHasMore(true);
-            hasMoreRef.current = true;
+        hasMoreRef.current = true;
+        entriesLengthRef.current = 0;
 
-            try {
-                const data = await getLeaderboardEntries(
-                    category,
-                    0,
-                    count
-                );
+        try {
+            const data = await getLeaderboardEntries(
+                category,
+                0,
+                count,
+                sortOrder
+            );
 
-                if (!cancelled) {
-                    setEntries(data);
-                    entriesLengthRef.current = data.length;
-                    const stillMore = data.length === count;
-                    setHasMore(stillMore);
-                    hasMoreRef.current = stillMore;
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setError(INITIAL_LOAD_FAIL_TEXT);
-                    console.error(err);
-                }
-            } finally {
-                if (!cancelled) {
-                    setLoading(false);
-                }
-            }
+            setEntries(data);
+
+            entriesLengthRef.current = data.length;
+
+            const stillMore = data.length === count;
+
+            setHasMore(stillMore);
+            hasMoreRef.current = stillMore;
+        } catch (err) {
+            setError(INITIAL_LOAD_FAIL_TEXT);
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
+    }, [category, count, sortOrder, setEntries]);
 
-        load();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [category, count]);
+    useEffect(() => {
+        loadEntries();
+    }, [loadEntries]);
 
     const loadMore = useCallback(async () => {
-        if (loadingMoreRef.current || !hasMoreRef.current) return;
+        if (loadingMoreRef.current || !hasMoreRef.current || entries.length == 0) return;
 
         loadingMoreRef.current = true;
         setLoadingMore(true);
@@ -118,11 +117,20 @@ export function Leaderboard({
         try {
             const start = entriesLengthRef.current;
             const end = start + count;
-            const data = await getLeaderboardEntries(category, start, end, sortOrder);
+
+            const data = await getLeaderboardEntries(
+                category,
+                start,
+                end,
+                sortOrder
+            );
 
             setEntries((prev) => [...prev, ...data]);
+
             entriesLengthRef.current += data.length;
+
             const stillMore = data.length === count;
+
             setHasMore(stillMore);
             hasMoreRef.current = stillMore;
         } catch (err) {
@@ -132,37 +140,77 @@ export function Leaderboard({
             loadingMoreRef.current = false;
             setLoadingMore(false);
         }
-    }, [category, count]);
+    }, [category, count, sortOrder, setEntries]);
 
     useEffect(() => {
         const el = scrollRef.current;
+
         if (!el || loading) return;
 
         const handleScroll = () => {
-            const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-            if (distanceFromBottom < 32) {
+            const distanceFromBottom =
+                el.scrollHeight - el.scrollTop - el.clientHeight;
+
+            if (distanceFromBottom < LOAD_MORE_DISTANCE_FROM_BOTTOM) {
                 loadMore();
             }
         };
 
         el.addEventListener("scroll", handleScroll);
 
-        // Also check immediately in case content doesn't fill the container
         handleScroll();
 
-        return () => el.removeEventListener("scroll", handleScroll);
+        return () => {
+            el.removeEventListener("scroll", handleScroll);
+        };
     }, [loading, loadMore]);
 
-    return (
+    async function submitScore(score : number, name : string) : Promise<number> {
+        try {
+            const timestamp = Math.floor(Date.now() / DATE_ADJUSTMENT_FACTOR);
+            const result = await submitLeaderboardScore(category, {
+                name,
+                score
+            });
+
+            const addedIndex = result["index"];
+            
+            if (typeof addedIndex != "number") {
+                return -1;
+            } else if (addedIndex < 0) {
+                return addedIndex;
+            }
+            const newEntry : LeaderboardEntry = {
+                timestamp,
+                name,
+                score
+            };
+
+            setEntries((prevEntries) => {
+                const updated = [...prevEntries];
+                updated.splice(addedIndex, 0, newEntry);
+                return updated;
+            });
+
+            return addedIndex;
+        } catch (err) {
+            console.error(err);
+        } 
+        return -1;
+    }
+
+    return [(
         <div className="w-full max-w-2xl mx-auto bg-transparent rounded-xl border border-neutral-800 shadow-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-neutral-800 bg-neutral-950">
+            <div className="px-5 py-4 border-b border-neutral-800 bg-neutral-950/60">
                 <h2 className="text-lg font-bold text-neutral-100 tracking-wide uppercase">
                     {title}
                 </h2>
             </div>
 
             {loading ? (
-                <p className="px-5 py-6 text-neutral-400 text-sm">Loading...</p>
+                <p className="px-5 py-6 text-neutral-400 text-sm">
+                    Loading...
+                </p>
             ) : (
                 <div>
                     <div
@@ -171,70 +219,98 @@ export function Leaderboard({
                     >
                         <table className="w-full border-collapse table-fixed">
                             <tbody>
-                                <tr className="text-neutral-500 text-xs uppercase tracking-wider">
-                                    <th className="px-5 py-0 text-left font-medium w-[15%]">{subTitles.placement}</th>
-                                    <th className="px-5 py-0 text-center font-medium w-[30%]">{subTitles.name}</th>
-                                    <th className="px-5 py-0 text-center font-medium w-[25%]">{subTitles.score}</th>
-                                    <th className="px-5 py-0 text-right font-medium w-[20%]">{subTitles.timestamp}</th>
-                                </tr> 
+                                <tr className="text-neutral-500 text-xs uppercase tracking-wider bg-neutral-950/40 text-white/75">
+                                    <th className="px-5 py-0 text-left font-medium w-[15%]">
+                                        {subTitles.placement}
+                                    </th>
+
+                                    <th className="px-5 py-0 text-center font-medium w-[30%]">
+                                        {subTitles.name}
+                                    </th>
+
+                                    <th className="px-5 py-0 text-center font-medium w-[25%]">
+                                        {subTitles.score}
+                                    </th>
+
+                                    <th className="px-5 py-0 text-right font-medium w-[20%]">
+                                        {subTitles.timestamp}
+                                    </th>
+                                </tr>
+
                                 {entries.map((entry, index) => (
                                     <tr
                                         key={`${entry.name}-${entry.timestamp}-${index}`}
                                         className={`border-t border-neutral-800 bg-neutral-800/40 hover:bg-neutral-500/10 transition-colors ${
-                                            index < 3 ? "bg-neutral-800/20" : ""
+                                            index < 3
+                                                ? "bg-neutral-800/20"
+                                                : ""
                                         }`}
                                     >
-                                        <td className={`px-5 py-3  text-left`}>
+                                        <td className="px-5 py-3 text-left">
                                             {getPlacementBadge(index)}
                                         </td>
-                                        
+
                                         <td className="px-5 py-3 text-center text-neutral-100 truncate">
                                             {entry.name}
                                         </td>
+
                                         <td className="px-5 py-3 text-neutral-200 text-sm text-center whitespace-nowrap font-semibold">
-                                            {entry.score}
+                                            {scoreFilterFunction(entry.score)}
                                         </td>
+
                                         <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
                                             {(() => {
-                                                const date: Date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
-                                                return (
-                                                    <div className="px-5 py-3 text-neutral-300 text-sm text-right whitespace-nowrap">
-                                                        <div>
-                                                            {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
-                                                        </div>
+                                                const date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
 
-                                                        <div className="text-neutral-600 text-xs text-right whitespace-nowrap">
+                                                return (
+                                                    <div className="px-5 py-3 text-neutral-300/70 text-sm text-right whitespace-nowrap">
+                                                        <div>
                                                             {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
                                                         </div>
+
+                                                        <div className="text-neutral-400/80 text-xs text-right whitespace-nowrap">
+                                                            {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
+                                                        </div>
                                                     </div>
-                                                )
+                                                );
                                             })()}
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+
                         {loadingMore && (
-                            <p className="px-5 py-3 text-neutral-500 text-xs text-center">
+                            <p className="px-5 py-3 text-neutral-500 text-xs text-center bg-neutral-950/40">
                                 Loading more...
                             </p>
                         )}
 
-                        {!hasMore && entries.length > 0 && (
-                            <p className="px-5 py-3 text-neutral-700 text-xs text-center">
-                                That's about it...
+                        {!hasMore && (
+                            <p className="px-5 py-3 text-neutral-700 text-xs text-center bg-neutral-950/40">
+                                {entries.length > 0 ? "That's about it..." : "Be the first!"}
                             </p>
                         )}
+
                         {error && (
-                            <p className="px-5 py-6 text-center text-red-400/80 text-sm">{error}</p>
+                            <div className="px-5 py-6 text-center bg-neutral-950/40">
+                                <p className="text-red-400/80 text-sm mb-3">
+                                    {error}
+                                </p>
+
+                                <button
+                                    onClick={loadEntries}
+                                    className="px-4 py-2 rounded-md bg-neutral-800 text-neutral-200 text-sm hover:bg-neutral-700 transition-colors"
+                                >
+                                    Retry
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
             )}
-
-            
         </div>
-
-        
-    );
+    ),
+    submitScore
+    ]
 }
