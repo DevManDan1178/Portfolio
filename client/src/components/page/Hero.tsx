@@ -6,61 +6,68 @@ import { MENU_SCENES, type GameEventHandlers } from '../canvas/PolygonTD'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { motion } from 'framer-motion'
 import { ScrollToNavId } from './Navbar'
+import type { GameEventLinkers } from '../../../types/exhibits/games'
 
 
 const Hero = () => {
   const [_levelProgress, setLevelProgress] = useState<number>(0)
   const [terminalText, setTerminalText] = useState<string>(TerminalTexts.TerminalIntroduction)
-  const unityControllerRef = useRef<UnityController>(null) 
-  const gameEventHandlers : RefObject<GameEventHandlers> = useRef({
-    OnLevelCleared(levelNumber) {
-      setTerminalText(levelNumber >= 5 ? TerminalTexts.LastLevelClear : TerminalTexts.LevelCleared)
-    },
-    OnLevelLost(_levelNumber) {
-      setTerminalText(TerminalTexts.LevelLost)
-    },
-    OnLevelStarted(_levelNumber) {
-      setTerminalText(TerminalTexts.LevelStarted)
-    },
-    OnPauseToggled(paused) {
-      setTerminalText(paused ? TerminalTexts.Paused : TerminalTexts.Unpaused)
-    },
-    OnLevelProgressChanged(levelNumber) {
-      setLevelProgress(levelNumber)
-    },
-    OnSceneChanged(sceneName) {
-      console.log(sceneName, MENU_SCENES.levelSelect)
-      if (sceneName === MENU_SCENES.levelSelect) {
-        setTerminalText(TerminalTexts.LevelSelect)
-      } else if (sceneName === MENU_SCENES.mainMenu) {
-        setTerminalText(TerminalTexts.Menu)
-      }
-    },
-  })
-  /*
-  function startUnity() {
-      const controller = unityControllerRef.current
-      if (!controller) {
-        console.log("no controller - delaying Unity start")
-        setTimeout(startUnity, 100)
-        return
-      }
-      controller.start()
-      controller.started = true
-    }*/
+  const unityControllerRef = useRef<UnityController>(null)
 
-  //setTimeout(startUnity, 500) //Avoid starting initially due to lag spike
+  function OnLevelCleared(levelNumber : any) {
+    setTerminalText(levelNumber >= 5 ? TerminalTexts.LastLevelClear : TerminalTexts.LevelCleared)
+  }
+  
+  function OnLevelLost(_levelNumber : any) {
+    
+  }
+
+  function OnLevelStarted(_levelNumber : any) {
+    setTerminalText(TerminalTexts.LevelStarted)
+  }
+
+  function OnPauseToggled(paused : any) {
+    setTerminalText(paused ? TerminalTexts.Paused : TerminalTexts.Unpaused)
+  }
+
+  function OnLevelProgressChanged(levelNumber : any) {
+    setLevelProgress(levelNumber)
+  }
+
+  function OnSceneChanged(sceneName : any) {
+    if (sceneName === MENU_SCENES.levelSelect) {
+      setTerminalText(TerminalTexts.LevelSelect)
+    } else if (sceneName === MENU_SCENES.mainMenu) {
+      setTerminalText(TerminalTexts.Menu)
+    }
+  }
+
+  const gameEventLinkers : RefObject<GameEventLinkers> = useRef([
+    {
+      gameEventName: "PolygonTD-pause-toggled", 
+      handler: OnPauseToggled
+    }, {
+      gameEventName: "PolygonTD-level-starting",
+      handler: OnLevelStarted
+    }, {
+      gameEventName: "PolygonTD-level-lost",
+      handler: (e : any) => OnLevelLost
+    }, {
+      gameEventName: "PolygonTD-level-cleared",
+      handler: OnLevelCleared
+    }, {
+      gameEventName: "PolygonTD-player-level-progression",
+      handler: OnLevelProgressChanged
+    }, {
+      gameEventName: "PolygonTD-scene-change",
+      handler: OnSceneChanged
+    }
+  ])
+
+
   return (
     <div className='relative w-full min-h-[100svh] mx-auto z-10 overflow-hidden flex flex-col items-center justify-start'>
       <div className={`${styles.paddingX} absolute inset-0 py-2 top-[40px] max-w-7xl mx-auto flex flex-row items-start gap-5`}>
-        {/* 
-         <div className='flex flex-col justify-center items-center mt-5'>
-          
-          <div className='w-5 h-5 rounded-full bg-[#4d78ee]'/>
-          <div className='w-1 sm:h-80 h-40 blue-gradient'/>
-          
-        </div>
-        */}
         <div>
           <h2 className={`${styles.heroHeadText} text-white`}>
             {headerIntroElement}
@@ -88,7 +95,7 @@ const Hero = () => {
 
           {/* Bottom border */}
           <div className='absolute bottom-0 left-0 h-[2px] w-[calc(100%-4px)] ml-[2px] mr-[2px] bg-white/30 z-10' />       
-          <ComputerCanvas gameEventHandlers={gameEventHandlers} unityControllerRef={unityControllerRef}/>
+          <ComputerCanvas gameEventLinkers={gameEventLinkers} unityControllerRef={unityControllerRef}/>
             
         </div>
       </motion.div>
