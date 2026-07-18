@@ -1,9 +1,12 @@
-import { type LeaderboardCategory, type LeaderboardEntry, type LeaderboardInputEntry } from "../../../shared/types/leaderboard"
+import { defaultLeaderboardSortOrder, LeaderboardSortOrder } from "../../../shared/types/api/globalBoards/leaderboard";
+import { type LeaderboardCategory, type LeaderboardEntry, type LeaderboardInputEntry } from "../../../shared/types/api/globalBoards/leaderboard"
+import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards"
 import getEnvironmentVariables from "../environment";
 
 const leaderboardKeys : Record<LeaderboardCategory, string> = {
     "Echo Arena": "echo-arena",
     "Sidestep2": "sidestep-2",
+    "Test": "test-board",
 };
 
 const requestSectionKey = "leaderboards";
@@ -13,7 +16,8 @@ const requestSectionKey = "leaderboards";
 export async function getLeaderboardEntries(
     category : LeaderboardCategory, 
     start : number, 
-    end : number
+    end : number,
+    sortOrder: LeaderboardSortOrder
 ) :  Promise<LeaderboardEntry[]> {
     if (start < 0 || end < 0) {
         console.log("Invalid start and/or end - getLeaderboardEntres: ", start, end)
@@ -28,8 +32,7 @@ export async function getLeaderboardEntries(
     const categoryKey = leaderboardKeys[category];
     const requestURL = 
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
-        `start=${start.toString()}&end=${end.toString()}`;
-    
+        `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${sortOrder != defaultLeaderboardSortOrder}`;
     try {
         const response = await fetch(requestURL, {
             method: "GET",
