@@ -5,6 +5,9 @@ import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase }
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000; // Seconds to milliseconds
 
+const INITIAL_LOAD_FAIL_TEXT = "Failed to load entries";
+const LOAD_MORE_FAIL_TEXT = "Failed to load more entries."
+
 export type NameboardProps = GlobalBoardPropsBase & { 
     category: NameboardCategory, 
     subTitles? : GlobalBoardSubTitlePropsBase,
@@ -55,7 +58,7 @@ export function Nameboard({
                 }
             } catch (err) {
                 if (!cancelled) {
-                    setError("Failed to load nameboard.");
+                    setError(INITIAL_LOAD_FAIL_TEXT);
                     console.error(err);
                 }
             } finally {
@@ -90,7 +93,7 @@ export function Nameboard({
             setHasMore(stillMore);
             hasMoreRef.current = stillMore;
         } catch (err) {
-            setError("Failed to load more entries.");
+            setError(LOAD_MORE_FAIL_TEXT);
             console.error(err);
         } finally {
             loadingMoreRef.current = false;
@@ -125,17 +128,10 @@ export function Nameboard({
                 </h2>
             </div>
 
-            {loading && (
+            {loading ? (
                 <p className="px-5 py-6 text-neutral-400 text-sm">Loading...</p>
-            )}
-
-            {error && (
-                <p className="px-5 py-6 text-red-400 text-sm">{error}</p>
-            )}
-
-            {!loading && !error && (
-                <div>
-                    
+            ) : (
+                <div>  
                     <div
                         ref={scrollRef}
                         className="max-h-96 overflow-y-auto"
@@ -188,9 +184,13 @@ export function Nameboard({
                                 That's about it...
                             </p>
                         )}
+                        {error && (
+                            <p className="px-5 py-6 text-center text-red-400/80 text-sm">{error}</p>
+                        )}
                     </div>
                 </div>
             )}
+            
         </div>
     );
 }
