@@ -1,5 +1,6 @@
 import { addScoreStreamEntry, getScoreStreamEntries, } from "../src/routes/scoreStream";
-import { type ScoreStreamCategory } from "../../shared/types/scoreStreams";
+import { defaultScoreStreamSortOrder, ScoreStreamSortOrder, type ScoreStreamCategory } from "../../shared/types/api/globalBoards/scoreStreams";
+import { reverseOrderQueryParameter } from "../../shared/constants/api/globalBoards";
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);
@@ -17,11 +18,13 @@ export default async function handler(request: Request) {
         if (request.method === "GET") {
             const start = Number(url.searchParams.get("start") ?? 0);
             const end = Number(url.searchParams.get("end") ?? 10);
-
+            
+            const sortOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultScoreStreamSortOrder);
             const entries = await getScoreStreamEntries(
                 category as ScoreStreamCategory,
                 start,
-                end
+                end,
+                sortOrder as ScoreStreamSortOrder
             );
 
             return Response.json(entries);

@@ -1,9 +1,9 @@
-import { type NameboardCategory, type NameboardEntry, type NameboardInputEntry } from "../../../shared/types/nameboard"
+import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
+import { defaultNameboardSortOrder, type NameboardCategory, type NameboardEntry, type NameboardInputEntry,  NameboardSortOrder} from "../../../shared/types/api/globalBoards/nameboard"
 import getEnvironmentVariables from "../environment";
 
 const nameboardKeys : Record<NameboardCategory, string> = {
     "PolygonTD": "polygon-td",
-    "Stack Matching": "stack-matching"
 };
 
 const requestSectionKey = "nameboards";
@@ -11,7 +11,8 @@ const requestSectionKey = "nameboards";
 export async function getNameboardEntries(
     category : NameboardCategory, 
     start : number, 
-    end : number
+    end : number,
+    sortOrder: NameboardSortOrder
 ) :  Promise<NameboardEntry[]> {
     if (start < 0 || end < 0) {
         console.log("Invalid start and/or end - getNameboardEntres: ", start, end)
@@ -25,7 +26,7 @@ export async function getNameboardEntries(
     const categoryKey = nameboardKeys[category];
     const requestURL = 
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
-        `start=${start.toString()}&end=${end.toString()}`;
+        `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${sortOrder != defaultNameboardSortOrder}`;
     
     try {
         const response = await fetch(requestURL, {

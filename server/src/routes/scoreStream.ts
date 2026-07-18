@@ -1,4 +1,5 @@
-import { type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamInputEntry } from "../../../shared/types/scoreStreams"
+import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
+import { defaultScoreStreamSortOrder, ScoreStreamSortOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamInputEntry } from "../../../shared/types/api/globalBoards/scoreStreams"
 import getEnvironmentVariables from "../environment";
 
 const scoreStreamKeys : Record<ScoreStreamCategory, string> = {
@@ -10,7 +11,8 @@ const requestSectionKey = "score-streams";
 export async function getScoreStreamEntries(
     category : ScoreStreamCategory, 
     start : number, 
-    end : number
+    end : number,
+    sortOrder: ScoreStreamSortOrder
 ) :  Promise<ScoreStreamEntry[]> {
     if (start < 0 || end < 0) {
         console.log("Invalid start and/or end - getScoreStreamEntres: ", start, end)
@@ -25,7 +27,7 @@ export async function getScoreStreamEntries(
     const categoryKey = scoreStreamKeys[category];
     const requestURL = 
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
-        `start=${start.toString()}&end=${end.toString()}`;
+        `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${sortOrder != defaultScoreStreamSortOrder}`;
     
     try {
         const response = await fetch(requestURL, {
