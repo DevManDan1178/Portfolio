@@ -1,8 +1,7 @@
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { TextureLoader, Points } from 'three'
 import { useEffect, useMemo, useRef } from 'react'
-
-const PARTICLE_TEXTURE_PATH = '/images/Star.png'
+import { star } from '../../assets'
 
 const ROTATION_SPEED_Y = (Math.random() - 0.5) * 0.015
 const ROTATION_SPEED_X = (Math.random() - 0.5) * 0.015
@@ -10,7 +9,7 @@ const ROTATION_SPEED_X = (Math.random() - 0.5) * 0.015
 const MOUSE_STRENGTH = 0.025
 
 function Particles() {
-  const texture = useLoader(TextureLoader, PARTICLE_TEXTURE_PATH)
+  const texture = useLoader(TextureLoader, star)
 
   const pointsRef = useRef<Points>(null!)
 
