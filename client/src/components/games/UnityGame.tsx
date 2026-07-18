@@ -1,0 +1,249 @@
+import { useEffect, useRef, useState } from "react";
+import type { GameEventLinkers } from "../../../types/exhibits/games";
+
+type UnityGameProps = {
+  config: UnityLoaderConfig;
+  canvasDimensions: { x: number; y: number };
+  containerId: string;
+  fileInfo: FileInfo;
+  gameEventLinkers?: GameEventLinkers;
+
+  className?: string;
+  showFullscreenButton?: boolean;
+};
+
+export default function UnityGame({
+  config,
+  canvasDimensions,
+  containerId,
+  fileInfo,
+  gameEventLinkers = [],
+  className,
+  showFullscreenButton = true,
+}: UnityGameProps) {
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const unityInstanceRef = useRef<UnityInstance | null>(null);
+  const isQuittingRef = useRef(false);
+
+  const onLoadingProgress = (progress: number) => {
+    setProgress(progress);
+  };
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    if (unityInstanceRef.current) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.id = containerId;
+    canvas.width = canvasDimensions.x;
+    canvas.height = canvasDimensions.y;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
+    canvas.style.touchAction = "none";
+    canvas.style.borderRadius = "12px";
+
+    canvasRef.current = canvas;
+    containerRef.current.appendChild(canvas);
+
+    const loaderSrc = `${fileInfo.gamePath}/Build/${fileInfo.buildName}.loader.js`;
+
+    let script = document.querySelector(
+      `script[src="${loaderSrc}"]`
+    ) as HTMLScriptElement | null;
+
+    const listeners: Array<{
+      name: string;
+      handler: EventListener;
+    }> = [];
+
+    const startUnity = () => {
+      // @ts-ignore
+      createUnityInstance(canvas, config, onLoadingProgress).then(
+        (unityInstance: UnityInstance) => {
+          unityInstanceRef.current = unityInstance;
+
+          canvas.focus();
+
+          unityInstance.SendMessage(
+            "InputBridge",
+            "SetRealInputReaderDisabled",
+            "false"
+          );
+          unityInstance.SendMessage(
+            "InputBridge",
+            "SetCanQuit",
+            "false"
+          );
+
+          gameEventLinkers.forEach(({ gameEventName, handler }) => {
+            const listener: EventListener = (e) => {
+              handler((e as CustomEvent).detail);
+            };
+
+            window.addEventListener(gameEventName, listener);
+
+            listeners.push({
+              name: gameEventName,
+              handler: listener,
+            });
+          });
+
+          setLoading(false);
+        }
+      );
+    };
+
+    if (!script) {
+      script = document.createElement("script");
+      script.src = loaderSrc;
+      script.async = true;
+      script.onload = startUnity;
+      document.body.appendChild(script);
+    } else {
+      if ((window as any).createUnityInstance) {
+        startUnity();
+      } else {
+        script.onload = startUnity;
+      }
+    }
+
+    return () => {
+      listeners.forEach(({ name, handler }) => {
+        window.removeEventListener(name, handler);
+      });
+
+      const unity = unityInstanceRef.current;
+
+      if (unity && !isQuittingRef.current) {
+        isQuittingRef.current = true;
+
+        unity.Quit?.()?.then(() => {
+          unityInstanceRef.current = null;
+
+          if (canvasRef.current) {
+            canvasRef.current.remove();
+            canvasRef.current = null;
+          }
+        });
+      } else if (canvasRef.current) {
+        canvasRef.current.remove();
+        canvasRef.current = null;
+      }
+    };
+  }, [
+    config,
+    containerId,
+    canvasDimensions,
+    fileInfo,
+    gameEventLinkers,
+  ]);
+
+  const handleFullscreen = () => {
+    const unity = unityInstanceRef.current;
+
+    if (unity?.SetFullscreen) {
+      unity.SetFullscreen(1);
+      return;
+    }
+
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  return (
+    <div className={className}>
+      <div
+        ref={containerRef}
+        className="relative w-full aspect-video border-4 border-zinc-700 rounded-2xl flex items-center justify-center"
+      >
+        {loading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-black/80 z-10 gap-4">
+            <div className="font-pixeloid text-[30px] text-white">
+              LOADING...
+            </div>
+
+            <div className="w-[60%] h-4 bg-zinc-800 overflow-hidden">
+              <div
+                className="h-full bg-white transition-all duration-100"
+                style={{
+                  width: `${Math.floor(progress * 100)}%`,
+                }}
+              />
+            </div>
+
+            <div className="text-[25px] text-zinc-400 font-pixeloid">
+              {Math.floor(progress * 100)}%
+            </div>
+          </div>
+        )}
+      </div>
+
+      {showFullscreenButton && (
+        <button
+          onClick={handleFullscreen}
+          className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
+        >
+          Fullscreen
+        </button>
+      )}
+    </div>
+  );
+}
+
+export type UnityLoaderConfig = {
+  dataUrl: string;
+  frameworkUrl: string;
+  codeUrl: string;
+  streamingAssetsUrl?: string;
+
+  companyName?: string;
+  productName?: string;
+  productVersion?: string;
+
+  webglContextAttributes?: Record<string, any>;
+  matchWebGLToCanvasSize?: boolean;
+  devicePixelRatio?: number;
+};
+
+export type UnityInstance = {
+  SendMessage: (
+    gameObjectName: string,
+    methodName: string,
+    value?: string | number | boolean
+  ) => void;
+
+  Quit?: () => Promise<void> | void;
+  RemoveFocus?: () => void;
+
+  SetFullscreen?: (enabled: 0 | 1) => void;
+
+  Module?: {
+    canvas?: HTMLCanvasElement;
+    WebGL?: WebGLRenderingContext;
+    requestFullscreen?: () => void;
+    exitFullscreen?: () => void;
+  };
+
+  SendInternalMessage?: (
+    target: string,
+    method: string,
+    value?: string
+  ) => void;
+
+  SetProfilerEnabled?: (enabled: boolean) => void;
+
+  loaderUrl?: string;
+  dataUrl?: string;
+  frameworkUrl?: string;
+  codeUrl?: string;
+};
+
+export type FileInfo = {gamePath: string; buildName: string };
