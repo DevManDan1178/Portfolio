@@ -21,6 +21,14 @@ export const MiscTags : Record<string, Tag> = {
 }
 
 export const BaseTags : Record<string, Tag> = {
+  CMake: {
+    name: "CMake",
+    color: "#d6d6d6"
+  },
+  Cpp : {
+    name: "C++",
+    color: "#659AD2"
+  },
   CSharp : {
     name : "C#",
     color : "green-text-gradient",
@@ -72,6 +80,7 @@ export const BaseTags : Record<string, Tag> = {
   } 
 }
 
+
 export const Tags : Record<string, Tag> = {
   React : {
     name: "React",
@@ -98,7 +107,6 @@ export const Tags : Record<string, Tag> = {
     subTags : [BaseTags.Lua, BaseTags.GameDev]
   }
 }
-
 
 export type Tag = {
   name : string,
