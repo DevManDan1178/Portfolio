@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef, type ReactNode } from "react"
 import { type LeaderboardCategory, type LeaderboardEntry } from "../../../../shared/types/api/globalBoards/leaderboard";
 import { getLeaderboardEntries, submitLeaderboardScore } from "../../api/leaderboard";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
-import { indexFromBottomKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
+import { deletedIndexKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
 import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000;
@@ -171,27 +171,29 @@ export function Leaderboard({
                 score: Math.round(score)
             });
 
-            const indexFromTop = result[indexFromTopKey];
-            const indexFromBottom = result[indexFromBottomKey]
+            const index = result[indexFromTopKey];
+            const deletedIndex = result[deletedIndexKey];
             
-            
-            if (typeof indexFromTop != "number" || typeof indexFromBottom != "number") {
+            if (typeof index != "number") {
                 return postQueryNetworkErrorCode;
-            } else if (indexFromTop < 0 || indexFromBottom < 0) {
+            } else if (index < 0) {
                 return postQueryRefusedErrorCode;
             }
-
-            const index = indexFromTop;
-
             const newEntry : LeaderboardEntry = {
                 timestamp,
                 name,
                 score: Math.round(score)
             };
 
-            setEntries((prevEntries) => {
+           setEntries((prevEntries) => {
                 const updated = [...prevEntries];
+
+                if (typeof deletedIndex === "number" && deletedIndex >= 0) {
+                    updated.splice(deletedIndex, 1);
+                }
+
                 updated.splice(index, 0, newEntry);
+
                 return updated;
             });
 
