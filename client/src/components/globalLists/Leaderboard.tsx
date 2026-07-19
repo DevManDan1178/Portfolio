@@ -11,9 +11,12 @@ const DATE_ADJUSTMENT_FACTOR: number = 1000;
 const INITIAL_LOAD_FAIL_TEXT : string = "Failed to load data";
 const LOAD_MORE_FAIL_TEXT : string = "Failed to load more entries.";
 
+const NO_MORE_ENTRIES_TEXT : string = "Thats about it...";
+const NO_ENTRIES_TEXT : string = "Nobody's here. Be the first!";
+
 const LOAD_MORE_DISTANCE_FROM_BOTTOM : number = 16
 
-const getPlacementBadge = (index: number) => {
+const getPlacementBadge = (index: number, theme : Theme) => {
     const placementNumber: number = index + 1;
 
     const placementTextStyle: string = (() => {
@@ -33,7 +36,7 @@ const getPlacementBadge = (index: number) => {
     })();
 
     return (
-        <div className={`${placementTextStyle} font-semibold`}>
+        <div className={`${getThemeStyles(theme)} ${placementTextStyle} font-semibold`}>
             #{placementNumber}
         </div>
     );
@@ -75,7 +78,6 @@ export function Leaderboard({
     const scrollRef = useRef<HTMLDivElement>(null);
     const loadingMoreRef = useRef(false);
     const hasMoreRef = useRef(true);
-    const entriesLengthRef = useRef(0);
 
     const loadEntries = useCallback(async () => {
         setLoading(true);
@@ -83,7 +85,6 @@ export function Leaderboard({
         setHasMore(true);
 
         hasMoreRef.current = true;
-        entriesLengthRef.current = 0;
 
         try {
             const data = await getLeaderboardEntries(
@@ -93,8 +94,6 @@ export function Leaderboard({
             );
 
             setEntries(data);
-
-            entriesLengthRef.current = data.length;
 
             const stillMore = data.length === count;
 
@@ -117,13 +116,13 @@ export function Leaderboard({
     }
 
     const loadMore = useCallback(async () => {
-        if (loadingMoreRef.current || !hasMoreRef.current || entries.length == 0) return;
+        if (loadingMoreRef.current || !hasMoreRef.current || entries.length <= 0) return;
 
         loadingMoreRef.current = true;
         setLoadingMore(true);
 
         try {
-            const start = entriesLengthRef.current;
+            const start = entries.length;
             const end = start + count;
 
             const data = await getLeaderboardEntries(
@@ -133,8 +132,6 @@ export function Leaderboard({
             );
 
             setEntries((prev) => [...prev, ...data]);
-
-            entriesLengthRef.current += data.length;
 
             const stillMore = data.length === count;
 
@@ -147,7 +144,7 @@ export function Leaderboard({
             loadingMoreRef.current = false;
             setLoadingMore(false);
         }
-    }, [category, count, setEntries]);
+    }, [category, count, entries, setEntries]);
 
     useEffect(() => {
         const el = scrollRef.current;
@@ -256,8 +253,8 @@ export function Leaderboard({
                                             : ""
                                     }`}
                                 >
-                                    <td className={`${getThemeStyles(theme)} px-5 py-3 text-left`}>
-                                        {getPlacementBadge(index)}
+                                    <td className="px-5 py-3 text-left">
+                                        {getPlacementBadge(index, theme)}
                                     </td>
 
                                     <td className={`${getThemeStyles(theme)} px-5 py-3 text-center text-neutral-100 truncate`}>
@@ -268,17 +265,15 @@ export function Leaderboard({
                                         {getFormattedScore(entry.score)}
                                     </td>
 
-                                    <td className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap`}>
+                                    <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
                                         {(() => {
                                             const date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
 
                                             return (
-                                                <div className="px-5 py-3 text-neutral-300/70 text-sm text-right whitespace-nowrap">
-                                                    <div>
-                                                        {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
-                                                    </div>
+                                                <div className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-300/70 text-sm text-right whitespace-nowrap`}>
+                                                    {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
 
-                                                    <div className="text-neutral-400/80 text-xs text-right whitespace-nowrap">
+                                                    <div className={`${getThemeStyles(theme)}  text-neutral-400/80 text-xs text-right whitespace-nowrap`}>
                                                         {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
                                                     </div>
                                                 </div>
@@ -297,7 +292,7 @@ export function Leaderboard({
 
                     {!hasMore && (
                         <p className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-500 text-xs text-center bg-neutral-950/40`}>
-                            {entries.length > 0 ? "That's about it..." : "Be the first!"}
+                            {entries.length > 0 ? NO_MORE_ENTRIES_TEXT : NO_ENTRIES_TEXT}
                         </p>
                     )}
 
