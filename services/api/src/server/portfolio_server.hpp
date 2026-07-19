@@ -19,6 +19,11 @@
 
 using int_score = uint32_t;
 
+constexpr const char* INDEX_KEY = "index";
+constexpr const char* INDEX_FROM_BOTTOM_KEY = "index_from_bottom";
+constexpr const char* DELETED_INDEX_KEY = "deleted_index";
+
+
 constexpr const size_t NAMEBOARD_MAX_LENGTHS = 10000;
 constexpr const size_t LEADERBOARD_MAX_LENGTHS = 1000;
 
@@ -93,13 +98,20 @@ class portfolio_server : public request_server_base {
             return score_streams.try_emplace_locked(key, file_helper::get_file_path(DATA_DIRECTORY, SCORE_STREAM_SUBDIRECTORY_NAME), LEADERBOARD_MAX_LENGTHS).first;
         }
 
-        std::tuple<int, int> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
+        /**
+         * @return [inserted idx, size, deleted idx]
+         */
+        std::tuple<int, int, int> add_leaderboard_entry(const std::string& key, const std::string& name, int_score score) {      
             auto lb = get_leaderboard(key);
-            std::optional<std::size_t> inserted_idx = lb->submit_score(name, score);
+            auto [inserted_idx, deleted_idx] = lb->submit_score(name, score);
             if (inserted_idx.has_value()) {
-                return {static_cast<int>(inserted_idx.value()), static_cast<int>(lb->size())};
+                return {
+                    static_cast<int>(inserted_idx.value()), 
+                    static_cast<int>(lb->size()),
+                    deleted_idx.has_value() ? static_cast<int>(deleted_idx.value()) : -1
+                };
             }
-            return {-1, static_cast<int>(lb->size())};
+            return {-1, -1, static_cast<int>(lb->size())};
         }
 
         std::tuple<int, int> add_nameboard_entry(const std::string& key, const std::string& name) {
@@ -117,10 +129,13 @@ class portfolio_server : public request_server_base {
             return ss->size();
         }
 
-        void set_response_body_as_added_index(boost_http_response& response, int index, int total_size) {
+        void set_response_body_as_added_index(boost_http_response& response, int index, int total_size, int deleted_idx = -1) {
             json result;
-            result["index"] = index;
-            result["index_from_bottom"] = index >= 0 ? total_size - 1 - index : -1;
+            result[INDEX_KEY] = index;
+            result[INDEX_FROM_BOTTOM_KEY] = index >= 0 ? total_size - 1 - index : -1;
+            if (deleted_idx >= 0) {
+                result[DELETED_INDEX_KEY] = deleted_idx;
+            }
             
             http_parser::set_response_json(response, result);
         }
@@ -149,8 +164,8 @@ class portfolio_server : public request_server_base {
                 json data = json::parse(body);
                 std::string name = data["name"].get<std::string>();
                 int_score score = data["score"].get<int_score>();
-                auto [inserted_idx, total_size] = add_leaderboard_entry(key, name, score);
-                set_response_body_as_added_index(response, inserted_idx, total_size);
+                auto [inserted_idx, total_size, deleted_idx] = add_leaderboard_entry(key, name, score);
+                set_response_body_as_added_index(response, inserted_idx, total_size, deleted_idx);
             }
             catch (const json::parse_error& e) {
                 http_parser::set_response_bad_request(response, "Invalid JSON");
