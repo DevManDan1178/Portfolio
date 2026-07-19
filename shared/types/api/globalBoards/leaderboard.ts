@@ -1,5 +1,6 @@
 export type LeaderboardCategory =
-    | "Echo Arena"
+    | "Echo Arena Highscore"
+    | "Echo Arena Pacifist"
     | "Sidestep2"
     | "Stack Matching";
 

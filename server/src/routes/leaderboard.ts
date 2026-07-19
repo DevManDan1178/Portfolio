@@ -4,7 +4,8 @@ import getEnvironmentVariables from "../environment";
 import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 
 const leaderboardKeys : Record<LeaderboardCategory, string> = {
-    "Echo Arena": "echo-arena",
+    "Echo Arena Highscore": "echo-arena-highscore",
+    "Echo Arena Pacifist": "echo-arena-pacifist",
     "Sidestep2": "sidestep-2",
     "Stack Matching": "stack-matching",
 };
