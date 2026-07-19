@@ -38,7 +38,12 @@ body {
 }
 
 #status {
-	display: none
+	background-color: #242424;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
 }
 
 #status-splash {
@@ -84,10 +89,9 @@ body {
 	text-align: center;
 	z-index: 1;
 }
-		</style>
+	</style>
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
-<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
-
+		<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
 	</head>
 	<body>
 		<canvas id="canvas">
@@ -103,10 +107,17 @@ body {
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
 		</div>
-
+		<script>
+		window.onHighscoreChanged = function(value) {
+			// Prevents error in case not set
+		};
+		window.onZeroKillsDeath = function(value) {
+			// Prevents error in case not set
+		};
+		</script>
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":9773020,"index.wasm":36160334},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":9859080,"index.wasm":39513091},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
