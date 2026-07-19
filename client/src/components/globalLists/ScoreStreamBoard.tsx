@@ -19,7 +19,7 @@ export type ScoreStreamBoardProps = GlobalBoardPropsBase & {
     }
     queryOrder?: ScoreStreamQueryOrder,
     entriesState?: EntriesState<ScoreStreamEntry>,
-    scoreFilterFunction?: (score: number) => number
+    scoreFormatFunction?: (score: number) => number
 };
 
 export function ScoreStreamBoard({
@@ -33,7 +33,7 @@ export function ScoreStreamBoard({
     },
     queryOrder = defaultScoreStreamQueryOrder,
     entriesState = useState<ScoreStreamEntry[]>([]),
-    scoreFilterFunction = (score: number) => score
+    scoreFormatFunction = (score: number) => score
 }: ScoreStreamBoardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
     const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
@@ -229,7 +229,7 @@ export function ScoreStreamBoard({
                                         </td>
 
                                         <td className="px-5 py-3 text-neutral-200 text-sm text-center font-semibold truncate">
-                                            {scoreFilterFunction(entry.score)}
+                                            {scoreFormatFunction(entry.score)}
                                         </td>
 
                                         <td className="px-5 py-3 text-center">
