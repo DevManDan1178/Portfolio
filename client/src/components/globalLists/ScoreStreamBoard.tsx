@@ -1,34 +1,40 @@
-import { useEffect, useState, useCallback, useRef} from "react";
-import { defaultScoreStreamSortOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamSortOrder } from "../../../../shared/types/api/globalBoards/scoreStreams";
-import { getScoreStreamEntries } from "../../api/scoreStream";
-import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards"
+import { useEffect, useState, useCallback, useRef, type ReactNode } from "react";
+import { defaultScoreStreamQueryOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamQueryOrder } from "../../../../shared/types/api/globalBoards/scoreStreams";
+import { getScoreStreamEntries, submitScoreStreamScore } from "../../api/scoreStream";
+import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
+import { indexFromBottomKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists";
 
-const DATE_ADJUSTMENT_FACTOR: number = 1000; // Seconds to milliseconds
+const DATE_ADJUSTMENT_FACTOR: number = 1000;
 
-const INITIAL_LOAD_FAIL_TEXT = "Failed to load entries";
-const LOAD_MORE_FAIL_TEXT = "Failed to load more entries."
+const INITIAL_LOAD_FAIL_TEXT : string = "Failed to load data";
+const LOAD_MORE_FAIL_TEXT : string = "Failed to load more entries.";
 
-export type ScoreStreamBoardProps = GlobalBoardPropsBase & { 
-    category: ScoreStreamCategory, 
-    subTitles? : GlobalBoardSubTitlePropsBase & {
+const LOAD_MORE_DISTANCE_FROM_BOTTOM : number = 16
+
+export type ScoreStreamBoardProps = GlobalBoardPropsBase & {
+    category: ScoreStreamCategory,
+    subTitles?: GlobalBoardSubTitlePropsBase & {
         score: string
     }
-    sortOrder? : ScoreStreamSortOrder,
-    entriesState? : EntriesState<ScoreStreamEntry>
+    queryOrder?: ScoreStreamQueryOrder,
+    entriesState?: EntriesState<ScoreStreamEntry>,
+    scoreFilterFunction?: (score: number) => number
 };
 
-export function ScoreStreamBoard({ 
-    title, 
-    category, 
-    count, 
+export function ScoreStreamBoard({
+    title,
+    category,
+    count,
     subTitles = {
-        name: "Name", 
-        score: "Score", 
+        name: "Name",
+        score: "Score",
         timestamp: "Achieved at"
     },
-    sortOrder = defaultScoreStreamSortOrder,
+    queryOrder = defaultScoreStreamQueryOrder,
     entriesState = useState<ScoreStreamEntry[]>([]),
-} : ScoreStreamBoardProps) {
+    scoreFilterFunction = (score: number) => score
+}: ScoreStreamBoardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
     const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -40,46 +46,44 @@ export function ScoreStreamBoard({
     const hasMoreRef = useRef(true);
     const entriesLengthRef = useRef(0);
 
-    useEffect(() => {
-        let cancelled = false;
+    const loadEntries = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        setHasMore(true);
 
-        async function load() {
-            setLoading(true);
-            setError(null);
-            setHasMore(true);
-            hasMoreRef.current = true;
+        hasMoreRef.current = true;
+        entriesLengthRef.current = 0;
 
-            try {
-                const data = await getScoreStreamEntries(category, 0, count, sortOrder);
+        try {
+            const data = await getScoreStreamEntries(
+                category,
+                0,
+                count,
+                queryOrder
+            );
 
-                if (!cancelled) {
-                    setEntries(data);
-                    entriesLengthRef.current = data.length;
-                    const stillMore = data.length === count;
-                    setHasMore(stillMore);
-                    hasMoreRef.current = stillMore;
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setError(INITIAL_LOAD_FAIL_TEXT);
-                    console.error(err);
-                }
-            } finally {
-                if (!cancelled) {
-                    setLoading(false);
-                }
-            }
+            setEntries(data);
+
+            entriesLengthRef.current = data.length;
+
+            const stillMore = data.length === count;
+
+            setHasMore(stillMore);
+            hasMoreRef.current = stillMore;
+        } catch (err) {
+            setError(INITIAL_LOAD_FAIL_TEXT);
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
+    }, [category, count, queryOrder, setEntries]);
 
-        load();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [category, count]);
+    useEffect(() => {
+        loadEntries();
+    }, [loadEntries]);
 
     const loadMore = useCallback(async () => {
-        if (loadingMoreRef.current || !hasMoreRef.current) return;
+        if (loadingMoreRef.current || !hasMoreRef.current || entries.length == 0) return;
 
         loadingMoreRef.current = true;
         setLoadingMore(true);
@@ -87,11 +91,20 @@ export function ScoreStreamBoard({
         try {
             const start = entriesLengthRef.current;
             const end = start + count;
-            const data = await getScoreStreamEntries(category, start, end, sortOrder);
+
+            const data = await getScoreStreamEntries(
+                category,
+                start,
+                end,
+                queryOrder
+            );
 
             setEntries((prev) => [...prev, ...data]);
+
             entriesLengthRef.current += data.length;
+
             const stillMore = data.length === count;
+
             setHasMore(stillMore);
             hasMoreRef.current = stillMore;
         } catch (err) {
@@ -101,58 +114,112 @@ export function ScoreStreamBoard({
             loadingMoreRef.current = false;
             setLoadingMore(false);
         }
-    }, [category, count]);
+    }, [category, count, queryOrder, setEntries]);
 
     useEffect(() => {
         const el = scrollRef.current;
+
         if (!el || loading) return;
 
         const handleScroll = () => {
-            const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-            if (distanceFromBottom < 32) {
+            const distanceFromBottom =
+                el.scrollHeight - el.scrollTop - el.clientHeight;
+
+            if (distanceFromBottom < LOAD_MORE_DISTANCE_FROM_BOTTOM) {
                 loadMore();
             }
         };
 
         el.addEventListener("scroll", handleScroll);
 
-        // Also check immediately in case content doesn't fill the container
         handleScroll();
 
-        return () => el.removeEventListener("scroll", handleScroll);
+        return () => {
+            el.removeEventListener("scroll", handleScroll);
+        };
     }, [loading, loadMore]);
 
-    return (
+
+    async function submitScore(score : number, name : string) : Promise<number> {
+        try {
+            const timestamp = Math.floor(Date.now() / DATE_ADJUSTMENT_FACTOR);
+            const result = await submitScoreStreamScore(category, {
+                name,
+                score: Math.round(score)
+            });
+
+            const indexFromTop = result[indexFromTopKey];
+            const indexFromBottom = result[indexFromBottomKey]
+            
+            
+            if (typeof indexFromTop != "number" || typeof indexFromBottom != "number") {
+                return postQueryNetworkErrorCode;
+            } else if (indexFromTop < 0 || indexFromBottom < 0) {
+                return postQueryRefusedErrorCode;
+            }
+
+            const index = queryOrder == defaultScoreStreamQueryOrder ? indexFromTop : indexFromBottom;
+
+            const newEntry : ScoreStreamEntry = {
+                timestamp,
+                name,
+                score: Math.round(score)
+            };
+
+            setEntries((prevEntries) => {
+                const updated = [...prevEntries];
+                updated.splice(index, 0, newEntry);
+                return updated;
+            });
+
+            return index;
+        } catch (err) {
+            console.error(err);
+        } 
+        return -1;
+    }
+
+    return [(
         <div className="w-full max-w-2xl mx-auto bg-transparent rounded-xl border border-neutral-800 shadow-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-neutral-800 bg-neutral-950">
+            <div className="px-5 py-4 border-b border-neutral-800 bg-neutral-950/60">
                 <h2 className="text-lg font-bold text-neutral-100 tracking-wide uppercase">
                     {title}
                 </h2>
             </div>
 
             {loading ? (
-                <p className="px-5 py-6 text-neutral-400 text-sm">Loading...</p>
+                <p className="px-5 py-6 text-neutral-400 text-sm">
+                    Loading...
+                </p>
             ) : (
                 <div>
-                    <table className="w-full border-collapse">
-                        
-                    </table>
                     <div
                         ref={scrollRef}
                         className="max-h-96 overflow-y-auto"
                     >
                         <table className="w-full border-collapse table-fixed">
                             <tbody>
-                                <tr className="text-neutral-500 text-xs uppercase tracking-wider">
-                                    <th className="px-5 py-0 text-left font-medium w-[40%]">{subTitles.name}</th>
-                                    <th className="px-5 py-0 text-center font-medium w-[25%]">{subTitles.score}</th>
-                                    <th className="px-5 py-0 text-right font-medium w-[35%]">{subTitles.timestamp}</th>
+                                <tr className="text-neutral-500 text-xs uppercase tracking-wider bg-neutral-950/40 text-white/75">
+                                    <th className="px-5 py-0 text-left font-medium w-[40%]">
+                                        {subTitles.name}
+                                    </th>
+
+                                    <th className="px-5 py-0 text-center font-medium w-[25%]">
+                                        {subTitles.score}
+                                    </th>
+
+                                    <th className="px-5 py-0 text-right font-medium w-[35%]">
+                                        {subTitles.timestamp}
+                                    </th>
                                 </tr>
+
                                 {entries.map((entry, index) => (
                                     <tr
                                         key={`${entry.name}-${entry.timestamp}-${index}`}
                                         className={`border-t border-neutral-800 bg-neutral-800/40 hover:bg-neutral-500/10 transition-colors ${
-                                            index < 3 ? "bg-neutral-800/20" : ""
+                                            index < 3
+                                                ? "bg-neutral-800/20"
+                                                : ""
                                         }`}
                                     >
                                         <td className="px-5 py-3 text-left">
@@ -162,19 +229,23 @@ export function ScoreStreamBoard({
                                         </td>
 
                                         <td className="px-5 py-3 text-neutral-200 text-sm text-center font-semibold truncate">
-                                            {entry.score}
+                                            {scoreFilterFunction(entry.score)}
                                         </td>
 
                                         <td className="px-5 py-3 text-center">
                                             {(() => {
-                                                const date: Date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
+                                                const date = new Date(
+                                                    entry.timestamp *
+                                                        DATE_ADJUSTMENT_FACTOR
+                                                );
+
                                                 return (
-                                                    <div className="text-neutral-300 text-sm text-right whitespace-nowrap truncate">
+                                                    <div className="px-5 py-3 text-neutral-300/70 text-sm text-right whitespace-nowrap">
                                                         <div>
                                                             {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
                                                         </div>
 
-                                                        <div className="text-neutral-600 text-xs text-right">
+                                                        <div className="text-neutral-400/80 text-xs text-right whitespace-nowrap">
                                                             {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
                                                         </div>
                                                     </div>
@@ -185,23 +256,38 @@ export function ScoreStreamBoard({
                                 ))}
                             </tbody>
                         </table>
-                        {loadingMore && (
-                            <p className="px-5 py-3 text-neutral-500 text-xs text-center">
+
+                        {loadingMore && !error && (
+                            <p className="px-5 py-3 text-neutral-500 text-xs text-center bg-neutral-950/40">
                                 Loading more...
                             </p>
                         )}
 
-                        {!hasMore && entries.length > 0 && (
-                            <p className="px-5 py-3 text-neutral-700 text-xs text-center">
-                                That's about it...
+                        {!hasMore && (
+                            <p className="px-5 py-3 text-neutral-700 text-xs text-center bg-neutral-950/40">
+                                {entries.length > 0 ? "That's about it..." : "Be the first!"}
                             </p>
                         )}
+
                         {error && (
-                            <p className="px-5 py-6 text-center text-red-400/80 text-sm">{error}</p>
+                            <div className="px-5 py-6 text-center bg-neutral-950/40">
+                                <p className="text-red-400/80 text-sm mb-3">
+                                    {error}
+                                </p>
+
+                                <button
+                                    onClick={loadEntries}
+                                    className="px-4 py-2 rounded-md bg-neutral-800 text-neutral-200 text-sm hover:bg-neutral-700 transition-colors"
+                                >
+                                    Retry
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
-            )}  
+            )}
         </div>
-    );
+    ),
+    submitScore    
+    ]
 }
