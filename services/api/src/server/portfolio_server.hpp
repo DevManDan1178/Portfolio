@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <optional>
 #include <tuple>
+#include <array>
 
 #include "data_structures/global_boards/score_stream.hpp"
 #include "storage/file_helper.hpp"
@@ -39,6 +40,10 @@ constexpr std::string_view SCORE_STREAMS_DIRECTORY = "/score-streams/";
 
 constexpr std::string_view GLOBAL_BOARDS_FROM_BOTTOM_QUERY = "from-bottom=true";
 
+constexpr std::array LEADERBOARDS_WITH_LOWEST_FIRST = {
+    "stack-matching"
+};
+
 class portfolio_server : public request_server_base {
     private:
         std::string api_key;
@@ -62,11 +67,16 @@ class portfolio_server : public request_server_base {
             double ip_token_refill_rate = DEFAULT_IP_TOKEN_REFILL_RATE
         ) : request_server_base(port, worker_count, max_ip_rate_tokens, ip_token_refill_rate) 
             {
+            for (auto& key : LEADERBOARDS_WITH_LOWEST_FIRST) {
+                leaderboards.try_emplace(key, file_helper::get_file_path(DATA_DIRECTORY, LEADERBOARDS_SUBDIRECTORY_NAME, key), LEADERBOARD_MAX_LENGTHS, false);
+                log_debug() << key << " lb with highest first on false";
+            }
+
+            for (auto& key : {GLOBAL_URLS_KEY, LEADERBOARDS_KEY, NAMEBOARDS_KEY, SCORE_STREAMS_KEY}) {
+                rate_limiters.try_emplace(key, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
+            }
+
             load();
-            rate_limiters.try_emplace(GLOBAL_URLS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
-            rate_limiters.try_emplace(LEADERBOARDS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
-            rate_limiters.try_emplace(NAMEBOARDS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
-            rate_limiters.try_emplace(SCORE_STREAMS_KEY, INITIAL_RATE_TOKENS, RATE_REFILL_RATE);
         }
  
 
