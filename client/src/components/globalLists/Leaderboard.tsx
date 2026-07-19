@@ -173,7 +173,7 @@ export function Leaderboard({
     }, [loading, loadMore]);
 
     async function submitScore(preprocessedScore : number, name : string) : Promise<number> {
-        const score = preprocessedScore * scoreStorageFactor;
+        const score = Math.round(preprocessedScore * scoreStorageFactor);
         try {
             const timestamp = Math.floor(Date.now() / DATE_ADJUSTMENT_FACTOR);
             const result = await submitLeaderboardScore(category, {
@@ -192,7 +192,7 @@ export function Leaderboard({
             const newEntry : LeaderboardEntry = {
                 timestamp,
                 name,
-                score: Math.round(score)
+                score
             };
 
            setEntries((prevEntries) => {
