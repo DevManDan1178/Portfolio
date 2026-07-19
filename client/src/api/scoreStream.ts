@@ -1,5 +1,6 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
-import { defaultScoreStreamQueryOrder, scoreStreamApiURLPath, type ScoreStreamCategory, type ScoreStreamInputEntry, type ScoreStreamQueryOrder } from "../../../shared/types/api/globalBoards/scoreStreams";
+import { defaultScoreStreamQueryOrder, type ScoreStreamCategory, type ScoreStreamInputEntry, type ScoreStreamQueryOrder } from "../../../shared/types/api/globalBoards/scoreStreams";
+import { scoreStreamApiURLPath } from "../../../shared/constants/api/globalBoards";
 
 export async function getScoreStreamEntries(
     category: ScoreStreamCategory,

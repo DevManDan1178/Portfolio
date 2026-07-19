@@ -14,4 +14,3 @@ export type LeaderboardInputEntry = Omit<
     "timestamp"
 >;
 
-export const leaderboardApiURLPath = "/api/leaderboard";

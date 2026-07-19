@@ -11,4 +11,3 @@ export type NameboardCategory =
 
 export type NameboardInputEntry = Omit<NameboardEntry, "timestamp">
 
-export const nameboardApiURLPath = "/api/nameboard";

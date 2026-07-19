@@ -1,5 +1,6 @@
-import { defaultNameboardQueryOrder, nameboardApiURLPath, type NameboardCategory, type NameboardInputEntry, type NameboardQueryOrder } from "../../../shared/types/api/globalBoards/nameboard";
+import { defaultNameboardQueryOrder, type NameboardCategory, type NameboardInputEntry, type NameboardQueryOrder } from "../../../shared/types/api/globalBoards/nameboard";
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards"
+import { nameboardApiURLPath } from "../../../shared/constants/api/globalBoards";
 
 export async function getNameboardEntries(
     category: NameboardCategory,

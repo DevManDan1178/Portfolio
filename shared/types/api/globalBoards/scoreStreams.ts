@@ -15,4 +15,3 @@ export type ScoreStreamInputEntry = Omit<
     "timestamp"
 >;
 
-export const scoreStreamApiURLPath = "/api/score-stream";

@@ -1,6 +1,6 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
-import {  leaderboardApiURLPath, type LeaderboardCategory, type LeaderboardInputEntry } from "../../../shared/types/api/globalBoards/leaderboard";
-
+import { type LeaderboardCategory, type LeaderboardInputEntry } from "../../../shared/types/api/globalBoards/leaderboard";
+import { leaderboardApiURLPath } from "../../../shared/constants/api/globalBoards";
 export async function getLeaderboardEntries(
     category: LeaderboardCategory,
     start: number,

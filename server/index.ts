@@ -3,17 +3,15 @@ import leaderboardHandler from "./api/leaderboard";
 import nameboardHandler from "./api/nameboard"
 import scoreStreamHandler from "./api/scoreStream"
 import "dotenv/config";
-import { leaderboardApiURLPath } from "../shared/types/api/globalBoards/leaderboard";
-import { scoreStreamApiURLPath } from "../shared/types/api/globalBoards/scoreStreams";
-import { nameboardApiURLPath } from "../shared/types/api/globalBoards/nameboard";
-import { Request, Response } from "express";
+import { leaderboardApiURLPath, nameboardApiURLPath, scoreStreamApiURLPath } from "../shared/constants/api/globalBoards";
+import { Request } from "express";
 
 const app = express();
 
 app.use(express.json());
 
 function getReq(req : Request) : globalThis.Request {
-    return new Request(
+    return new globalThis.Request(
         `http://${req.headers.host}${req.url}`,
         {
             method: req.method,
