@@ -54,7 +54,7 @@ const Technologies = () => {
     title: "Fastest Times",
     count: 20,
     scoreStorageFactor: SCORE_STORAGE_FACTOR,
-    scoreFormatFunction: (score : number | undefined) => (score == undefined ? "-" : formatTime(score, 2)),
+    scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : `${formatTime(score, 2)}s`,
     scoreComparisonFunction: (a : number, b: number) => b > a,
     submitButtonCooldown: SUBMIT_BUTTON_COOLDOWN,
   })
