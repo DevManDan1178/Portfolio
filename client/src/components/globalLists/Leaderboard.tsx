@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback, useRef, type ReactNode } from "react";
-import { defaultLeaderboardSortOrder, type LeaderboardCategory, type LeaderboardEntry, type LeaderboardSortOrder } from "../../../../shared/types/api/globalBoards/leaderboard";
+import { type LeaderboardCategory, type LeaderboardEntry } from "../../../../shared/types/api/globalBoards/leaderboard";
 import { getLeaderboardEntries, submitLeaderboardScore } from "../../api/leaderboard";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
+import { indexFromBottomKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000;
 
@@ -42,7 +44,6 @@ export type LeaderboardProps = GlobalBoardPropsBase & {
         score: string,
         placement: string
     }
-    sortOrder?: LeaderboardSortOrder,
     entriesState?: EntriesState<LeaderboardEntry>,
     scoreFilterFunction? : (score : number) => string
 }
@@ -57,7 +58,6 @@ export function Leaderboard({
         score: "Score",
         timestamp: "Achieved at"
     },
-    sortOrder = defaultLeaderboardSortOrder,
     entriesState = useState<LeaderboardEntry[]>([]),
     scoreFilterFunction = (score : number) => `${score}`
 }: LeaderboardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
@@ -85,7 +85,6 @@ export function Leaderboard({
                 category,
                 0,
                 count,
-                sortOrder
             );
 
             setEntries(data);
@@ -102,7 +101,7 @@ export function Leaderboard({
         } finally {
             setLoading(false);
         }
-    }, [category, count, sortOrder, setEntries]);
+    }, [category, count, setEntries]);
 
     useEffect(() => {
         loadEntries();
@@ -122,7 +121,6 @@ export function Leaderboard({
                 category,
                 start,
                 end,
-                sortOrder
             );
 
             setEntries((prev) => [...prev, ...data]);
@@ -140,7 +138,7 @@ export function Leaderboard({
             loadingMoreRef.current = false;
             setLoadingMore(false);
         }
-    }, [category, count, sortOrder, setEntries]);
+    }, [category, count, setEntries]);
 
     useEffect(() => {
         const el = scrollRef.current;
@@ -170,29 +168,34 @@ export function Leaderboard({
             const timestamp = Math.floor(Date.now() / DATE_ADJUSTMENT_FACTOR);
             const result = await submitLeaderboardScore(category, {
                 name,
-                score
+                score: Math.round(score)
             });
 
-            const addedIndex = result["index"];
+            const indexFromTop = result[indexFromTopKey];
+            const indexFromBottom = result[indexFromBottomKey]
             
-            if (typeof addedIndex != "number") {
-                return -1;
-            } else if (addedIndex < 0) {
-                return addedIndex;
+            
+            if (typeof indexFromTop != "number" || typeof indexFromBottom != "number") {
+                return postQueryNetworkErrorCode;
+            } else if (indexFromTop < 0 || indexFromBottom < 0) {
+                return postQueryRefusedErrorCode;
             }
+
+            const index = indexFromTop;
+
             const newEntry : LeaderboardEntry = {
                 timestamp,
                 name,
-                score
+                score: Math.round(score)
             };
 
             setEntries((prevEntries) => {
                 const updated = [...prevEntries];
-                updated.splice(addedIndex, 0, newEntry);
+                updated.splice(index, 0, newEntry);
                 return updated;
             });
 
-            return addedIndex;
+            return index;
         } catch (err) {
             console.error(err);
         } 
