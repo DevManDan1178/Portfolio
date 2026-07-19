@@ -14,3 +14,8 @@ export type EntriesState<T> = [
     entries: T[],
     setEntries: Dispatch<SetStateAction<T[]>>
 ]
+
+export type SubmitResult = {
+    message : string,
+    isError : boolean
+  }
