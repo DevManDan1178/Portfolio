@@ -1,10 +1,7 @@
 export type LeaderboardCategory =
     | "Echo Arena"
     | "Sidestep2"
-    | "Test"
-
-export type LeaderboardSortOrder = "Top" | "Bottom"
-export const defaultLeaderboardSortOrder : LeaderboardSortOrder = "Top";
+    | "Stack Matching";
 
 export type LeaderboardEntry = {
     name: string;
