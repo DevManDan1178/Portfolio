@@ -5,6 +5,7 @@ import GodotGame from "../../../components/games/GodotGame";
 import { echoArena } from "../../../assets";
 import type { GameEventLinkers } from "../../../../types/exhibits/games";
 import SubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
+import { formatTime } from "../../../../../shared/constants/util";
 
 const FILE_PATH = "/games/EchoArena/index.html";
 
@@ -40,8 +41,8 @@ const descriptionElement: ReactElement = (
 );
 
 export default function EchoArenaGamePage() {
-  const [leaderboard, attemptSumbitScore] = SubmittableLeaderboard({
-    category:"Echo Arena",
+  const [highscoreLeaderboard, highscoreAttemptSumbit] = SubmittableLeaderboard({
+    category:"Echo Arena Highscore",
     title: "Highest scores",
     count: 20,
     theme: {
@@ -49,20 +50,42 @@ export default function EchoArenaGamePage() {
     },
     bestScoreTitle: "BEST SCORE",
     placeholderName: "Name",
-    submitButtonText: "SUBMIT"
+    submitButtonText: "SUBMIT",
   })
+
+  const [pacifistLeaderboard, pacifistAttemptSubmit] = SubmittableLeaderboard({
+    category:"Echo Arena Pacifist",
+    title: "LONGEST TIME ON ZERO KILLS",
+    count: 20,
+    theme: {
+      font: "font-pixeloid",
+    },
+    bestScoreTitle: "BEST TIME",
+    placeholderName: "Name",
+    submitButtonText: "SUBMIT",
+    scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : formatTime(score, 2),
+    scoreStorageFactor: 1000,
+  })
+
+  const [selectedLeaderboard, setSelectedLeaderboard] = useState<"highscore" | "pacifist">("highscore");
 
   const gameEventLinkers : GameEventLinkers = [
     {
       gameEventName: "onHighscoreChanged",
       handler(score : number) {
         console.log("new godot highscore", score);
-        attemptSumbitScore(score);
+        highscoreAttemptSumbit(score);
       },
+    }, {
+      gameEventName: "onZeroKillsDeath",
+      handler(timeSurvived : number) {
+        console.log("survived on zero kills for: ", timeSurvived);
+        pacifistAttemptSubmit(timeSurvived);
+      }
     }
   ];
 
-  const [leaderboardToggled, setleaderboardToggled] = useState(false)
+  const [leaderboardsToggled, setleaderboardsToggled] = useState(false)
 
   const [echoArenaGame, handleFullscreen] = GodotGame({
     gamePath:FILE_PATH,
@@ -99,17 +122,39 @@ export default function EchoArenaGamePage() {
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
               className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
-              onClick={() => setleaderboardToggled(!leaderboardToggled)}
+              onClick={() => setleaderboardsToggled(!leaderboardsToggled)}
             >
-              LEADERBOARD
+              LEADERBOARDS
             </button>
           </div>
         </div>
 
-        {leaderboardToggled && (
-          <div className="w-full flex justify-center pb-10 font-pixeloid">
-            {leaderboard}
+        {leaderboardsToggled && (
+          <>
+          <div className="flex flex-col items-center w-full">
+            <div className="w-full items-center justify-center flex gap-10">
+              <button
+                onClick={() => setSelectedLeaderboard("highscore")}
+                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "highscore" ? "bg-white cursor-default" : "bg-white/80"} text-black font-pixeloid text-sm rounded hover:bg-white transition`}
+              >
+                HIGHSCORE
+              </button>
+
+              <button
+                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "pacifist" ? "bg-white cursor-default" : "bg-white/80"} text-black font-pixeloid text-sm rounded hover:bg-white transition`}
+                onClick={() => setSelectedLeaderboard("pacifist")}
+              >
+                PACIFIST
+              </button>
+            </div>
+           
+            
+            <div className="w-full flex justify-center pb-10 font-pixeloid pt-10">
+              {selectedLeaderboard == "highscore" ? highscoreLeaderboard : pacifistLeaderboard}
+            </div>
           </div>
+          
+        </>
         )}
                 
         <div className="shrink-0 w-full flex justify-center text-sm text-zinc-400 py-5">
