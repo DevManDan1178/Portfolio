@@ -115,8 +115,8 @@ export default function({
     }
 
     return [(
-        <div className="flex">
-          <div className="w-[calc(15%_+_50px)] h-[70%] flex flex-col items-center justify-center">
+        <div className="flex flex-row gap-5">
+          <div className="w-[calc(15%_+_50px)] h-[70%] my-auto flex flex-col items-center justify-center">
             <p className={`text-white/80 text-center text-md sm:text-xl ${getThemeStyles(theme)}`}>
               {bestScoreTitle}
             </p>
