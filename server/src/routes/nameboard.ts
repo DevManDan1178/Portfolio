@@ -57,6 +57,9 @@ export async function getNameboardEntries(
 }
 
 export async function addNameboardEntry(category : NameboardCategory, entry : NameboardInputEntry, queryOrder : NameboardQueryOrder) : Promise<JSON | undefined> {
+    if (!entry.name.trim()) {
+        return
+    }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
         return;

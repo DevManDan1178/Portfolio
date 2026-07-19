@@ -57,6 +57,9 @@ export async function getScoreStreamEntries(
 }
 
 export async function addScoreStreamEntry(category : ScoreStreamCategory, entry : ScoreStreamInputEntry, queryOrder : ScoreStreamQueryOrder) : Promise<JSON | undefined> {
+    if (!entry.name.trim()) {
+        return
+    }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
         return;

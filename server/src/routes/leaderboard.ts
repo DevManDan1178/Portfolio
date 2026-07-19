@@ -58,6 +58,10 @@ export async function getLeaderboardEntries(
 }
 
 export async function addLeaderboardEntry(category : LeaderboardCategory, entry : LeaderboardInputEntry) : Promise<JSON | undefined> {
+    if (!entry.name.trim()) {
+        return
+    }
+
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
         return;
