@@ -28,6 +28,11 @@ export default function UnityGame({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const unityInstanceRef = useRef<UnityInstance | null>(null);
   const isQuittingRef = useRef(false);
+  const gameEventLinkersRef = useRef<GameEventLinkers>(gameEventLinkers);
+
+  useEffect(() => {
+    gameEventLinkersRef.current = gameEventLinkers;
+  }, [gameEventLinkers]);
 
   const onLoadingProgress = (progress: number) => {
     setProgress(progress);
@@ -36,6 +41,8 @@ export default function UnityGame({
   useEffect(() => {
     if (!containerRef.current) return;
     if (unityInstanceRef.current) return;
+
+    let cancelled = false;
 
     const canvas = document.createElement("canvas");
     canvas.id = containerId;
@@ -65,7 +72,13 @@ export default function UnityGame({
       // @ts-ignore
       createUnityInstance(canvas, config, onLoadingProgress).then(
         (unityInstance: UnityInstance) => {
+          if (cancelled) {
+            unityInstance.Quit?.();
+            return;
+          }
+
           unityInstanceRef.current = unityInstance;
+          isQuittingRef.current = false;
 
           canvas.focus();
 
@@ -80,7 +93,7 @@ export default function UnityGame({
             "false"
           );
 
-          gameEventLinkers.forEach(({ gameEventName, handler }) => {
+          gameEventLinkersRef.current.forEach(({ gameEventName, handler }) => {
             const listener: EventListener = (e) => {
               handler((e as CustomEvent).detail);
             };
@@ -102,17 +115,23 @@ export default function UnityGame({
       script = document.createElement("script");
       script.src = loaderSrc;
       script.async = true;
-      script.onload = startUnity;
+      script.addEventListener("load", startUnity);
       document.body.appendChild(script);
     } else {
       if ((window as any).createUnityInstance) {
         startUnity();
       } else {
-        script.onload = startUnity;
+        script.addEventListener("load", startUnity);
       }
     }
 
     return () => {
+      cancelled = true;
+
+      if (script) {
+        script.removeEventListener("load", startUnity);
+      }
+
       listeners.forEach(({ name, handler }) => {
         window.removeEventListener(name, handler);
       });
@@ -122,14 +141,27 @@ export default function UnityGame({
       if (unity && !isQuittingRef.current) {
         isQuittingRef.current = true;
 
-        unity.Quit?.()?.then(() => {
+        const quit = unity.Quit?.();
+
+        if (quit instanceof Promise) {
+          quit.then(() => {
+            unityInstanceRef.current = null;
+            isQuittingRef.current = false;
+
+            if (canvasRef.current) {
+              canvasRef.current.remove();
+              canvasRef.current = null;
+            }
+          });
+        } else {
           unityInstanceRef.current = null;
+          isQuittingRef.current = false;
 
           if (canvasRef.current) {
             canvasRef.current.remove();
             canvasRef.current = null;
           }
-        });
+        }
       } else if (canvasRef.current) {
         canvasRef.current.remove();
         canvasRef.current = null;
@@ -140,7 +172,6 @@ export default function UnityGame({
     containerId,
     canvasDimensions,
     fileInfo,
-    gameEventLinkers,
   ]);
 
   const handleFullscreen = () => {
@@ -165,7 +196,7 @@ export default function UnityGame({
         className="relative w-full aspect-video border-4 border-zinc-700 rounded-2xl flex items-center justify-center"
       >
         {loading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-black/80 z-10 gap-4">
+          <div className="absolute inset-0 flex flex-col centered justify-center rounded-2xl bg-black/80 z-10 gap-4">
             <div className="font-pixeloid text-[30px] text-white">
               LOADING...
             </div>
