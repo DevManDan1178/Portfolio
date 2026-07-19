@@ -63,14 +63,32 @@ const Navbar = () => {
 
   window.addEventListener("scroll", updateActive);
   window.addEventListener("resize", updateActive);
-  function processKeyboardEvent(event : KeyboardEvent) {
-    if (event.code == "Space") {
-      console.log((surfingNavlinkIndexRef.current + 1) % (navbarLinks.length), navbarLinks.length)
-      scrollToNavIdx(Math.min(surfingNavlinkIndexRef.current + 1 , navbarLinks.length - 1))
-      event.preventDefault()
+  function processKeyboardEvent(event: KeyboardEvent) {
+    const target = event.target as HTMLElement;
+
+    if (
+      target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.isContentEditable
+    ) {
+      return;
+    }
+
+    if (event.code === "Space") {
+      console.log(
+        (surfingNavlinkIndexRef.current + 1) % navbarLinks.length,
+        navbarLinks.length
+      );
+
+      scrollToNavIdx(
+        Math.min(surfingNavlinkIndexRef.current + 1, navbarLinks.length - 1)
+      );
+
+      event.preventDefault();
     }
   }
-  window.addEventListener("keydown", processKeyboardEvent)
+
+  window.addEventListener("keydown", processKeyboardEvent);
 
   updateActive(); 
 
