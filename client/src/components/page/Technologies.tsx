@@ -1,14 +1,15 @@
-import { useRef, useState} from 'react'
+import { useRef, useState, useEffect } from 'react'
 import useSound from 'use-sound'
-import { BallCanvas } from '../canvas'
+import { TechGrid } from '../canvas'
 import { SectionWrapper } from '../../hoc'
-import { preTitle, techStack, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText, technologies } from '../../constants/technologies'
+import { preTitle, techStack, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText, technologies } from '../../constants/components/page/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../../style'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
-import { ScoreStreamBoard } from '../globalLists/ScoreStreamBoard'
 import { Leaderboard } from '../globalLists/Leaderboard'
-import { Nameboard } from '../globalLists/Nameboard'
+import { formatTime } from '../../../../shared/constants/util'
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from '../../constants/components/globalLists'
+import type { SubmitResult } from '../../../types/api/globalBoards'
 
 export type NodeStatus = {
   solved : boolean,
@@ -24,8 +25,10 @@ const SECOND_TECHNOLOGY_CATEGORY_APPEARANCE_DELAY = 0.25
 const PAIR_SELECTED_HIDE_DELAY : number = 1 * 1000
 const SOLVED_DISPLAY_DELAY : number = 0.5 * 1000
 
+const SCORE_STORAGE_FACTOR : number = 0.1
 
-
+const SUBMIT_BUTTON_COOLDOWN : number = 500
+const TIMER_DIGITS_AFTER_ZERO : number = 2
 
 const Technologies = () => {
   const [playSelectSound] = useSound('/sounds/match2Minigame/BallFlip.wav', {volume: 0.3})
@@ -43,6 +46,48 @@ const Technologies = () => {
   const [technologyNodes, setTechnologyNodes] = useState<TechnologyNode[]>(getRandomizedTechnologyNodes())
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   
+  const [timer, setTimer] = useState(0); // milliseconds
+  const [timerRunning, setTimerRunning] = useState(false)
+
+  const [bestTimerScore, setbestTimerScore] = useState(-1)
+  const [leaderboardToggled, setleaderboardToggled] = useState(false)
+  const [submitName, setSubmitName] = useState("")
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false)
+  const [bestSubmittedScore, setBestSubmittedScore] = useState(-1)
+  const [submitResult, setSubmitResult] = useState<SubmitResult>({
+    message: "",
+    isError: false
+  })
+
+  useEffect(() => {
+    if (!submitButtonDisabled) return;
+
+      const timeout = setTimeout(() => {
+          setSubmitButtonDisabled(false)
+      }, SUBMIT_BUTTON_COOLDOWN); // disappears after 3 seconds
+
+      return () => clearTimeout(timeout);
+  }, [submitButtonDisabled]);
+
+  useEffect(() => {
+    if (!timerRunning) return;
+
+    const interval = setInterval(() => {
+      setTimer((prev) => prev + 10); // update every 10ms
+    }, 10);
+
+    return () => clearInterval(interval);
+  }, [timerRunning]);
+
+  function onSolved() {
+    if (bestTimerScore < 0 || bestTimerScore > timer) {
+      setbestTimerScore(timer)
+    }
+    setTimerRunning(false)
+    timeoutRef.current = setTimeout(() => {
+      setSolved(true), SOLVED_DISPLAY_DELAY
+    })
+  }
 
   const onCorrectPairSelected = (index1 : number, index2 : number) => {
     var solved = true;
@@ -57,9 +102,7 @@ const Technologies = () => {
     }))
     playMatchSound()
     if (solved) {
-      timeoutRef.current = setTimeout(() => {
-        setSolved(true), SOLVED_DISPLAY_DELAY
-      })
+      onSolved()
     }
   }
 
@@ -92,6 +135,9 @@ const Technologies = () => {
   }
 
   const onSelected = (index : number) => {
+    if (!timerRunning) {
+      setTimerRunning(true)
+    }
     var otherSelectedIndex : number = -1
 
     setTechnologyNodes(technologyNodes.map((technologyNode : TechnologyNode, _index : number) => {
@@ -124,12 +170,18 @@ const Technologies = () => {
     onSelected(index)
   }
 
+  function resetTimer() {
+    setTimer(0)
+    setTimerRunning(false)
+  }
+
   const reset = () => {
     setSolved(false)
     setAborted(false)
     setInputDisabled(false)
     setTechnologyNodes(getRandomizedTechnologyNodes())
     playGameFlipSound()
+    resetTimer()
   }
   
   const abort = () => {
@@ -138,12 +190,71 @@ const Technologies = () => {
     }
     setAborted(true)
     setInputDisabled(true)
+    resetTimer()
     const newTechnologyNodes = technologyNodes.map((technologyNode) => ({technology:technologyNode.technology, status: {solved : false, selected: true}})) //Array.from(new Map(technologyNodes.map((technologyNode : TechnologyNode) => 
-        //[technologyNode.technology.name, {technology:technologyNode.technology, status: {solved : false, selected: true}}])).values())
     setTechnologyNodes(newTechnologyNodes)
     playGameFlipSound()
   }
+  
+  function submitBlocked() {
+    return bestSubmittedScore > 0 && bestSubmittedScore >= bestTimerScore
+  }
 
+  function canSubmit() {
+    return bestTimerScore > 0 && !submitButtonDisabled && submitName.trim() && !submitBlocked()
+  }
+
+
+
+  const onSubmitScorePressed = async () => {
+    if (bestTimerScore < 0 || !submitName.trim()) {
+      return
+    }
+    const result = await submitScore(bestTimerScore * SCORE_STORAGE_FACTOR, submitName)
+
+    const submitResult : SubmitResult= (() => {
+      if (result >= 0) {
+        setBestSubmittedScore(bestTimerScore.valueOf())
+
+        return {
+          message: `You (${submitName}) are now top ${result + 1} with a time of ${formatTime(bestTimerScore.valueOf(), TIMER_DIGITS_AFTER_ZERO)}!`,
+          isError: false,
+        };
+      }
+      switch(result) {
+        case postQueryNetworkErrorCode:
+          return {
+            message: "Could not send to leaderboard",
+            isError: true,
+          }
+        case postQueryRefusedErrorCode:
+          return {
+            message: "Your name already has at least this score!",
+            isError: true
+          }
+        default:
+          return {
+            message: "Failed to submit to leaderboard",
+            isError: true
+          }
+      }
+    })();
+    setSubmitResult(submitResult) 
+  }
+
+  const scoreFilterFactor = 0.001 / SCORE_STORAGE_FACTOR;
+
+  const [leaderboard, submitScore] = Leaderboard({
+    title:"Fastest times",
+    category:"Stack Matching",
+    count:20,
+    scoreFilterFunction(score) {
+      return `${(score * scoreFilterFactor).toFixed(2)}s` // Milliseconds to seconds
+    },
+  })
+
+
+  
   return (
     <div className='mb-[75px]'>
       <div> {/*
@@ -212,15 +323,92 @@ const Technologies = () => {
           </span>
         </span>
         <div className='flex flex-row flex-wrap justify-center gap-10 w-full aspect-[3/1] mt-[10px] mb-[20px] border-2 border-white/40 rounded-2xl'>
-            <BallCanvas technologies={technologyNodes} getOnClick={getOnClick} />
+            <TechGrid technologies={technologyNodes} getOnClick={getOnClick} />
         </div>
-        <div className='w-full flex items-center justify-center'>
-          <button className={`gap-10 ${styles.techStackMatchStyle.buttonSizeStyle} "cursor-pointer" bg-white/15 rounded-lg border-2 border-white/10 items-center justify-center`} onClick={solved ? reset : (aborted ? reset : abort)} >
-            <p className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary tracking-wider text-center`}>
-              {solved ? solvedButtonText : (aborted ? abortedButtonText : abortingButtonText)}
+        <div className='w-full flex items-center justify-center pt-5 pb-10'>
+          {/* Middle */}
+          <div className="absolute left-1/2 -translate-x-1/2 w-[calc(15%+75px)] items-center justify-center flex">
+            <button
+              className={`cursor-pointer ${styles.techStackMatchStyle.buttonHeightStyle} w-full bg-white/15 rounded-lg border-2 border-white/10 flex items-center justify-center`}
+              onClick={solved ? reset : (aborted ? reset : abort)}
+            >
+              <p
+                className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary tracking-wider text-center`}
+              >
+                {solved ? solvedButtonText : aborted ? abortedButtonText : abortingButtonText}
+              </p>
+            </button>
+          </div>
+          {/* Right*/}
+          <div className="absolute left-0 translate-x-1/4 w-[calc(15%+75px)] items-center justify-center flex">
+            <div
+              className={`${styles.techStackMatchStyle.buttonHeightStyle} w-full bg-white/15 rounded-lg border-2 border-white/10 flex items-center justify-center`}
+            >
+              <p
+                className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary tracking-wider text-center`}
+                style={{fontVariantNumeric: "tabular-nums"}}
+              >
+                {`${formatTime(timer, TIMER_DIGITS_AFTER_ZERO)}`}
+              </p>
+            </div>
+          </div>
+          {/* Right*/}
+          <div className="absolute right-0 -translate-x-1/4 w-[calc(15%+75px)] items-center justify-center flex">
+            <button
+              className={`cursor-pointer ${styles.techStackMatchStyle.buttonHeightStyle} w-full bg-white/15 rounded-lg border-2 border-white/10 flex items-center justify-center`}
+              onClick={() => {setleaderboardToggled(!leaderboardToggled)}}
+            >
+              <p
+                className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary tracking-wider text-center`}
+              >
+                Leaderboard
+              </p>
+            </button>
+          </div>
+        </div>
+        {leaderboardToggled && (<div className="flex">
+          <div className="w-[calc(15%_+_50px)] flex flex-col items-center justify-center">
+            <p className="text-white/80 text-center text-md sm:text-xl">
+              Best Score
             </p>
-          </button>
+
+            <p
+              className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary text-center tracking-wider text-xs sm:text-lg pt-5 pb-5`}
+            >
+              {bestTimerScore > 0 ? formatTime(bestTimerScore, TIMER_DIGITS_AFTER_ZERO) : "-"}
+            </p>
+            
+            <input
+              type="text"
+              value={submitName}
+              disabled={submitBlocked()}
+              onChange={(e) => setSubmitName(e.target.value)}
+              placeholder="[Name]"
+              maxLength={20}
+              className="w-full mb-5 mt-5 px-2 py-2 rounded-lg border-2 border-white/10 bg-white/10 text-white placeholder-white/40 text-center focus:outline-none focus:border-secondary"
+            />
+            <button 
+              className={`${canSubmit() ? "cursor-pointer bg-white/15" : "cursor-default bg-white/10"} ${styles.techStackMatchStyle.buttonHeightStyle}  rounded-lg border-2 border-white/10 flex items-center justify-center`}
+              onClick={onSubmitScorePressed}
+            >
+              <p
+                className={`text-xs sm:text-xl ${styles.techStackMatchStyle.buttonTextSizeStyle} ${canSubmit() ? "text-secondary" : "text-secondary/50"}  tracking-wider text-center pl-1 pr-1`}
+              >
+                Submit score
+              </p>
+            </button>
+            {submitResult.message && 
+             <div className="px-5 py-6 text-center bg-neutral-950/40">
+                <p className={`${submitResult.isError ? "text-red-400/80" : "text-white/80"} text-sm mb-3`}>
+                    {submitResult.message}
+                </p>
+            </div>
+              
+            }
+          </div>
+          {leaderboard}
         </div>
+        )}
       </div>  
     </div>
   )
