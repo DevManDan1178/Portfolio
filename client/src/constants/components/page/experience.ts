@@ -1,4 +1,4 @@
-import { vanierCollege } from '../assets'
+import { vanierCollege } from '../../../assets'
 
 export type IconInfo = {
   icon : string,

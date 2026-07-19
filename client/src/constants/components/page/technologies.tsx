@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { javascript, typescript, html, reactjs, tailwind, nodejs, git, threejs, unity, godot, cSharp, lua, robloxStudio, java, vsCode, cMake, cpp, dotnet, } from "../assets";
+import { javascript, typescript, html, reactjs, tailwind, nodejs, git, threejs, unity, godot, cSharp, lua, robloxStudio, java, vsCode, cMake, cpp, dotnet, } from "../../../assets";
 
 export type Technology = {
   name : string,
@@ -19,7 +19,7 @@ export const techStack: Record<string, Technology[]> = {
     { name: "React", icon: reactjs },
     { name: "Three JS", icon: threejs },
   ],
-
+  /*
   "Game Development": [
     { name: "Unity", icon: unity },
     { name: "Godot", icon: godot },
@@ -46,6 +46,7 @@ export const techStack: Record<string, Technology[]> = {
     { name: "Git", icon: git },
     { name: "CMake", icon: cMake },
   ],
+  */
 }
 
 export const technologies : Technology[] = Object.values(techStack).flat()

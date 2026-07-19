@@ -1,7 +1,7 @@
 import { useState, useEffect ,type ReactElement } from "react"
-import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../assets"
-import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "./tags"
-import { InvertingDisplay, type HoverMode } from "../components/effects/VisualEffects"
+import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../../../assets"
+import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "../../tags"
+import { InvertingDisplay, type HoverMode } from "../../../components/effects/VisualEffects"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
 

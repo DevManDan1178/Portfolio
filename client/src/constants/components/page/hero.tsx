@@ -1,6 +1,6 @@
 import type { ReactElement } from "react"
-import AnimatedTextAppearance from "../components/effects/AnimatedTextAppearance"
-import { portfolioHeroName } from "."
+import AnimatedTextAppearance from "../../../components/effects/AnimatedTextAppearance"
+import { portfolioHeroName } from "../.."
 
 export const ANIMATED_HEADER_APPEARANCE_DURATION : number = .5
 export const DESCRIPTION_APPEARANCE_DELAY : number = ANIMATED_HEADER_APPEARANCE_DURATION - 0.1
