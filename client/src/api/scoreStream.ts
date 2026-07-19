@@ -1,18 +1,41 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
-import { defaultScoreStreamSortOrder, scoreStreamApiURLPath, type ScoreStreamCategory, type ScoreStreamSortOrder } from "../../../shared/types/api/globalBoards/scoreStreams";
+import { defaultScoreStreamQueryOrder, scoreStreamApiURLPath, type ScoreStreamCategory, type ScoreStreamInputEntry, type ScoreStreamQueryOrder } from "../../../shared/types/api/globalBoards/scoreStreams";
 
 export async function getScoreStreamEntries(
     category: ScoreStreamCategory,
     start: number,
     end: number,
-    sortOrder: ScoreStreamSortOrder
+    queryOrder: ScoreStreamQueryOrder
 ) {
-    const queryURL = `${scoreStreamApiURLPath}?category=${encodeURIComponent(category)}&start=${start}&end=${end}&${reverseOrderQueryParameter}=${sortOrder != defaultScoreStreamSortOrder}`;
+    const queryURL = `${scoreStreamApiURLPath}?category=${encodeURIComponent(category)}&start=${start}&end=${end}&${reverseOrderQueryParameter}=${queryOrder != defaultScoreStreamQueryOrder}`;
     console.log("fetching from ", queryURL )
     const response = await fetch(queryURL);
 
     if (!response.ok) {
         throw new Error("Failed to fetch score stream");
+    }
+
+    return response.json();
+}
+
+
+export async function submitScoreStreamScore(category : ScoreStreamCategory, entry : ScoreStreamInputEntry) {
+    const queryURL = `${scoreStreamApiURLPath}?category=${encodeURIComponent(category)}`;
+
+    console.log("posting to ", queryURL);
+    const response = await fetch(queryURL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            name: entry.name,
+            score: entry.score
+        })
+    })
+
+    if (!response.ok) {
+        throw new Error("Failed to post to score stream");
     }
 
     return response.json();

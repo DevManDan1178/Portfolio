@@ -1,13 +1,12 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
-import { defaultLeaderboardSortOrder, leaderboardApiURLPath, type LeaderboardCategory, type LeaderboardInputEntry, type LeaderboardSortOrder } from "../../../shared/types/api/globalBoards/leaderboard";
+import {  leaderboardApiURLPath, type LeaderboardCategory, type LeaderboardInputEntry } from "../../../shared/types/api/globalBoards/leaderboard";
 
 export async function getLeaderboardEntries(
     category: LeaderboardCategory,
     start: number,
     end: number,
-    sortOrder: LeaderboardSortOrder = "Top"
 ) {
-    const queryURL =`${leaderboardApiURLPath}?category=${encodeURIComponent(category)}&start=${start}&end=${end}&${reverseOrderQueryParameter}=${sortOrder != defaultLeaderboardSortOrder}`;
+    const queryURL =`${leaderboardApiURLPath}?category=${encodeURIComponent(category)}&start=${start}&end=${end}&${reverseOrderQueryParameter}=${false}`;
    
     console.log("fetching from ",  queryURL)
     const response = await fetch(queryURL);
@@ -25,8 +24,12 @@ export async function submitLeaderboardScore(category : LeaderboardCategory, ent
 
     console.log("posting to ", queryURL);
     const response = await fetch(queryURL, {
+        method: "POST",
+         headers: {
+            "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-            name: entry,
+            name: entry.name,
             score: entry.score
         })
     })
