@@ -3,12 +3,17 @@ import { type SubmitResult } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
 import { type LeaderboardProps, Leaderboard } from "./Leaderboard"
 import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists"
+import { getThemeStyles } from "../../style"
 
 export type SubmittableLeaderboardProps = LeaderboardProps & {
     scoreFormatFunction? : (score : number | undefined) => string
     scoreStorageFactor? : number,
     submitButtonCooldown? : number,
-    scoreComparisonFunction? : (a : number, b : number) => boolean
+    scoreComparisonFunction? : (a : number, b : number) => boolean,
+    bestScoreTitle? : string,
+    placeholderScore? : string,
+    placeholderName? : string,
+    submitButtonText? : string,
 }
 
 export default function({
@@ -17,10 +22,15 @@ export default function({
     subTitles,
     entriesState,
     count,
-    scoreFormatFunction = (score : number | undefined) => `${score}`,
+    bestScoreTitle = "Best Score",
+    placeholderScore = "-",
+    placeholderName = "[Name]",
+    submitButtonText = "Submit Score",
+    scoreFormatFunction = (score : number | undefined) => `${score ?? placeholderScore}`,
     scoreStorageFactor = 1,
     submitButtonCooldown = 3000,
-    scoreComparisonFunction = (a : number, b : number) => a > b
+    scoreComparisonFunction = (a : number, b : number) => a > b,
+    theme = {},
 } : SubmittableLeaderboardProps) : [ReactElement, (candidateScore : number) => void]{
     
     const [bestScore, setbestScore] = useState<number | undefined>(undefined)
@@ -64,7 +74,8 @@ export default function({
         entriesState,
         count,
         scoreStorageFactor,
-        scoreFormatFunction
+        scoreFormatFunction,
+        theme
     })
 
     const onSubmitScorePressed = async () => {
@@ -105,13 +116,13 @@ export default function({
 
     return [(
         <div className="flex">
-          <div className="w-[calc(15%_+_50px)] flex flex-col items-center justify-center">
-            <p className="text-white/80 text-center text-md sm:text-xl">
-              Best Score
+          <div className="w-[calc(15%_+_50px)] h-[70%] flex flex-col items-center justify-center">
+            <p className={`text-white/80 text-center text-md sm:text-xl ${getThemeStyles(theme)}`}>
+              {bestScoreTitle}
             </p>
 
             <p
-              className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary text-center tracking-wider text-xs sm:text-lg pt-5 pb-5`}
+              className={`${styles.techStackMatchStyle.buttonTextSizeStyle} ${getThemeStyles(theme)} text-secondary text-center tracking-wider text-xs sm:text-lg pt-5 pb-5`}
             >
               {scoreFormatFunction(bestScore)}
             </p>
@@ -121,23 +132,23 @@ export default function({
               value={submitName}
               disabled={submitBlocked()}
               onChange={(e) => setSubmitName(e.target.value)}
-              placeholder="[Name]"
+              placeholder={placeholderName}
               maxLength={20}
-              className="w-full mb-5 mt-5 px-2 py-2 rounded-lg border-2 border-white/10 bg-white/10 text-white placeholder-white/40 text-center focus:outline-none focus:border-secondary"
+              className={`${getThemeStyles(theme)} w-full mb-5 mt-5 px-2 py-2 rounded-lg border-2 border-white/10 bg-white/10 text-white placeholder-white/40 text-center focus:outline-none focus:border-secondary`}
             />
             <button 
               className={`${canSubmit() ? "cursor-pointer bg-white/15" : "cursor-default bg-white/10"} ${styles.techStackMatchStyle.buttonHeightStyle}  rounded-lg border-2 border-white/10 flex items-center justify-center`}
               onClick={onSubmitScorePressed}
             >
               <p
-                className={`text-xs sm:text-xl ${styles.techStackMatchStyle.buttonTextSizeStyle} ${canSubmit() ? "text-secondary" : "text-secondary/50"}  tracking-wider text-center pl-1 pr-1`}
+                className={`text-xs sm:text-xl ${styles.techStackMatchStyle.buttonTextSizeStyle} ${getThemeStyles(theme)} ${canSubmit() ? "text-secondary" : "text-secondary/50"}  tracking-wider text-center pl-1 pr-1`}
               >
-                Submit score
+                {submitButtonText}
               </p>
             </button>
             {submitResult.message && 
              <div className="px-5 py-6 text-center bg-neutral-950/40">
-                <p className={`${submitResult.isError ? "text-red-400/80" : "text-white/80"} text-sm mb-3`}>
+                <p className={`${submitResult.isError ? "text-red-400/80" : "text-white/80"} text-sm mb-3 ${getThemeStyles(theme)}`}>
                     {submitResult.message}
                 </p>
             </div>
