@@ -45,7 +45,8 @@ export type LeaderboardProps = GlobalBoardPropsBase & {
         placement: string
     }
     entriesState?: EntriesState<LeaderboardEntry>,
-    scoreFilterFunction? : (score : number) => string
+    scoreFormatFunction? : (score : number) => string,
+    scoreStorageFactor? : number
 }
 
 export function Leaderboard({
@@ -59,7 +60,8 @@ export function Leaderboard({
         timestamp: "Achieved at"
     },
     entriesState = useState<LeaderboardEntry[]>([]),
-    scoreFilterFunction = (score : number) => `${score}`
+    scoreFormatFunction = (score : number) => `${score}`,
+    scoreStorageFactor = 1
 }: LeaderboardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
     const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
@@ -106,6 +108,10 @@ export function Leaderboard({
     useEffect(() => {
         loadEntries();
     }, [loadEntries]);
+
+    function getFormattedScore(score : number) {
+        return scoreFormatFunction(score / scoreStorageFactor);
+    }
 
     const loadMore = useCallback(async () => {
         if (loadingMoreRef.current || !hasMoreRef.current || entries.length == 0) return;
@@ -163,7 +169,8 @@ export function Leaderboard({
         };
     }, [loading, loadMore]);
 
-    async function submitScore(score : number, name : string) : Promise<number> {
+    async function submitScore(preprocessedScore : number, name : string) : Promise<number> {
+        const score = preprocessedScore * scoreStorageFactor;
         try {
             const timestamp = Math.floor(Date.now() / DATE_ADJUSTMENT_FACTOR);
             const result = await submitLeaderboardScore(category, {
@@ -260,7 +267,7 @@ export function Leaderboard({
                                         </td>
 
                                         <td className="px-5 py-3 text-neutral-200 text-sm text-center whitespace-nowrap font-semibold">
-                                            {scoreFilterFunction(entry.score)}
+                                            {getFormattedScore(entry.score)}
                                         </td>
 
                                         <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
