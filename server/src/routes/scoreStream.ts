@@ -1,5 +1,5 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
-import { defaultScoreStreamSortOrder, ScoreStreamSortOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamInputEntry } from "../../../shared/types/api/globalBoards/scoreStreams"
+import { defaultScoreStreamQueryOrder, ScoreStreamQueryOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamInputEntry } from "../../../shared/types/api/globalBoards/scoreStreams"
 import getEnvironmentVariables from "../environment";
 import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 
@@ -13,7 +13,7 @@ export async function getScoreStreamEntries(
     category : ScoreStreamCategory, 
     start : number, 
     end : number,
-    sortOrder: ScoreStreamSortOrder
+    queryOrder: ScoreStreamQueryOrder
 ) :  Promise<ScoreStreamEntry[] | undefined> {
     if (start < 0 || end < 0) {
         console.log("Invalid start and/or end - getScoreStreamEntres: ", start, end)
@@ -28,7 +28,7 @@ export async function getScoreStreamEntries(
     const categoryKey = scoreStreamKeys[category];
     const requestURL = 
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
-        `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${sortOrder != defaultScoreStreamSortOrder}`;
+        `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${queryOrder != defaultScoreStreamQueryOrder}`;
     
     try {
         const response = await fetchWithTimeout(requestURL, {
@@ -56,7 +56,7 @@ export async function getScoreStreamEntries(
     }
 }
 
-export async function addScoreStreamEntry(category : ScoreStreamCategory, entry : ScoreStreamInputEntry) : Promise<number | undefined> {
+export async function addScoreStreamEntry(category : ScoreStreamCategory, entry : ScoreStreamInputEntry, queryOrder : ScoreStreamQueryOrder) : Promise<JSON | undefined> {
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
         return;
@@ -64,13 +64,14 @@ export async function addScoreStreamEntry(category : ScoreStreamCategory, entry 
     const {requestURLBase, API_KEY} = environmentVariables;
 
     const categoryKey = scoreStreamKeys[category];
-    const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}`;
+    const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}?${reverseOrderQueryParameter}=${queryOrder != defaultScoreStreamQueryOrder}`;
 
     try {
         const response = await fetchWithTimeout(requestURL, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${API_KEY}`,
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 name: entry.name,
@@ -87,10 +88,7 @@ export async function addScoreStreamEntry(category : ScoreStreamCategory, entry 
             return;
         }
 
-        const data = await response.json();
-        const added_index = data.index;
-
-        return added_index;
+        return await response.json();
     } catch (error) {
         console.log("Failed to post scoreStream entry:", error);
         return;

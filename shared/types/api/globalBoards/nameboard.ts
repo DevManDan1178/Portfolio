@@ -3,8 +3,8 @@ export type NameboardEntry = {
     timestamp : number,
 }
 
-export type NameboardSortOrder =  "Oldest" | "Newest";
-export const defaultNameboardSortOrder : NameboardSortOrder = "Oldest";
+export type NameboardQueryOrder =  "Oldest" | "Newest";
+export const defaultNameboardQueryOrder : NameboardQueryOrder = "Oldest";
 
 export type NameboardCategory = 
     | "PolygonTD";

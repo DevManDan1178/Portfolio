@@ -7,8 +7,8 @@ export type ScoreStreamEntry = {
     score: number;
 };
 
-export type ScoreStreamSortOrder = "Newest" | "Oldest";
-export const defaultScoreStreamSortOrder : ScoreStreamSortOrder = "Newest";
+export type ScoreStreamQueryOrder = "Newest" | "Oldest";
+export const defaultScoreStreamQueryOrder : ScoreStreamQueryOrder = "Newest";
 
 export type ScoreStreamInputEntry = Omit<
     ScoreStreamEntry,

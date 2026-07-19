@@ -1,5 +1,5 @@
 import { addScoreStreamEntry, getScoreStreamEntries, } from "../src/routes/scoreStream";
-import { defaultScoreStreamSortOrder, ScoreStreamSortOrder, type ScoreStreamCategory } from "../../shared/types/api/globalBoards/scoreStreams";
+import { defaultScoreStreamQueryOrder, ScoreStreamQueryOrder, type ScoreStreamCategory } from "../../shared/types/api/globalBoards/scoreStreams";
 import { reverseOrderQueryParameter } from "../../shared/constants/api/globalBoards";
 
 export default async function handler(request: Request) {
@@ -19,12 +19,12 @@ export default async function handler(request: Request) {
             const start = Number(url.searchParams.get("start") ?? 0);
             const end = Number(url.searchParams.get("end") ?? 10);
             
-            const sortOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultScoreStreamSortOrder);
+            const queryOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultScoreStreamQueryOrder);
             const entries = await getScoreStreamEntries(
                 category as ScoreStreamCategory,
                 start,
                 end,
-                sortOrder as ScoreStreamSortOrder
+                queryOrder as ScoreStreamQueryOrder
             );
 
             return Response.json(entries);
@@ -33,15 +33,16 @@ export default async function handler(request: Request) {
         if (request.method === "POST") {
             const body = await request.json();
 
-            const index = await addScoreStreamEntry(
+            const queryOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultScoreStreamQueryOrder);
+            
+            return Response.json(await addScoreStreamEntry(
                 category as ScoreStreamCategory,
                 {
                     name: body.name,
                     score: body.score,
-                }
-            );
-
-            return Response.json({ index });
+                },
+                queryOrder as ScoreStreamQueryOrder
+            ));
         }
 
         return Response.json(
