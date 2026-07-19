@@ -1,12 +1,12 @@
 
 import { useState } from 'react' 
 import { styles } from '../../style';
-import { getDefaultLinkElement, type BulletPoint, type Project, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, defaultTagSymbol } from '../../constants/projects';
+import { getDefaultLinkElement, type BulletPoint, type Project, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, defaultTagSymbol } from '../../constants/components/page/projects';
 import { type Tag } from '../../constants/tags';
 import Tilt from 'react-parallax-tilt'
 import { motion } from 'framer-motion'
 import { SectionWrapper } from '../../hoc'
-import { preTitle, title, subDescription, projects} from '../../constants/projects'
+import { preTitle, title, subDescription, projects} from '../../constants/components/page/projects'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { pages } from '../../constants/pages/pages';
 
