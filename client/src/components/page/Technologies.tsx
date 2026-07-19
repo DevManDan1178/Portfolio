@@ -278,7 +278,7 @@ const Technologies = () => {
                 className={`${styles.techStackMatchStyle.buttonTextSizeStyle} text-secondary tracking-wider text-center`}
                 style={{fontVariantNumeric: "tabular-nums"}}
               >
-                {`${formatTime(timer, TIMER_DIGITS_AFTER_ZERO)}`}
+                {`${formatTime(timer, TIMER_DIGITS_AFTER_ZERO)}s`}
               </p>
             </div>
           </div>
