@@ -11,7 +11,13 @@ export function GetScreenSizeType() : ScreenSizeType{
       return ("lg")
 }
 
+export type Theme = {
+  font? : string
+}
 
+export function getThemeStyles(theme : Theme) : string {
+  return `${theme.font ?? ""}`
+}
 
 const styles = {
   paddingX: "sm:px-10 px-4",
