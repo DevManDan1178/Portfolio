@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import type { GameEventLinkers } from "../../../types/exhibits/games";
 
 type UnityGameProps = {
@@ -7,9 +7,9 @@ type UnityGameProps = {
   containerId: string;
   fileInfo: FileInfo;
   gameEventLinkers?: GameEventLinkers;
-
   className?: string;
   showFullscreenButton?: boolean;
+  loadingText? : string | ReactElement;
 };
 
 export default function UnityGame({
@@ -19,8 +19,8 @@ export default function UnityGame({
   fileInfo,
   gameEventLinkers = [],
   className,
-  showFullscreenButton = true,
-}: UnityGameProps) {
+  loadingText = "LOADING...",
+}: UnityGameProps) : [ReactElement, () => void] {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
@@ -109,6 +109,10 @@ export default function UnityGame({
           setLoading(false);
         }
       );
+      window.addEventListener("beforeunload", () => {
+        console.log("removing unity db")
+        indexedDB.deleteDatabase("UnityCache");
+      });
     };
 
     if (!script) {
@@ -174,7 +178,7 @@ export default function UnityGame({
     fileInfo,
   ]);
 
-  const handleFullscreen = () => {
+  const toggleFullscreen = () => {
     const unity = unityInstanceRef.current;
 
     if (unity?.SetFullscreen) {
@@ -189,16 +193,16 @@ export default function UnityGame({
     }
   };
 
-  return (
+  return [(
     <div className={className}>
       <div
         ref={containerRef}
         className="relative w-full aspect-video border-4 border-zinc-700 rounded-2xl flex items-center justify-center"
       >
         {loading && (
-          <div className="absolute inset-0 flex flex-col centered justify-center rounded-2xl bg-black/80 z-10 gap-4">
-            <div className="font-pixeloid text-[30px] text-white">
-              LOADING...
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-black/80 z-10 gap-4">
+            <div className="font-pixeloid text-[30px] text-white text-center whitespace-pre-wrap">
+              {loadingText}
             </div>
 
             <div className="w-[60%] h-4 bg-zinc-800 overflow-hidden">
@@ -217,16 +221,11 @@ export default function UnityGame({
         )}
       </div>
 
-      {showFullscreenButton && (
-        <button
-          onClick={handleFullscreen}
-          className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
-        >
-          Fullscreen
-        </button>
-      )}
+
     </div>
-  );
+  ),
+  toggleFullscreen
+  ]
 }
 
 export type UnityLoaderConfig = {
