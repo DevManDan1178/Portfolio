@@ -130,27 +130,29 @@ export default function EchoArenaGamePage() {
 
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
-              className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
+              className={`${leaderboardsToggled && "border-black/40 border-2"}  mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded transition`}
               onClick={() => setLeaderboardsToggled(!leaderboardsToggled)}
             >
-              LEADERBOARDS
+              {`LEADERBOARDS`}
             </button>
           </div>
         </div>
 
-        {leaderboardsToggled && (
-          <>
+        <div 
+          className={leaderboardsToggled ? "block" : "hidden"}
+          aria-hidden={!leaderboardsToggled}
+        >
           <div className="flex flex-col items-center w-full">
             <div className="w-full items-center justify-center flex gap-10">
               <button
                 onClick={() => setSelectedLeaderboard("highscore")}
-                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "highscore" ? "bg-white cursor-default" : "bg-white/80"} text-black font-pixeloid text-sm rounded hover:bg-white transition`}
+                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "highscore" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded  transition`}
               >
                 HIGHSCORE
               </button>
 
               <button
-                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "pacifist" ? "bg-white cursor-default" : "bg-white/80"} text-black font-pixeloid text-sm rounded hover:bg-white transition`}
+                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "pacifist" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded  transition`}
                 onClick={() => setSelectedLeaderboard("pacifist")}
               >
                 PACIFIST
@@ -162,10 +164,7 @@ export default function EchoArenaGamePage() {
               {selectedLeaderboard == "highscore" ? highscoreLeaderboard : pacifistLeaderboard}
             </div>
           </div>
-          
-        </>
-        )}
-                
+        </div>    
         <div className="shrink-0 w-full flex justify-center text-sm text-zinc-400 py-5">
           <div className="w-full max-w-[80%] text-center">
             {descriptionElement}

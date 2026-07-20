@@ -92,7 +92,7 @@ export default function() {
     {
       gameEventName: "Sidestep2-highscore",
       handler: (score : number) => {
-        console.log("Sidestep2 highscore:", score);
+        highscoreAttemptSubmit(score);
       }
     }
   ];
@@ -148,7 +148,12 @@ export default function() {
             </button>
           </div>
         </div>
-        {leaderboardToggled && highscoreLeaderboard}
+        <div 
+          className={leaderboardToggled ? "block" : "hidden"}
+          aria-hidden={!leaderboardToggled}
+        >
+          {highscoreLeaderboard}
+        </div>
         <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
           <div className="w-full max-w-[80%] text-center">
             {descriptionElement}
