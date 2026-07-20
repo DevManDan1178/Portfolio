@@ -33,13 +33,14 @@ export default async function handler(request: Request) {
             const body = await request.json();
 
             const queryOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultNameboardQueryOrder);
-            return Response.json(await addNameboardEntry(
+            const result = await addNameboardEntry(
                 category as NameboardCategory,
                 {
                     name: body.name,
                 },
                 queryOrder as NameboardQueryOrder
-            ));
+            )
+            return Response.json(result);
         }
 
         return Response.json(
@@ -48,7 +49,7 @@ export default async function handler(request: Request) {
         );
 
     } catch (error) {
-        console.error(error);
+        console.error("[Nameboard request handler]", error);
 
         return Response.json(
             { error: "Nameboard request failed" },

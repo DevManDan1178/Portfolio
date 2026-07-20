@@ -35,14 +35,15 @@ export default async function handler(request: Request) {
 
             const queryOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultScoreStreamQueryOrder);
             
-            return Response.json(await addScoreStreamEntry(
+            const result = await addScoreStreamEntry(
                 category as ScoreStreamCategory,
                 {
                     name: body.name,
                     score: body.score,
                 },
                 queryOrder as ScoreStreamQueryOrder
-            ));
+            )
+            return Response.json(result);
         }
 
         return Response.json(
@@ -51,7 +52,7 @@ export default async function handler(request: Request) {
         );
 
     } catch (error) {
-        console.error(error);
+        console.error("[ScoreStream request handler", error);
 
         return Response.json(
             { error: "ScoreStream request failed" },

@@ -30,14 +30,14 @@ export default async function handler(request: Request) {
 
         if (request.method === "POST") {
             const body = await request.json();
-            
-            return Response.json(await addLeaderboardEntry(
+            const result = await addLeaderboardEntry(
                 category as LeaderboardCategory,
                 {
                     name: body.name,
                     score: body.score,
                 },
-            ));
+            )
+            return Response.json(result);
         }
 
         return Response.json(
@@ -46,7 +46,7 @@ export default async function handler(request: Request) {
         );
 
     } catch (error) {
-        console.error(error);
+        console.error("[Leaderboard request handler]", error);
 
         return Response.json(
             { error: "Leaderboard request failed" },
