@@ -109,10 +109,6 @@ export default function UnityGame({
           setLoading(false);
         }
       );
-      window.addEventListener("beforeunload", () => {
-        console.log("removing unity db")
-        indexedDB.deleteDatabase("UnityCache");
-      });
     };
 
     if (!script) {
