@@ -79,7 +79,7 @@ export default function({
     })
 
     const onSubmitScorePressed = async () => {
-        if (bestScore == undefined || !submitName.trim()) {
+        if (!canSubmit() || submitButtonDisabled || bestScore == undefined || !submitName.trim()) {
             return
         }
         const result = await submitScore(bestScore, submitName)
