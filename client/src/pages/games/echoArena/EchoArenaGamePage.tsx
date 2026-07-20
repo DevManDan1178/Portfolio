@@ -1,6 +1,6 @@
 import { type ReactElement, useState } from "react";
 import { styles } from "../../../style";
-import SEO from "../../../components/misc/SEO";
+import SEO, { type SEOInfo } from "../../../components/misc/SEO";
 import GodotGame from "../../../components/games/GodotGame";
 import { echoArena } from "../../../assets";
 import type { GameEventLinkers } from "../../../../types/exhibits/games";
@@ -40,6 +40,15 @@ const descriptionElement: ReactElement = (
   </span>
 );
 
+const seoInfo : SEOInfo = {
+  title:"Echo Arena",
+    image:echoArena,
+    description:
+      `Playable on PC in browser! ` +
+      `Survival arena shooter where you must plan your movement carefully. ` +
+      `Every 15 seconds, a new clone of yourself repeats your past movements, damaging anything it touches. `
+}
+
 export default function EchoArenaGamePage() {
   const [highscoreLeaderboard, highscoreAttemptSumbit] = SubmittableLeaderboard({
     category:"Echo Arena Highscore",
@@ -55,7 +64,7 @@ export default function EchoArenaGamePage() {
 
   const [pacifistLeaderboard, pacifistAttemptSubmit] = SubmittableLeaderboard({
     category:"Echo Arena Pacifist",
-    title: "LONGEST TIME ON ZERO KILLS",
+    title: "LONGEST TIME WITHOUT KILLS",
     count: 20,
     theme: {
       font: "font-pixeloid",
@@ -63,7 +72,7 @@ export default function EchoArenaGamePage() {
     bestScoreTitle: "BEST TIME",
     placeholderName: "Name",
     submitButtonText: "SUBMIT",
-    scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : formatTime(score, 2),
+    scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : `${formatTime(score * 1000, 2)}s`,
     scoreStorageFactor: 1000,
   })
 
@@ -85,9 +94,9 @@ export default function EchoArenaGamePage() {
     }
   ];
 
-  const [leaderboardsToggled, setleaderboardsToggled] = useState(false)
+  const [leaderboardsToggled, setLeaderboardsToggled] = useState(false)
 
-  const [echoArenaGame, handleFullscreen] = GodotGame({
+  const [echoArenaGame, toggleFullscreen] = GodotGame({
     gamePath:FILE_PATH,
     gameEventLinkers:gameEventLinkers,
     className:"w-[calc(50%+125px)]"
@@ -96,11 +105,11 @@ export default function EchoArenaGamePage() {
   return (
     <>
       <SEO
-        title="Echo Arena"
-        image={echoArena}
-        description="Survival arena shooter where you must plan your movement carefully"
+        title={seoInfo.title}
+        description={seoInfo.description}
+        image={seoInfo.image}
+        url={seoInfo.url}
       />
-
       <div className="w-full h-screen flex flex-col bg-zinc-950 text-white">
         <div className="shrink-0 text-3xl font-semibold py-5 text-center font-pixeloid">
           ECHO ARENA
@@ -112,7 +121,7 @@ export default function EchoArenaGamePage() {
         <div className="w-full flex justify-center items-start gap-20 pt-5 pb-10">
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
-              onClick={handleFullscreen}
+              onClick={toggleFullscreen}
               className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
             >
               FULLSCREEN
@@ -122,7 +131,7 @@ export default function EchoArenaGamePage() {
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
               className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
-              onClick={() => setleaderboardsToggled(!leaderboardsToggled)}
+              onClick={() => setLeaderboardsToggled(!leaderboardsToggled)}
             >
               LEADERBOARDS
             </button>
