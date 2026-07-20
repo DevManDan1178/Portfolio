@@ -236,9 +236,9 @@ class portfolio_server : public request_server_base {
             response.result(boost::beast::http::status::ok);
         }
 
-        bool handle_leaderboard_get(const std::string& key, const std::string& body,  boost_http_response& response, bool from_bottom = false) {
+        bool handle_leaderboard_get(const std::string& key, const std::string& query,  boost_http_response& response, bool from_bottom = false) {
             try {
-                json data = http_parser::parse_query(body);
+                json data = http_parser::parse_query(query);
                 int start = data["start"].get<int>();
                 int end = data["end"].get<int>();
                 if (start < 0 || end < 0) {
