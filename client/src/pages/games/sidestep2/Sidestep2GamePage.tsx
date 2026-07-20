@@ -1,12 +1,13 @@
-import { type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import SEO from "../../../components/misc/SEO";
 import UnityGame from "../../../components/games/UnityGame";
 import { type FileInfo } from "../../../components/games/UnityGame";
 import type { SEOInfo } from "../../../components/misc/SEO";
 import type { GameEventLinkers } from "../../../../types/exhibits/games";
+import SubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
 
 const GAME_PATH = "/games/Sidestep2";
-const BUILD_NAME = "WebBuild_1.2";
+const BUILD_NAME = "WebBuild_1.3";
 
 const containerId = "Sidestep2_UnityCanvas";
 const canvasDimensions = {
@@ -22,7 +23,7 @@ const config = {
     streamingAssetsUrl: "StreamingAssets",
     companyName: "DevManDan",
     productName: BUILD_NAME,
-    productVersion: "1.1",
+    productVersion: "1.3",
 };
 
 const fileInfo : FileInfo = {
@@ -71,11 +72,21 @@ const descriptionElement : ReactElement = <span>
 
 const seoInfo : SEOInfo = {
   title : "Sidestep²", 
-  description : "Bullet hell game"
+  description : 
+    `Playable on PC with browser! ` +
+    `A small bullet hell game about dodging projectiles and lasers. ` + 
+    `Move with keyboard (WASD) or with mouse (RMB). `
 }
 
 export default function() {
 
+  const [leaderboardToggled, setLeaderboardToggled] = useState(false)
+  const [highscoreLeaderboard, highscoreAttemptSubmit] = SubmittableLeaderboard({
+    category: "Sidestep2 Highscore",
+    title: "Highest Scores - Endless Mode",
+    count: 20,
+    submitButtonText: "Submit"
+  })
 
   const gameEventLinkers : GameEventLinkers = [
     {
@@ -85,6 +96,21 @@ export default function() {
       }
     }
   ];
+
+  const [sidestep2Game, toggleFullscreen] = UnityGame({
+    className:"w-[calc(50%+125px)]",
+    config,
+    canvasDimensions,
+    containerId,
+    fileInfo,
+    gameEventLinkers,
+    loadingText : (
+      <>
+        <p className="font-pixeloid">LOADING...</p>
+        <p className="text-sm font-pixeloid">This might take a while...</p>
+      </>
+    )
+  })
 
   return (
     <>
@@ -101,17 +127,28 @@ export default function() {
         </div>
 
         <div className="w-full flex flex-col items-center">
-          <UnityGame
-            className="w-[calc(50%+125px)]"
-            config={config}
-            canvasDimensions={canvasDimensions}
-            containerId={containerId}
-            fileInfo={fileInfo}
-            gameEventLinkers={gameEventLinkers}
-            showFullscreenButton
-          />
+          {sidestep2Game}
         </div>
+        <div className="w-full flex justify-center items-start gap-20 pt-5 pb-10">
+          <div className="w-[calc(15%+50px)] flex justify-center">
+            <button
+              onClick={toggleFullscreen}
+              className="mt-6 px-3 py-1 bg-white text-black/70 font-bold text-md rounded hover:bg-zinc-300 transition"
+            >
+              FULLSCREEN
+            </button>
+          </div>
 
+          <div className="w-[calc(15%+50px)] flex justify-center">
+            <button
+              className="mt-6 px-3 py-1 bg-white text-black/70 font-bold text-md rounded hover:bg-zinc-300 transition"
+              onClick={() => setLeaderboardToggled(!leaderboardToggled)}
+            >
+              LEADERBOARDS
+            </button>
+          </div>
+        </div>
+        {leaderboardToggled && highscoreLeaderboard}
         <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
           <div className="w-full max-w-[80%] text-center">
             {descriptionElement}
