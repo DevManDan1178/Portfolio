@@ -51,6 +51,7 @@ export function ScoreStreamBoard({
     const loadingMoreRef = useRef(false);
     const hasMoreRef = useRef(true);
     const entriesLengthRef = useRef(0);
+    const loadedRef = useRef(false);
 
     const loadEntries = useCallback(async () => {
         setLoading(true);
@@ -85,11 +86,14 @@ export function ScoreStreamBoard({
     }, [category, count, queryOrder, setEntries]);
 
     useEffect(() => {
+        if (loadedRef.current) return;
+
+        loadedRef.current = true;
         loadEntries();
     }, [loadEntries]);
 
     const loadMore = useCallback(async () => {
-        if (loadingMoreRef.current || !hasMoreRef.current || entries.length == 0) return;
+        if (!loadedRef.current || loadingMoreRef.current || !hasMoreRef.current || entries.length == 0) return;
 
         loadingMoreRef.current = true;
         setLoadingMore(true);

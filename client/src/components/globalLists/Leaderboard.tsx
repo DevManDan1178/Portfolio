@@ -78,6 +78,7 @@ export function Leaderboard({
     const scrollRef = useRef<HTMLDivElement>(null);
     const loadingMoreRef = useRef(false);
     const hasMoreRef = useRef(true);
+    const loadedRef = useRef(false);
 
     const loadEntries = useCallback(async () => {
         setLoading(true);
@@ -108,6 +109,9 @@ export function Leaderboard({
     }, [category, count, setEntries]);
 
     useEffect(() => {
+        if (loadedRef.current) return;
+
+        loadedRef.current = true;
         loadEntries();
     }, [loadEntries]);
 
@@ -116,7 +120,7 @@ export function Leaderboard({
     }
 
     const loadMore = useCallback(async () => {
-        if (loadingMoreRef.current || !hasMoreRef.current || entries.length <= 0) return;
+        if (!loadedRef.current || loadingMoreRef.current || !hasMoreRef.current || entries.length <= 0) return;
 
         loadingMoreRef.current = true;
         setLoadingMore(true);
