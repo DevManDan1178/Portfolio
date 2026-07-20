@@ -28,14 +28,20 @@ export const projects : Record<string, Project> = {
         iconIsStr : true
       },
       allLinks: [{
-        url: "/PolygonTD",
-        linkIcon : "▶",
-        iconIsStr : true
-      },
-      {
-        url: "https://devman-dan.itch.io/polygon-tower-defense",
-        linkIcon : itchIO
-    }]},
+          url: "/PolygonTD",
+          linkIcon : "▶",
+          iconIsStr : true
+        },
+        {
+          url: "https://github.com/DevManDan1178/PolygonTD",
+          linkIcon: github
+        },
+        {
+          url: "https://devman-dan.itch.io/polygon-tower-defense",
+          linkIcon : itchIO
+        },
+      ]
+    },
     visuals : {
       nameColor : "yellow-text-gradient",
     },
@@ -53,14 +59,20 @@ export const projects : Record<string, Project> = {
         iconIsStr : true
       },
       allLinks : [{
-        url: "/EchoArena",
-        linkIcon : "▶",
-        iconIsStr : true
-      },
-      {
-        url: "https://devman-dan.itch.io/echo-arena",
-        linkIcon : itchIO
-    }]},
+          url: "/EchoArena",
+          linkIcon : "▶",
+          iconIsStr : true
+        },
+        {
+          url: "https://github.com/DevManDan1178/Echo-Arena",
+          linkIcon : github
+        },
+        {
+          url: "https://devman-dan.itch.io/echo-arena",
+          linkIcon : itchIO
+        },
+      ]
+    },
     visuals : {
       nameColor : "light-red-text-gradient"
     }
@@ -80,11 +92,17 @@ export const projects : Record<string, Project> = {
           url : "/sidestep2",
           linkIcon : "▶",
           iconIsStr : true
-      },
-      {
+        },
+        {
+          url: "https://github.com/DevManDan1178/Sidestep2",
+          linkIcon: github
+        },
+        {
           url : "https://devman-dan.itch.io/sidestep",
           linkIcon : itchIO,
-      }]},
+        },
+      ]
+    },
     visuals: {
       nameColor: "#f6ffe0"
     }
