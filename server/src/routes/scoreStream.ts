@@ -14,18 +14,20 @@ export async function getScoreStreamEntries(
     start : number, 
     end : number,
     queryOrder: ScoreStreamQueryOrder
-) :  Promise<ScoreStreamEntry[] | undefined> {
+) : Promise<ScoreStreamEntry[]> {
     if (start < 0 || end < 0) {
-        console.log("Invalid start and/or end - getScoreStreamEntres: ", start, end)
-        return;
+        throw new Error(`Invalid start and/or end: ${start}, ${end}`);
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return;
+        throw new Error("Missing environment variables");
+    }
+    const categoryKey = scoreStreamKeys[category];
+    if (!categoryKey) {
+        throw new Error(`Invalid score stream category: ${category}`);
     }
     const {requestURLBase, API_KEY} = environmentVariables;
 
-    const categoryKey = scoreStreamKeys[category];
     const requestURL = 
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
         `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${queryOrder != defaultScoreStreamQueryOrder}`;
@@ -39,12 +41,9 @@ export async function getScoreStreamEntries(
         });
 
         if (!response.ok) {
-            console.log(
-                "ScoreStream request failed:",
-                response.status,
-                await response.text()
+            throw new Error(
+                `ScoreStream request failed: ${response.status} ${await response.text()}`
             );
-            return;
         }
 
         const data = await response.json();
@@ -52,21 +51,24 @@ export async function getScoreStreamEntries(
         return data as ScoreStreamEntry[];
     } catch (error) {
         console.log("Failed to fetch scoreStream entries:", error);
-        return;
+        throw error;
     }
 }
 
-export async function addScoreStreamEntry(category : ScoreStreamCategory, entry : ScoreStreamInputEntry, queryOrder : ScoreStreamQueryOrder) : Promise<JSON | undefined> {
+export async function addScoreStreamEntry(category : ScoreStreamCategory, entry : ScoreStreamInputEntry, queryOrder : ScoreStreamQueryOrder) : Promise<JSON> {
     if (!entry.name.trim()) {
-        return
+        throw new Error("ScoreStream entry name cannot be empty");
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return;
+        throw new Error("Missing environment variables");
     }
     const {requestURLBase, API_KEY} = environmentVariables;
 
     const categoryKey = scoreStreamKeys[category];
+    if (!categoryKey) {
+        throw new Error(`Invalid score stream category: ${category}`);
+    }
     const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}?${reverseOrderQueryParameter}=${queryOrder != defaultScoreStreamQueryOrder}`;
 
     try {
@@ -83,17 +85,14 @@ export async function addScoreStreamEntry(category : ScoreStreamCategory, entry 
         });
 
         if (!response.ok) {
-            console.log(
-                "ScoreStream request failed:",
-                response.status,
-                await response.text()
+            throw new Error(
+                `ScoreStream request failed: ${response.status} ${await response.text()}`
             );
-            return;
         }
 
         return await response.json();
     } catch (error) {
         console.log("Failed to post scoreStream entry:", error);
-        return;
+        throw error;
     }
 }

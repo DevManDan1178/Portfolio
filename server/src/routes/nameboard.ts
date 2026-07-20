@@ -14,17 +14,20 @@ export async function getNameboardEntries(
     start : number, 
     end : number,
     queryOrder: NameboardQueryOrder
-) :  Promise<NameboardEntry[] | undefined> {
+) : Promise<NameboardEntry[]> {
     if (start < 0 || end < 0) {
-        console.log("Invalid start and/or end - getNameboardEntres: ", start, end)
-        return;
+        throw new Error(`Invalid start and/or end: ${start}, ${end}`);
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return;
+        throw new Error("Missing environment variables");
+    }
+    const categoryKey = nameboardKeys[category];
+    if (!categoryKey) {
+        throw new Error(`Invalid nameboard category: ${category}`);
     }
     const {requestURLBase, API_KEY} = environmentVariables;
-    const categoryKey = nameboardKeys[category];
+
     const requestURL = 
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
         `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${queryOrder != defaultNameboardQueryOrder}`;
@@ -38,12 +41,9 @@ export async function getNameboardEntries(
         });
 
         if (!response.ok) {
-            console.log(
-                "Leaderboard request failed:",
-                response.status,
-                await response.text()
+            throw new Error(
+                `Nameboard request failed: ${response.status} ${await response.text()}`
             );
-            return;
         }
 
         const data = await response.json();
@@ -52,21 +52,24 @@ export async function getNameboardEntries(
         return data as NameboardEntry[];
     } catch (error) {
         console.log("Failed to fetch nameboard entries:", error);
-        return;
+        throw error;
     }
 }
 
-export async function addNameboardEntry(category : NameboardCategory, entry : NameboardInputEntry, queryOrder : NameboardQueryOrder) : Promise<JSON | undefined> {
+export async function addNameboardEntry(category : NameboardCategory, entry : NameboardInputEntry, queryOrder : NameboardQueryOrder) : Promise<JSON> {
     if (!entry.name.trim()) {
-        return
+        throw new Error("Nameboard entry name cannot be empty");
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return;
+        throw new Error("Missing environment variables");
     }
     const {requestURLBase, API_KEY} = environmentVariables;
 
     const categoryKey = nameboardKeys[category];
+    if (!categoryKey) {
+        throw new Error(`Invalid nameboard category: ${category}`);
+    }
     const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}?${reverseOrderQueryParameter}=${queryOrder != defaultNameboardQueryOrder}`;
 
     try {
@@ -82,17 +85,14 @@ export async function addNameboardEntry(category : NameboardCategory, entry : Na
         });
 
         if (!response.ok) {
-            console.log(
-                "Leaderboard request failed:",
-                response.status,
-                await response.text()
+            throw new Error(
+                `Nameboard request failed: ${response.status} ${await response.text()}`
             );
-            return;
         }
 
         return await response.json();
     } catch (error) {
         console.log("Failed to post nameboard entry:", error);
-        return;
+        throw error;
     }
 }

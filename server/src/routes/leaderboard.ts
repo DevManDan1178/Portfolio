@@ -6,7 +6,7 @@ import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 const leaderboardKeys : Record<LeaderboardCategory, string> = {
     "Echo Arena Highscore": "echo-arena-highscore",
     "Echo Arena Pacifist": "echo-arena-pacifist",
-    "Sidestep2": "sidestep-2",
+    "Sidestep2 Highscore": "sidestep-2-highscore",
     "Stack Matching": "stack-matching",
 };
 
@@ -17,18 +17,21 @@ export async function getLeaderboardEntries(
     category : LeaderboardCategory, 
     start : number, 
     end : number,
-) :  Promise<LeaderboardEntry[] | undefined> {
+) : Promise<LeaderboardEntry[]> {
     if (start < 0 || end < 0) {
-        console.log("Invalid start and/or end - getLeaderboardEntres: ", start, end)
-        return;
+        throw new Error(`Invalid start and/or end: ${start}, ${end}`);
     }
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return;
+        throw new Error("Missing environment variables");
+    }
+    const categoryKey = leaderboardKeys[category];
+    if (!categoryKey) {
+        throw new Error(`Invalid leaderboard category: ${category}`);
     }
     const {requestURLBase, API_KEY} = environmentVariables;
 
-    const categoryKey = leaderboardKeys[category];
+
     const requestURL = 
         `${requestURLBase}${requestSectionKey}/${categoryKey}?` +
         `start=${start.toString()}&end=${end.toString()}&${reverseOrderQueryParameter}=${false}`;
@@ -41,12 +44,9 @@ export async function getLeaderboardEntries(
         });
 
         if (!response.ok) {
-            console.log(
-                "Leaderboard request failed:",
-                response.status,
-                await response.text()
+            throw new Error(
+                `Leaderboard request failed: ${response.status} ${await response.text()}`
             );
-            return;
         }
 
         const data = await response.json();
@@ -54,22 +54,25 @@ export async function getLeaderboardEntries(
         return data as LeaderboardEntry[];
     } catch (error) {
         console.log("Failed to fetch leaderboard entries:", error);
-        return;
+        throw error;
     }
 }
 
-export async function addLeaderboardEntry(category : LeaderboardCategory, entry : LeaderboardInputEntry) : Promise<JSON | undefined> {
+export async function addLeaderboardEntry(category : LeaderboardCategory, entry : LeaderboardInputEntry) : Promise<JSON> {
     if (!entry.name.trim()) {
-        return
+        throw new Error("Leaderboard entry name cannot be empty");
     }
 
     const environmentVariables = getEnvironmentVariables();
     if (!environmentVariables) {
-        return;
+        throw new Error("Missing environment variables");
     }
     const {requestURLBase, API_KEY} = environmentVariables;
 
     const categoryKey = leaderboardKeys[category];
+    if (!categoryKey) {
+        throw new Error(`Invalid leaderboard category: ${category}`);
+    }
     const requestURL = `${requestURLBase}${requestSectionKey}/${categoryKey}?${reverseOrderQueryParameter}=${false}`;
 
     try {
@@ -87,18 +90,16 @@ export async function addLeaderboardEntry(category : LeaderboardCategory, entry 
         });
 
         if (!response.ok) {
-            console.log(
-                "Leaderboard request failed:",
-                response.status,
-                await response.text()
+            throw new Error(
+                `Leaderboard request failed: ${response.status} ${await response.text()}`
             );
-            return;
         }
+
         const data = await response.json();
         console.log("response", data);
         return data;
     } catch (error) {
         console.log("Failed to post leaderboard entry:", error);
-        return;
+        throw error;
     }
 }
