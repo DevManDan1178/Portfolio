@@ -30,6 +30,16 @@ export default function UnityGamePage({
   gameEventLinkers = [],
 }: UnityGamePageProps) {
   return function UnityGamePageComponent() {
+
+    const [game, toggleFullscreen] = UnityGame({
+      className:"w-[calc(50%+125px)]",
+      config,
+      canvasDimensions,
+      containerId,
+      fileInfo,
+      gameEventLinkers,
+    })
+
     return (
       <>
         <SEO
@@ -45,17 +55,14 @@ export default function UnityGamePage({
           </div>
 
           <div className="w-full flex flex-col items-center">
-            <UnityGame
-              className="w-[calc(50%+125px)]"
-              config={config}
-              canvasDimensions={canvasDimensions}
-              containerId={containerId}
-              fileInfo={fileInfo}
-              gameEventLinkers={gameEventLinkers}
-              showFullscreenButton
-            />
+            {game}
           </div>
-
+          <button
+            onClick={toggleFullscreen}
+            className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
+          >
+            Fullscreen
+          </button>
           <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
             <div className="w-full max-w-[80%] text-center">
               {descriptionElement}
