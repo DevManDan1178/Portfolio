@@ -259,7 +259,7 @@ const Technologies = () => {
           {/* Middle */}
           <div className="absolute left-1/2 -translate-x-1/2 w-[calc(15%+50px)] items-center justify-center flex">
             <button
-              className={`cursor-pointer ${styles.techStackMatchStyle.buttonHeightStyle} w-full bg-white/15 rounded-lg border-2 border-white/10 flex items-center justify-center`}
+              className={`${styles.techStackMatchStyle.buttonHeightStyle} w-full bg-white/15 rounded-lg border-2 border-white/10 flex items-center justify-center hover:bg-white/20`}
               onClick={solved ? reset : (aborted ? reset : abort)}
             >
               <p
@@ -285,7 +285,7 @@ const Technologies = () => {
           {/* Right*/}
           <div className="absolute right-0 -translate-x-1/4 w-[calc(15%+50px)] items-center justify-center flex">
             <button
-              className={`cursor-pointer ${styles.techStackMatchStyle.buttonHeightStyle} w-full bg-white/15 rounded-lg border-2 border-white/10 flex items-center justify-center`}
+              className={`${leaderboardToggled ? "border-white/10 bg-white/30" : "border-white/10 bg-white/15"} ${styles.techStackMatchStyle.buttonHeightStyle} w-full rounded-lg border-2 flex items-center justify-center hover:bg-white/20`}
               onClick={() => {setleaderboardToggled(!leaderboardToggled)}}
             >
               <p
@@ -296,7 +296,13 @@ const Technologies = () => {
             </button>
           </div>
         </div>
-        {leaderboardToggled && leaderboard}
+        <div 
+          className={leaderboardToggled ? "block" : "hidden"}
+          aria-hidden={!leaderboardToggled}
+        >
+          {leaderboard}
+        </div>
+        {/*leaderboardToggled && leaderboard*/}
       </div>  
     </div>
   )
