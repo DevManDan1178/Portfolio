@@ -63,44 +63,60 @@ const descriptionElement : ReactElement = <span className={styles.sectionSubText
 
 const seoInfo : SEOInfo = {
   title: "Polygon Tower Defense", 
-  description: "Tower defense game with customized upgrades"
+  description: 
+  `Playable on browser! ` +
+  `A tower defense game where you customize your own upgrades by choosing the stat boosts. ` +
+  `Defend waves of enemies by placing towers and platforms, or even by extending the track. `
 }
 
 const gameEventLinkers : GameEventLinkers = [];
 export default function() {
+
+  const [polygonTDGame, toggleFullscreen] = UnityGame({
+    className:"w-[calc(50%+125px)]",
+    config,
+    canvasDimensions,
+    containerId,
+    fileInfo,
+    gameEventLinkers,
+    loadingText : (
+      <>
+        <p className="font-pixeloid">LOADING...</p>
+        <p className="text-sm font-pixeloid">This might take a while...</p>
+      </>
+    )
+  })
+
   return (
-        <>
-          <SEO
-            title={seoInfo.title}
-            description={seoInfo.description}
-            image={seoInfo.image}
-            url={seoInfo.url}
-          />
-  
-          <div className="w-full h-screen flex flex-col items-center p-10 bg-zinc-950 text-white">
-            <div className="text-3xl font-semibold">
-              {titleElement}
-            </div>
-  
-            <div className="w-full flex flex-col items-center">
-              <UnityGame
-                className="w-[calc(50%+125px)]"
-                config={config}
-                canvasDimensions={canvasDimensions}
-                containerId={containerId}
-                fileInfo={fileInfo}
-                gameEventLinkers={gameEventLinkers}
-                showFullscreenButton
-              />
-            </div>
-  
-            <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
-              <div className="w-full max-w-[80%] text-center">
-                {descriptionElement}
-              </div>
-            </div>
+    <>
+      <SEO
+        title={seoInfo.title}
+        description={seoInfo.description}
+        image={seoInfo.image}
+        url={seoInfo.url}
+      />
+
+      <div className="w-full h-screen flex flex-col items-center p-10 bg-zinc-950 text-white">
+        <div className="text-3xl font-semibold">
+          {titleElement}
+        </div>
+
+        <div className="w-full flex flex-col items-center">
+          {polygonTDGame}
+        </div>
+        <button
+          onClick={toggleFullscreen}
+          className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
+        >
+          Fullscreen
+        </button>
+        <div className="relative w-full flex justify-center text-sm text-zinc-400 pt-5">
+          <div className="w-full max-w-[80%] text-center">
+            {descriptionElement}
           </div>
-        </>
-      );
+        </div>
+      </div>
+    </>
+  );
 }
 
