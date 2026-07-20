@@ -13,7 +13,7 @@ export async function getNameboardEntries(
     const response = await fetch(queryURL);
 
     if (!response.ok) {
-        throw new Error("Failed to fetch leaderboard");
+        throw new Error("Failed to fetch nameboard");
     }
 
     return response.json();
