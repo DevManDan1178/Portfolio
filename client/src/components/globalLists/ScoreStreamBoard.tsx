@@ -23,7 +23,8 @@ export type ScoreStreamBoardProps = GlobalBoardPropsBase & {
     }
     queryOrder?: ScoreStreamQueryOrder,
     entriesState?: EntriesState<ScoreStreamEntry>,
-    scoreFormatFunction?: (score: number) => number,
+    scoreStorageFactor? : number,
+    scoreFormatFunction?: (score: number) => string,
     theme? : Theme
 };
 
@@ -36,9 +37,10 @@ export function ScoreStreamBoard({
         score: "Score",
         timestamp: "Achieved at"
     },
+    scoreStorageFactor = 1,
     queryOrder = defaultScoreStreamQueryOrder,
     entriesState = useState<ScoreStreamEntry[]>([]),
-    scoreFormatFunction = (score: number) => score,
+    scoreFormatFunction = (score: number) => `${score}`,
     theme = {}
 }: ScoreStreamBoardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
     const [entries, setEntries] = entriesState;
@@ -150,7 +152,8 @@ export function ScoreStreamBoard({
     }, [loading, loadMore]);
 
 
-    async function submitScore(score : number, name : string) : Promise<number> {
+    async function submitScore(preprocessedScore : number, name : string) : Promise<number> {
+        const score = preprocessedScore * scoreStorageFactor;
         try {
             const timestamp = Math.floor(Date.now() / DATE_ADJUSTMENT_FACTOR);
             const result = await submitScoreStreamScore(category, {
@@ -186,6 +189,10 @@ export function ScoreStreamBoard({
             console.error(err);
         } 
         return -1;
+    }
+
+    function getFormattedScore(score : number) {
+        return scoreFormatFunction(score / scoreStorageFactor);
     }
 
     return [(
@@ -232,7 +239,7 @@ export function ScoreStreamBoard({
                                     </td>
 
                                     <td className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-200 text-sm text-center font-semibold truncate`}>
-                                        {scoreFormatFunction(entry.score)}
+                                        {getFormattedScore(entry.score)}
                                     </td>
 
                                     <td className="px-5 py-3 text-center">
