@@ -10,6 +10,8 @@ import { maxNameLength } from "../../../../../shared/constants/api/globalBoards"
 
 const FILE_PATH = "/games/EchoArena/index.html";
 
+const titleElement = <p className="pb-5 text-center font-pixeloid"> ECHO ARENA </p>
+
 const descriptionElement: ReactElement = (
   <span className={styles.subDescriptionText}>
     <span className="text-[18px] text-left w-[85%] tracking-wide leading-loose">
@@ -52,28 +54,32 @@ const seoInfo : SEOInfo = {
 
 export default function EchoArenaGamePage() {
   const [highscoreLeaderboard, highscoreAttemptSumbit] = SubmittableLeaderboard({
-    category:"Echo Arena Highscore",
+    category: "EchoArena-highscore",
     title: "Highest scores",
     count: 20,
     theme: {
       font: "font-pixeloid"
     },
-    submitSectionTitle: "BEST SCORE",
-    placeholderName: "Name",
-    submitButtonText: "SUBMIT",
+    submitSectionTexts: {
+      submitSectionTitle: "BEST SCORE",
+      placeholderName: "Name",
+      submitButtonText: "SUBMIT",
+    },
     maxNameLength,
   })
 
   const [pacifistLeaderboard, pacifistAttemptSubmit] = SubmittableLeaderboard({
-    category:"Echo Arena Pacifist",
+    category: "EchoArena-pacifist",
     title: "LONGEST TIME WITHOUT KILLS",
     count: 20,
     theme: {
       font: "font-pixeloid",
     },
-    submitSectionTitle: "BEST TIME",
-    placeholderName: "Name",
-    submitButtonText: "SUBMIT",
+    submitSectionTexts: {
+      submitSectionTitle: "BEST TIME",
+      placeholderName: "Name",
+      submitButtonText: "SUBMIT",
+    },
     scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : `${formatTime(score * 1000, 2)}s`,
     scoreStorageFactor: 1000,
     maxNameLength,
@@ -115,7 +121,7 @@ export default function EchoArenaGamePage() {
       />
       <div className="w-full h-screen flex flex-col bg-zinc-950 text-white">
         <div className="shrink-0 text-3xl font-semibold py-5 text-center font-pixeloid">
-          ECHO ARENA
+          {titleElement}
         </div>
 
         <div className="flex-1 flex flex-col justify-center items-center">
@@ -136,7 +142,7 @@ export default function EchoArenaGamePage() {
               className={`${leaderboardsToggled && "border-black/40 border-2"}  mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded transition`}
               onClick={() => setLeaderboardsToggled(!leaderboardsToggled)}
             >
-              {`LEADERBOARDS`}
+              LEADERBOARDS
             </button>
           </div>
         </div>
@@ -164,7 +170,18 @@ export default function EchoArenaGamePage() {
            
             
             <div className="w-full flex justify-center pb-10 font-pixeloid pt-10">
-              {selectedLeaderboard == "highscore" ? highscoreLeaderboard : pacifistLeaderboard}
+              <div 
+                className={selectedLeaderboard == "highscore" ? "block" : "hidden"}
+                aria-hidden={selectedLeaderboard != "highscore"}
+              >
+                {highscoreLeaderboard}
+              </div>
+              <div 
+                className={selectedLeaderboard == "pacifist" ? "block" : "hidden"}
+                aria-hidden={selectedLeaderboard != "pacifist"}
+              >
+                {pacifistLeaderboard}
+              </div>
             </div>
           </div>
         </div>    
