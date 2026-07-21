@@ -36,7 +36,7 @@ const About = () => {
           {title}
         </h2>
       </div>
-      <motion.p
+      <motion.div
         variants={{
           hidden: {
             x: 0,
@@ -59,7 +59,7 @@ const About = () => {
           <SubDescription/>
         </span>
         
-      </motion.p>
+      </motion.div>
       <motion.div 
         className='flex items-center justify-center gap-10 mt-[25px]  mb-[50px]'
         variants={{
