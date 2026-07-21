@@ -5,6 +5,14 @@ export type GlobalBoardPropsBase = {
     count: number, 
 }
 
+export type SubmittableGlobalBoardPropsBase = GlobalBoardPropsBase & {
+    maxNameLength : number
+    placeholderName? : string
+    submitButtonText?: string;
+    submitButtonCooldown?: number;
+    submitSectionTitle?: string;
+}
+
 export type GlobalBoardSubTitlePropsBase = {
     name : string, 
     timestamp: string
