@@ -7,21 +7,26 @@ import { getOnKeyDownInputEventDuplicator } from "../../constants/components/glo
 
 export type SubmittableNameboardProps = NameboardProps & SubmittableGlobalBoardPropsBase;
 
+const defaultSubmitSectionTexts = {
+    placeholderName: "[Name]",
+    submitButtonText: "Submit",
+    submitSectionTitle: "Submit Name",
+}
+
 export default function ({
     title,
     category,
     count,
-    subTitles,
+    boardSubTitles,
     entriesState,
     queryOrder,
     maxNameLength,
     theme = {},
 
-    placeholderName = "[Name]",
-    submitButtonText = "Submit",
+    submitSectionTexts,
     submitButtonCooldown = 3000,
-    submitSectionTitle = "Submit Name",
 }: SubmittableNameboardProps): [ReactElement, (submitEnabled : boolean) => void] {
+    const { submitSectionTitle, placeholderName, submitButtonText } = {...defaultSubmitSectionTexts, ...submitSectionTexts}
     const [submitName, setSubmitName] = useState("");
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -46,7 +51,7 @@ export default function ({
         title,
         category,
         count,
-        subTitles,
+        boardSubTitles,
         entriesState,
         queryOrder,
         theme,
@@ -112,7 +117,6 @@ export default function ({
                     type="text"
                     value={submitName}
                     disabled={submitted}
-                    onFocus={() => console.log("focused")}
                     onKeyDown={getOnKeyDownInputEventDuplicator(setSubmitName, (candidateName : string) => candidateName.length < maxNameLength)}
                     placeholder={placeholderName}
                     maxLength={20}

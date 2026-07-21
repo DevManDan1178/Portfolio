@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactElement } from "react"
-import { type SubmitResult, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
+import { type SubmitResult, type SubmitSectionTextsBase, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
 import { type LeaderboardProps, Leaderboard } from "./Leaderboard"
 import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists"
@@ -11,28 +11,35 @@ export type SubmittableLeaderboardProps = LeaderboardProps & SubmittableGlobalBo
     scoreStorageFactor? : number,
     scoreComparisonFunction? : (a : number, b : number) => boolean,
     placeholderScore? : string,
+    submitSectionTexts : SubmitSectionTextsBase & {
+        placeholderScore? : string,
+    }
+}
+
+const defaultSubmitSectionTexts = {
+    submitSectionTitle: "Best Score",
+    placeholderScore: " -",
+    placeholderName: "[Name]",
+    submitButtonText: "Submit Score",
 }
 
 export default function({
     category,
     title,
-    subTitles,
+    boardSubTitles,
     entriesState,
     count,
     theme = {},
-
     maxNameLength,
-    submitSectionTitle = "Best Score",
-    placeholderScore = "-",
-    placeholderName = "[Name]",
-    submitButtonText = "Submit Score",
-    scoreFormatFunction = (score : number | undefined) => `${score ?? placeholderScore}`,
+    submitSectionTexts,
+    
+    scoreFormatFunction = (score : number | undefined) => `${score ?? (submitSectionTexts.placeholderScore ?? defaultSubmitSectionTexts.placeholderScore)}`,
     scoreStorageFactor = 1,
     submitButtonCooldown = 3000,
     scoreComparisonFunction = (a : number, b : number) => a > b,
     
 } : SubmittableLeaderboardProps) : [ReactElement, (candidateScore : number) => void]{
-    
+    const { submitSectionTitle, placeholderName, submitButtonText } = {...defaultSubmitSectionTexts, ...submitSectionTexts}
     const [bestScore, setbestScore] = useState<number | undefined>(undefined)
     const [submitName, setSubmitName] = useState("")
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false)
@@ -70,7 +77,7 @@ export default function({
     const [leaderboard, submitScore] = Leaderboard({
         title,
         category,
-        subTitles,
+        boardSubTitles,
         entriesState,
         count,
         scoreStorageFactor,
