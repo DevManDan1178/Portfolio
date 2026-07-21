@@ -4,7 +4,7 @@ import { styles } from "../../style"
 import { type ScoreStreamBoardProps, ScoreStreamBoard } from "./ScoreStreamBoard"
 import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists"
 import { getThemeStyles } from "../../style"
-import { getOnKeyDownInputEventDuplicator } from "../../constants/components/globalBoards/input"
+import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input"
 
 export type SubmittableScoreStreamBoardProps = ScoreStreamBoardProps & SubmittableGlobalBoardPropsBase & {
     scoreFormatFunction? : (score : number | undefined) => string
@@ -147,6 +147,7 @@ export default function({
                     disabled={submitBlocked()}
                     onKeyDown={getOnKeyDownInputEventDuplicator(setSubmitName, (candidateName : string) => candidateName.length < maxNameLength)}
                     placeholder={placeholderName}
+                    onChange={() => {}}
                     maxLength={20}
                     className={`${getThemeStyles(theme)} w-full mb-5 mt-5 px-2 py-2 rounded-lg border-2 border-white/10 bg-white/10 text-white placeholder-white/40 text-center focus:outline-none focus:border-secondary`}
                 />
