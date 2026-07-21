@@ -6,3 +6,5 @@ export const deletedIndexKey = "deleted_index"
 export const leaderboardApiURLPath = "/api/leaderboard";
 export const nameboardApiURLPath = "/api/nameboard";
 export const scoreStreamApiURLPath = "/api/score-stream";
+
+export const maxNameLength = 10;
