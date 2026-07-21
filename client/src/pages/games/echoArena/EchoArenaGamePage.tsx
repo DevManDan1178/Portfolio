@@ -6,6 +6,7 @@ import { echoArena } from "../../../assets";
 import type { GameEventLinkers } from "../../../../types/exhibits/games";
 import SubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
 import { formatTime } from "../../../../../shared/constants/util";
+import { maxNameLength } from "../../../../../shared/constants/api/globalBoards";
 
 const FILE_PATH = "/games/EchoArena/index.html";
 
@@ -57,9 +58,10 @@ export default function EchoArenaGamePage() {
     theme: {
       font: "font-pixeloid"
     },
-    bestScoreTitle: "BEST SCORE",
+    submitSectionTitle: "BEST SCORE",
     placeholderName: "Name",
     submitButtonText: "SUBMIT",
+    maxNameLength,
   })
 
   const [pacifistLeaderboard, pacifistAttemptSubmit] = SubmittableLeaderboard({
@@ -69,11 +71,12 @@ export default function EchoArenaGamePage() {
     theme: {
       font: "font-pixeloid",
     },
-    bestScoreTitle: "BEST TIME",
+    submitSectionTitle: "BEST TIME",
     placeholderName: "Name",
     submitButtonText: "SUBMIT",
     scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : `${formatTime(score * 1000, 2)}s`,
     scoreStorageFactor: 1000,
+    maxNameLength,
   })
 
   const [selectedLeaderboard, setSelectedLeaderboard] = useState<"highscore" | "pacifist">("highscore");

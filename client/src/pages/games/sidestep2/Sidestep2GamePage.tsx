@@ -1,9 +1,10 @@
 import { useState, type ReactElement } from "react";
 import SEO from "../../../components/misc/SEO";
-import UnityGame from "../../../components/games/UnityGame";
+import UnityGame, { type UnityLoaderConfig } from "../../../components/games/UnityGame";
 import { type FileInfo } from "../../../components/games/UnityGame";
 import type { SEOInfo } from "../../../components/misc/SEO";
 import type { GameEventLinkers } from "../../../../types/exhibits/games";
+import { maxNameLength } from "../../../../../shared/constants/api/globalBoards";
 import SubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
 
 const GAME_PATH = "/games/Sidestep2";
@@ -16,7 +17,7 @@ const canvasDimensions = {
 }
 
  // @ts-ignore
-const config = {
+const config : UnityLoaderConfig = {
     dataUrl: `${GAME_PATH}/Build/${BUILD_NAME}.data.unityweb`,
     frameworkUrl: `${GAME_PATH}/Build/${BUILD_NAME}.framework.js.unityweb`,
     codeUrl: `${GAME_PATH}/Build/${BUILD_NAME}.wasm.unityweb`,
@@ -85,7 +86,8 @@ export default function() {
     category: "Sidestep2 Highscore",
     title: "Highest Scores - Endless Mode",
     count: 20,
-    submitButtonText: "Submit"
+    submitButtonText: "Submit",
+    maxNameLength
   })
 
   const gameEventLinkers : GameEventLinkers = [
