@@ -1,19 +1,16 @@
 import { useState, useEffect, type ReactElement } from "react"
-import { type SubmitResult } from "../../../types/api/globalBoards"
+import { type SubmitResult, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
 import { type LeaderboardProps, Leaderboard } from "./Leaderboard"
 import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists"
 import { getThemeStyles } from "../../style"
+import { getOnKeyDownInputEventDuplicator } from "../../constants/components/globalBoards/input"
 
-export type SubmittableLeaderboardProps = LeaderboardProps & {
+export type SubmittableLeaderboardProps = LeaderboardProps & SubmittableGlobalBoardPropsBase &  {
     scoreFormatFunction? : (score : number | undefined) => string
     scoreStorageFactor? : number,
-    submitButtonCooldown? : number,
     scoreComparisonFunction? : (a : number, b : number) => boolean,
-    bestScoreTitle? : string,
     placeholderScore? : string,
-    placeholderName? : string,
-    submitButtonText? : string,
 }
 
 export default function({
@@ -22,7 +19,10 @@ export default function({
     subTitles,
     entriesState,
     count,
-    bestScoreTitle = "Best Score",
+    theme = {},
+
+    maxNameLength,
+    submitSectionTitle = "Best Score",
     placeholderScore = "-",
     placeholderName = "[Name]",
     submitButtonText = "Submit Score",
@@ -30,7 +30,7 @@ export default function({
     scoreStorageFactor = 1,
     submitButtonCooldown = 3000,
     scoreComparisonFunction = (a : number, b : number) => a > b,
-    theme = {},
+    
 } : SubmittableLeaderboardProps) : [ReactElement, (candidateScore : number) => void]{
     
     const [bestScore, setbestScore] = useState<number | undefined>(undefined)
@@ -82,7 +82,7 @@ export default function({
         if (!canSubmit() || submitButtonDisabled || bestScore == undefined || !submitName.trim()) {
             return
         }
-        const result = await submitScore(bestScore, submitName)
+        const result = await submitScore(bestScore, submitName.trim())
 
         const submitResult : SubmitResult= (() => {
         if (result >= 0) {
@@ -118,7 +118,7 @@ export default function({
         <div className="flex flex-row gap-5">
           <div className="w-[calc(15%_+_50px)] h-[70%] my-auto flex flex-col items-center justify-center">
             <p className={`text-white/80 text-center text-md sm:text-xl ${getThemeStyles(theme)}`}>
-              {bestScoreTitle}
+              {submitSectionTitle}
             </p>
 
             <p
@@ -131,7 +131,7 @@ export default function({
               type="text"
               value={submitName}
               disabled={submitBlocked()}
-              onChange={(e) => setSubmitName(e.target.value)}
+              onKeyDown={getOnKeyDownInputEventDuplicator(setSubmitName, (candidateName : string) => candidateName.length < maxNameLength)}            
               placeholder={placeholderName}
               maxLength={20}
               className={`${getThemeStyles(theme)} w-full mb-5 mt-5 px-2 py-2 rounded-lg border-2 border-white/10 bg-white/10 text-white placeholder-white/40 text-center focus:outline-none focus:border-secondary`}
