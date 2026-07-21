@@ -10,3 +10,10 @@ export function formatTime(timeMS: number, digitsAfterZero: number) {
     `${String(Math.floor((timeMS % ToMinutes) / ToSeconds)).padStart(2, "0")}.`+
     `${String(milliseconds).padStart(digitsAfterZero, "0")}`;
 }
+
+export function formatDate(date : Date) {
+    return {
+        day: `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`,
+        hour: `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`                                            
+    }
+}

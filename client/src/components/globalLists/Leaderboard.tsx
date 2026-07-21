@@ -5,6 +5,7 @@ import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase }
 import { deletedIndexKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
 import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { type Theme, getThemeStyles } from "../../style";
+import { formatDate } from "../../../../shared/constants/util";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000;
 
@@ -274,14 +275,14 @@ export function Leaderboard({
 
                                     <td className="px-5 py-3 text-neutral-500 text-sm text-right whitespace-nowrap">
                                         {(() => {
-                                            const date = new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR);
-
+                        
+                                            const {day, hour} = formatDate(new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR))
                                             return (
                                                 <div className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-300/70 text-sm text-right whitespace-nowrap`}>
-                                                    {`${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`}
+                                                    {day}
 
                                                     <div className={`${getThemeStyles(theme)}  text-neutral-400/80 text-xs text-right whitespace-nowrap`}>
-                                                        {`${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`}
+                                                        {hour}
                                                     </div>
                                                 </div>
                                             );
