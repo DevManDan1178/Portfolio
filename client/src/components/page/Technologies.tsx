@@ -51,10 +51,12 @@ const Technologies = () => {
   const [leaderboardToggled, setleaderboardToggled] = useState(false)
 
   const [leaderboard, attemptSubmitScore] = SubmittableLeaderboard({
-    category: "Stack Matching",
+    category: "StackMatching",
     title: "Fastest Times",
     count: 20,
-    submitSectionTitle: "Fastest Time",
+    submitSectionTexts: {
+      submitSectionTitle: "Fastest Time",
+    },
     scoreStorageFactor: SCORE_STORAGE_FACTOR,
     scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : `${formatTime(score, 2)}s`,
     scoreComparisonFunction: (a : number, b: number) => b > a,
