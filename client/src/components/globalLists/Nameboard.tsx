@@ -18,24 +18,27 @@ const LOAD_MORE_DISTANCE_FROM_BOTTOM : number = 16
 
 export type NameboardProps = GlobalBoardPropsBase & {
     category: NameboardCategory,
-    subTitles?: GlobalBoardSubTitlePropsBase,
+    boardSubTitles?: GlobalBoardSubTitlePropsBase,
     queryOrder?: NameboardQueryOrder,
     entriesState?: EntriesState<NameboardEntry>,
     theme? : Theme
 }
 
+
+const defaultSubtitles = {
+    name: "Name",
+    timestamp: "Achieved at"
+}
 export function Nameboard({
     title,
     category,
     count,
-    subTitles = {
-        name: "Name",
-        timestamp: "Achieved at"
-    },
+    boardSubTitles,
     queryOrder = defaultNameboardQueryOrder,
     entriesState = useState<NameboardEntry[]>([]),
     theme = {}
 }: NameboardProps) : [ReactNode, (name : string) => Promise<number>] {
+    const subTitles = {...defaultSubtitles, ...boardSubTitles}
     const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);

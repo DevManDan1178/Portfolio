@@ -18,7 +18,7 @@ const LOAD_MORE_DISTANCE_FROM_BOTTOM : number = 16
 
 export type ScoreStreamBoardProps = GlobalBoardPropsBase & {
     category: ScoreStreamCategory,
-    subTitles?: GlobalBoardSubTitlePropsBase & {
+    boardSubTitles?: GlobalBoardSubTitlePropsBase & {
         score: string
     }
     queryOrder?: ScoreStreamQueryOrder,
@@ -28,21 +28,24 @@ export type ScoreStreamBoardProps = GlobalBoardPropsBase & {
     theme? : Theme
 };
 
+const defaultSubtitles = {
+    name: "Name",
+    score: "Score",
+    timestamp: "Achieved at"
+}
+
 export function ScoreStreamBoard({
     title,
     category,
     count,
-    subTitles = {
-        name: "Name",
-        score: "Score",
-        timestamp: "Achieved at"
-    },
+    boardSubTitles,
     scoreStorageFactor = 1,
     queryOrder = defaultScoreStreamQueryOrder,
     entriesState = useState<ScoreStreamEntry[]>([]),
     scoreFormatFunction = (score: number) => `${score}`,
     theme = {}
 }: ScoreStreamBoardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
+    const subTitles = {...defaultSubtitles, ...boardSubTitles}
     const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);

@@ -44,31 +44,34 @@ const getPlacementBadge = (index: number, theme : Theme) => {
 
 export type LeaderboardProps = GlobalBoardPropsBase & {
     category: LeaderboardCategory,
-    subTitles?: GlobalBoardSubTitlePropsBase & {
-        score: string,
-        placement: string
-    }
+    boardSubTitles?: GlobalBoardSubTitlePropsBase & {
+        score? : string,
+        placement? : string
+    },
     entriesState?: EntriesState<LeaderboardEntry>,
     scoreFormatFunction? : (score : number) => string,
     scoreStorageFactor? : number,
     theme? : Theme
 }
 
+const defaultSubtitles = {
+    placement: "Rank",
+    name: "Name",
+    score: "Score",
+    timestamp: "Achieved at"
+}
+
 export function Leaderboard({
     title,
     category,
     count,
-    subTitles = {
-        placement: "Rank",
-        name: "Name",
-        score: "Score",
-        timestamp: "Achieved at"
-    },
+    boardSubTitles,
     entriesState = useState<LeaderboardEntry[]>([]),
     scoreFormatFunction = (score : number) => `${score}`,
     scoreStorageFactor = 1,
     theme = {}
 }: LeaderboardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
+    const subTitles = {...defaultSubtitles, ...boardSubTitles}
     const [entries, setEntries] = entriesState;
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
