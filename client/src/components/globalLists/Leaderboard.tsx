@@ -3,7 +3,7 @@ import { type LeaderboardCategory, type LeaderboardEntry } from "../../../../sha
 import { getLeaderboardEntries, submitLeaderboardScore } from "../../api/leaderboard";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
 import { deletedIndexKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists";
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { type Theme, getThemeStyles } from "../../style";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000;
@@ -215,7 +215,7 @@ export function Leaderboard({
         } catch (err) {
             console.error(err);
         } 
-        return -1;
+        return queryErrorCode;
     }
 
     return [(

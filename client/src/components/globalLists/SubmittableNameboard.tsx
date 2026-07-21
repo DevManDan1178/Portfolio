@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactElement } from "react";
 import { type SubmitResult, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards";
 import { styles, getThemeStyles } from "../../style";
 import { Nameboard, type NameboardProps } from "./Nameboard";
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists";
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/globalBoards/input";
 
 export type SubmittableNameboardProps = NameboardProps & SubmittableGlobalBoardPropsBase;
@@ -92,7 +92,11 @@ export default function ({
                         message: "Request refused!",
                         isError: true,
                     };
-
+                case queryErrorCode:
+                    return {
+                        message: "Error sending request",
+                        isError: true
+                    }
                 default:
                     return {
                         message: "Failed to submit.",

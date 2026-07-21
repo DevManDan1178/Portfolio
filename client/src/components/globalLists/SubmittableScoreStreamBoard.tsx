@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactElement } from "react"
 import { type SubmitResult, type SubmitSectionTextsBase, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
 import { type ScoreStreamBoardProps, ScoreStreamBoard } from "./ScoreStreamBoard"
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists"
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists"
 import { getThemeStyles } from "../../style"
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/globalBoards/input"
 
@@ -102,22 +102,26 @@ export default function({
 
             switch(result) {
                 case postQueryNetworkErrorCode:
-                return {
-                    message: "Could not send to score stream",
-                    isError: true,
-                }
+                    return {
+                        message: "Could not send to score stream",
+                        isError: true,
+                    }
 
                 case postQueryRefusedErrorCode:
-                return {
-                    message: "Your score was refused!",
-                    isError: true
-                }
-
+                    return {
+                        message: "Your score was refused!",
+                        isError: true
+                    }
+                case queryErrorCode:
+                    return {
+                        message: "Error sending request",
+                        isError: true
+                    }
                 default:
-                return {
-                    message: "Failed to submit score",
-                    isError: true
-                }
+                    return {
+                        message: "Failed to submit score",
+                        isError: true
+                    }
             }
         })();
 

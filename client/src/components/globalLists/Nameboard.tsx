@@ -3,7 +3,7 @@ import { defaultNameboardQueryOrder, type NameboardCategory, type NameboardEntry
 import { getNameboardEntries, submitNameboardEntry } from "../../api/nameboard";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
 import { indexFromBottomKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists";
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { type Theme, getThemeStyles } from "../../style";
 
 const DATE_ADJUSTMENT_FACTOR: number = 1000;
@@ -181,7 +181,7 @@ export function Nameboard({
         } catch (err) {
             console.error(err);
         } 
-        return -1;
+        return queryErrorCode;
     }
 
     return [(

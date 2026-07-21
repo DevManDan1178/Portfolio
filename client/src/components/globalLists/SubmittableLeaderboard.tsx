@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactElement } from "react"
 import { type SubmitResult, type SubmitSectionTextsBase, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
 import { type LeaderboardProps, Leaderboard } from "./Leaderboard"
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode } from "../../constants/components/globalLists"
+import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists"
 import { getThemeStyles } from "../../style"
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/globalBoards/input"
 
@@ -92,31 +92,36 @@ export default function({
         const result = await submitScore(bestScore, submitName.trim())
 
         const submitResult : SubmitResult= (() => {
-        if (result >= 0) {
-            setBestSubmittedScore(bestScore.valueOf())
+            if (result >= 0) {
+                setBestSubmittedScore(bestScore.valueOf())
 
-            return {
-                message: `You (${submitName}) are now top ${result + 1} with a score of [${scoreFormatFunction(bestScore.valueOf())}]!`,
-                isError: false,
-            };
-        }
-        switch(result) {
-            case postQueryNetworkErrorCode:
-            return {
-                message: "Could not send to leaderboard",
-                isError: true,
+                return {
+                    message: `You (${submitName}) are now top ${result + 1} with a score of [${scoreFormatFunction(bestScore.valueOf())}]!`,
+                    isError: false,
+                };
             }
-            case postQueryRefusedErrorCode:
-            return {
-                message: "Your name already has at least this score!",
-                isError: true
+            switch(result) {
+                case postQueryNetworkErrorCode:
+                    return {
+                        message: "Could not send to leaderboard",
+                        isError: true,
+                    }
+                case postQueryRefusedErrorCode:
+                    return {
+                        message: "Your name already has at least this score!",
+                        isError: true
+                    }
+                case queryErrorCode:
+                    return {
+                        message: "Error sending request",
+                        isError: true
+                    }
+                default:
+                    return {
+                        message: "Failed to submit to leaderboard",
+                        isError: true
+                    }
             }
-            default:
-            return {
-                message: "Failed to submit to leaderboard",
-                isError: true
-            }
-        }
         })();
         setSubmitResult(submitResult) 
     }
