@@ -1,5 +1,5 @@
 export type ScoreStreamCategory =
-    | "Stack Matching";
+    | "PolygonTD";
 
 export type ScoreStreamEntry = {
     name: string;

@@ -4,7 +4,7 @@ import getEnvironmentVariables from "../environment";
 import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 
 const scoreStreamKeys : Record<ScoreStreamCategory, string> = {
-    "Stack Matching": "stack-matching"
+    "PolygonTD": "polygon-td-level-clears"
 };
 
 const requestSectionKey = "score-streams";

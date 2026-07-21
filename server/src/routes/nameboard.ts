@@ -4,7 +4,7 @@ import getEnvironmentVariables from "../environment";
 import { fetchWithTimeout } from "../querying/fetchWithTimeout";
 
 const nameboardKeys : Record<NameboardCategory, string> = {
-    "PolygonTD": "polygon-td",
+    "PolygonTD": "polygon-td-completions",
 };
 
 const requestSectionKey = "nameboards";
