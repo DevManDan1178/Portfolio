@@ -290,7 +290,7 @@ const Technologies = () => {
           {/* Right*/}
           <div className="absolute right-0 -translate-x-1/4 w-[calc(15%+50px)] items-center justify-center flex">
             <button
-              className={`${leaderboardToggled ? "border-white/10 bg-white/30" : "border-white/10 bg-white/15"} ${styles.techStackMatchStyle.buttonHeightStyle} w-full rounded-lg border-2 flex items-center justify-center hover:bg-white/20`}
+              className={`${leaderboardToggled ? "border-white/10 bg-white/20 hover:bg-white/15" : "border-white/10 bg-white/15 hover:bg-white/20"} ${styles.techStackMatchStyle.buttonHeightStyle} w-full rounded-lg border-2 flex items-center justify-center`}
               onClick={() => {setleaderboardToggled(!leaderboardToggled)}}
             >
               <p
