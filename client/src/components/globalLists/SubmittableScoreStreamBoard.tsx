@@ -35,7 +35,7 @@ export default function({
     submitSectionTexts,
     scoreFormatFunction = (score : number | undefined) => `${score ?? (submitSectionTexts.placeholderScore ?? defaultSubmitSectionTexts.placeholderScore)}`,
     scoreStorageFactor = 1,
-    submitButtonCooldown = 3000,
+    submitButtonCooldown = 1000,
 
 } : SubmittableScoreStreamBoardProps) : [ReactElement, (candidateScore : number) => void]{
     const { submitSectionTitle, placeholderName, submitButtonText } = {...defaultSubmitSectionTexts, ...submitSectionTexts}

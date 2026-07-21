@@ -24,7 +24,7 @@ export default function ({
     theme = {},
 
     submitSectionTexts,
-    submitButtonCooldown = 3000,
+    submitButtonCooldown = 1000,
 }: SubmittableNameboardProps): [ReactElement, (submitEnabled : boolean) => void] {
     const { submitSectionTitle, placeholderName, submitButtonText } = {...defaultSubmitSectionTexts, ...submitSectionTexts}
     const [submitName, setSubmitName] = useState("");

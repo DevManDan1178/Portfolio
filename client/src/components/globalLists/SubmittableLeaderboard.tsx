@@ -35,7 +35,7 @@ export default function({
     
     scoreFormatFunction = (score : number | undefined) => `${score ?? (submitSectionTexts.placeholderScore ?? defaultSubmitSectionTexts.placeholderScore)}`,
     scoreStorageFactor = 1,
-    submitButtonCooldown = 3000,
+    submitButtonCooldown = 1000,
     scoreComparisonFunction = (a : number, b : number) => a > b,
     
 } : SubmittableLeaderboardProps) : [ReactElement, (candidateScore : number) => void]{
