@@ -7,7 +7,7 @@ export type NameboardQueryOrder =  "Oldest" | "Newest";
 export const defaultNameboardQueryOrder : NameboardQueryOrder = "Oldest";
 
 export type NameboardCategory = 
-    | "PolygonTD";
+    | "PolygonTD-completionist";
 
 export type NameboardInputEntry = Omit<NameboardEntry, "timestamp">
 

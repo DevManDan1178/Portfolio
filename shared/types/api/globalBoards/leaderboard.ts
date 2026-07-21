@@ -1,8 +1,8 @@
 export type LeaderboardCategory =
-    | "Echo Arena Highscore"
-    | "Echo Arena Pacifist"
-    | "Sidestep2 Highscore"
-    | "Stack Matching";
+    | "EchoArena-highscore"
+    | "EchoArena-pacifist"
+    | "Sidestep2-highscore"
+    | "StackMatching";
 
 export type LeaderboardEntry = {
     name: string;

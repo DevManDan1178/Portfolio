@@ -1,5 +1,5 @@
 export type ScoreStreamCategory =
-    | "PolygonTD";
+    | "PolygonTD-clear";
 
 export type ScoreStreamEntry = {
     name: string;
