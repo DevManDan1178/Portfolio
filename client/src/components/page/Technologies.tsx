@@ -5,6 +5,7 @@ import { SectionWrapper } from '../../hoc'
 import { preTitle, techStack, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText, technologies } from '../../constants/components/page/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../../style'
+import { maxNameLength } from '../../../../shared/constants/api/globalBoards'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { formatTime } from '../../../../shared/constants/util'
 import SubmittableLeaderboard from '../globalLists/SubmittableLeaderboard'
@@ -53,10 +54,12 @@ const Technologies = () => {
     category: "Stack Matching",
     title: "Fastest Times",
     count: 20,
+    submitSectionTitle: "Fastest Time",
     scoreStorageFactor: SCORE_STORAGE_FACTOR,
     scoreFormatFunction: (score : number | undefined) => score == undefined ? "-" : `${formatTime(score, 2)}s`,
     scoreComparisonFunction: (a : number, b: number) => b > a,
     submitButtonCooldown: SUBMIT_BUTTON_COOLDOWN,
+    maxNameLength
   })
 
   useEffect(() => {
