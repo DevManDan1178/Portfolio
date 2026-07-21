@@ -5,17 +5,21 @@ export type GlobalBoardPropsBase = {
     count: number, 
 }
 
+export type SubmitSectionTextsBase = {
+    submitButtonText?: string; 
+    submitSectionTitle?: string;
+    placeholderName? : string,
+}
+
 export type SubmittableGlobalBoardPropsBase = GlobalBoardPropsBase & {
     maxNameLength : number
-    placeholderName? : string
-    submitButtonText?: string;
+    submitSectionTexts : SubmitSectionTextsBase 
     submitButtonCooldown?: number;
-    submitSectionTitle?: string;
 }
 
 export type GlobalBoardSubTitlePropsBase = {
-    name : string, 
-    timestamp: string
+    name? : string, 
+    timestamp?: string
 }
 
 export type EntriesState<T> = [
