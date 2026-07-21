@@ -83,10 +83,12 @@ export default function() {
 
   const [leaderboardToggled, setLeaderboardToggled] = useState(false)
   const [highscoreLeaderboard, highscoreAttemptSubmit] = SubmittableLeaderboard({
-    category: "Sidestep2 Highscore",
+    category: "Sidestep2-highscore",
     title: "Highest Scores - Endless Mode",
     count: 20,
-    submitButtonText: "Submit",
+    submitSectionTexts: {
+      submitButtonText: "Submit",
+    },
     maxNameLength
   })
 
@@ -108,8 +110,8 @@ export default function() {
     gameEventLinkers,
     loadingText : (
       <>
-        <p className="font-pixeloid">LOADING...</p>
-        <p className="text-sm font-pixeloid">This might take a while...</p>
+        <p className="font-bold">LOADING...</p>
+        <p className="text-sm ">This might take a while...</p>
       </>
     )
   })
