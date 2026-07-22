@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback, useRef, type ReactNode } from "react"
 import { type LeaderboardCategory, type LeaderboardEntry } from "../../../../shared/types/api/globalBoards/leaderboard";
 import { getLeaderboardEntries, submitLeaderboardScore } from "../../api/leaderboard";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
-import { deletedIndexKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
+import { deletedIndexKey, indexFromTopKey, nameRefusalEror } from "../../../../shared/constants/api/globalBoards";
+import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { type Theme, getThemeStyles } from "../../style";
 import { formatDate } from "../../../../shared/constants/util";
 
@@ -190,6 +190,9 @@ export function Leaderboard({
             const deletedIndex = result[deletedIndexKey];
             
             if (typeof index != "number") {
+                if (result.error == nameRefusalEror) {
+                  return nameRefusedErrorCode;
+                }
                 return postQueryNetworkErrorCode;
             } else if (index < 0) {
                 return postQueryRefusedErrorCode;

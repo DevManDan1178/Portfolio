@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback, useRef, type ReactNode } from "react"
 import { defaultScoreStreamQueryOrder, type ScoreStreamCategory, type ScoreStreamEntry, type ScoreStreamQueryOrder } from "../../../../shared/types/api/globalBoards/scoreStreams";
 import { getScoreStreamEntries, submitScoreStreamScore } from "../../api/scoreStream";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
-import { indexFromBottomKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
+import { indexFromBottomKey, indexFromTopKey, nameRefusalEror } from "../../../../shared/constants/api/globalBoards";
+import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { type Theme, getThemeStyles } from "../../style";
 import { formatDate } from "../../../../shared/constants/util";
 
@@ -169,6 +169,9 @@ export function ScoreStreamBoard({
             const indexFromBottom = result[indexFromBottomKey]
             
             if (typeof indexFromTop != "number" || typeof indexFromBottom != "number") {
+                if (result.error == nameRefusalEror) {
+                    return nameRefusedErrorCode;
+                }
                 return postQueryNetworkErrorCode;
             } else if (indexFromTop < 0 || indexFromBottom < 0) {
                 return postQueryRefusedErrorCode;

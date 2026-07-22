@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback, useRef, type ReactNode } from "react"
 import { defaultNameboardQueryOrder, type NameboardCategory, type NameboardEntry, type NameboardQueryOrder } from "../../../../shared/types/api/globalBoards/nameboard";
 import { getNameboardEntries, submitNameboardEntry } from "../../api/nameboard";
 import type { EntriesState, GlobalBoardPropsBase, GlobalBoardSubTitlePropsBase } from "../../../types/api/globalBoards";
-import { indexFromBottomKey, indexFromTopKey } from "../../../../shared/constants/api/globalBoards";
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
+import { indexFromBottomKey, indexFromTopKey, nameRefusalEror } from "../../../../shared/constants/api/globalBoards";
+import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { type Theme, getThemeStyles } from "../../style";
 import { formatDate } from "../../../../shared/constants/util";
 
@@ -160,6 +160,9 @@ export function Nameboard({
             
             
             if (typeof indexFromTop != "number" || typeof indexFromBottom != "number") {
+                if (result.error == nameRefusalEror) {
+                    return nameRefusedErrorCode;
+                }
                 return postQueryNetworkErrorCode;
             } else if (indexFromTop < 0 || indexFromBottom < 0) {
                 return postQueryRefusedErrorCode;
