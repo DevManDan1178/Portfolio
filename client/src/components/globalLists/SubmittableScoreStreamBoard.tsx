@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactElement } from "react"
 import { type SubmitResult, type SubmitSectionTextsBase, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
 import { type ScoreStreamBoardProps, ScoreStreamBoard } from "./ScoreStreamBoard"
-import { postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists"
+import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists"
 import { getThemeStyles } from "../../style"
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input"
 
@@ -101,6 +101,11 @@ export default function({
             }
 
             switch(result) {
+                case nameRefusedErrorCode:
+                    return {
+                        message: "Name not accepted",
+                        isError: true,
+                    }
                 case postQueryNetworkErrorCode:
                     return {
                         message: "Could not send to score stream",
@@ -130,7 +135,7 @@ export default function({
 
     return [(
         <div className="flex flex-row gap-5">
-            <div className="w-[calc(15%_+_50px)] h-[70%] my-auto flex flex-col items-center justify-center">
+            <div className="w-[calc(15%+50px)] h-[70%] my-auto flex flex-col items-center justify-center">
                 <p className={`text-white/80 text-center text-md sm:text-xl ${getThemeStyles(theme)}`}>
                     {submitSectionTitle}
                 </p>
@@ -149,7 +154,7 @@ export default function({
                     placeholder={placeholderName}
                     onChange={() => {}}
                     maxLength={20}
-                    className={`${getThemeStyles(theme)} w-full mb-5 mt-5 px-2 py-2 rounded-lg border-2 border-white/10 bg-white/10 text-white placeholder-white/40 text-center focus:outline-none focus:border-secondary`}
+                    className={`${getThemeStyles(theme)} w-full mb-5 mt-5 px-2 py-2 rounded-lg border-2 border-white/10 bg-white/10 text-white placeholder-white/40 text-center focus:outline-hidden focus:border-secondary`}
                 />
 
                 <button
