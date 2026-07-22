@@ -126,7 +126,10 @@ export default function ({
                     type="text"
                     value={submitName}
                     disabled={submitted}
-                    onKeyDown={getOnKeyDownInputEventDuplicator(setSubmitName, (candidateName : string) => candidateName.length < maxNameLength)}
+                    onKeyDown={getOnKeyDownInputEventDuplicator(
+                      (newValue : string) => {setSubmitName(newValue.trim())}, 
+                      (candidateName : string) => candidateName.length < maxNameLength)
+                    }
                     placeholder={placeholderName}
                     onChange={() => {}}
                     maxLength={20}
