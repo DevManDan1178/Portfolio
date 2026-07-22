@@ -5,7 +5,7 @@ import { glungus } from "../../assets";
 
 
 
-export default function() {
+export default function Glungus404Page() {
   return (<>
     <SEO title="404 Not Found" description="GLUNGUS CLICKER?"/>
     

@@ -5,7 +5,7 @@ import { type FileInfo } from "../../../components/games/UnityGame";
 import type { SEOInfo } from "../../../components/misc/SEO";
 import type { GameEventLinkers } from "../../../../types/exhibits/games";
 import { maxNameLength } from "../../../../../shared/constants/api/globalBoards";
-import SubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
+import useSubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
 
 const GAME_PATH = "/games/Sidestep2";
 const BUILD_NAME = "WebBuild_1.3";
@@ -16,7 +16,6 @@ const canvasDimensions = {
   y : 720,
 }
 
- // @ts-ignore
 const config : UnityLoaderConfig = {
     dataUrl: `${GAME_PATH}/Build/${BUILD_NAME}.data.unityweb`,
     frameworkUrl: `${GAME_PATH}/Build/${BUILD_NAME}.framework.js.unityweb`,
@@ -79,10 +78,10 @@ const seoInfo : SEOInfo = {
     `Move with keyboard (WASD) or with mouse (RMB). `
 }
 
-export default function() {
+export default function Sidestep2GamePage() {
 
   const [leaderboardToggled, setLeaderboardToggled] = useState(false)
-  const [highscoreLeaderboard, highscoreAttemptSubmit] = SubmittableLeaderboard({
+  const [highscoreLeaderboard, highscoreAttemptSubmit] = useSubmittableLeaderboard({
     category: "Sidestep2-highscore",
     title: "Highest Scores - Endless Mode",
     count: 20,

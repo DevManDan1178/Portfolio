@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { type SubmitResult, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards";
 import { styles, getThemeStyles } from "../../style";
-import { Nameboard, type NameboardProps } from "./Nameboard";
+import { useNameboard, type NameboardProps } from "./Nameboard";
 import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input";
+import { type NameboardEntry } from "../../../../shared/types/api/globalBoards/nameboard";
 
-export type SubmittableNameboardProps = NameboardProps & SubmittableGlobalBoardPropsBase;
+export type useSubmittableNameboardProps = Omit<NameboardProps, "entriesState"> & SubmittableGlobalBoardPropsBase;
 
 const defaultSubmitSectionTexts = {
     placeholderName: "[Name]",
@@ -13,20 +14,20 @@ const defaultSubmitSectionTexts = {
     submitSectionTitle: "Submit Name",
 }
 
-export default function ({
+export default function useSubmittableNameboard({
     title,
     category,
     count,
     boardSubTitles,
-    entriesState,
     queryOrder,
     maxNameLength,
     theme = {},
 
     submitSectionTexts,
     submitButtonCooldown = 1000,
-}: SubmittableNameboardProps): [ReactElement, (submitEnabled : boolean) => void] {
+}: useSubmittableNameboardProps): [ReactElement, (submitEnabled : boolean) => void] {
     const { submitSectionTitle, placeholderName, submitButtonText } = {...defaultSubmitSectionTexts, ...submitSectionTexts}
+    const entriesState = useState<NameboardEntry[]>([]);
     const [submitName, setSubmitName] = useState("");
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -47,7 +48,7 @@ export default function ({
         return () => clearTimeout(timeout);
     }, [submitButtonDisabled, submitButtonCooldown]);
 
-    const [nameboard, submitEntry] = Nameboard({
+    const [nameboard, submitEntry] = useNameboard({
         title,
         category,
         count,

@@ -1,14 +1,14 @@
 import { useRef, useState, useEffect } from 'react'
 import useSound from 'use-sound'
 import { TechGrid } from '../canvas'
-import { SectionWrapper } from '../../hoc'
+import { SectionWrapper } from '../hoc'
 import { preTitle, techStack, title, subDescription, type Technology, solvedButtonText, abortedButtonText, abortingButtonText, technologies } from '../../constants/components/page/technologies'
 import { motion } from 'framer-motion'
 import { styles } from '../../style'
 import { maxNameLength } from '../../../../shared/constants/api/globalBoards'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { formatTime } from '../../../../shared/constants/util'
-import SubmittableLeaderboard from '../globalLists/SubmittableLeaderboard'
+import useSubmittableLeaderboard from '../globalLists/SubmittableLeaderboard'
 
 export type NodeStatus = {
   solved : boolean,
@@ -50,7 +50,7 @@ const Technologies = () => {
 
   const [leaderboardToggled, setleaderboardToggled] = useState(false)
 
-  const [leaderboard, attemptSubmitScore] = SubmittableLeaderboard({
+  const [leaderboard, attemptSubmitScore] = useSubmittableLeaderboard({
     category: "StackMatching",
     title: "Fastest Times",
     count: 20,
@@ -78,12 +78,12 @@ const Technologies = () => {
     setTimerRunning(false)
     attemptSubmitScore(timer)
     timeoutRef.current = setTimeout(() => {
-      setSolved(true), SOLVED_DISPLAY_DELAY
-    })
+      setSolved(true)
+    }, SOLVED_DISPLAY_DELAY)
   }
 
   const onCorrectPairSelected = (index1 : number, index2 : number) => {
-    var solved = true;
+    let solved = true;
     setTechnologyNodes(technologyNodes.map((technologyNode : TechnologyNode, _index : number) => {
       if (_index == index1 || _index == index2) {
         return  {technology: technologyNode.technology, status: {solved: true, selected: false}} 
@@ -131,7 +131,7 @@ const Technologies = () => {
     if (!timerRunning) {
       setTimerRunning(true)
     }
-    var otherSelectedIndex : number = -1
+    let otherSelectedIndex : number = -1
 
     setTechnologyNodes(technologyNodes.map((technologyNode : TechnologyNode, _index : number) => {
       if (index != _index) {

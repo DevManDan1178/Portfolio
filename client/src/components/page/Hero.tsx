@@ -10,31 +10,31 @@ import type { GameEventLinkers } from '../../../types/exhibits/games'
 
 
 const Hero = () => {
-  const [_levelProgress, setLevelProgress] = useState<number>(0)
+  const [, setLevelProgress] = useState<number>(0)
   const [terminalText, setTerminalText] = useState<string>(TerminalTexts.TerminalIntroduction)
   const unityControllerRef = useRef<UnityController>(null)
 
-  function OnLevelCleared(levelNumber : any) {
+  function OnLevelCleared(levelNumber : number) {
     setTerminalText(levelNumber >= 5 ? TerminalTexts.LastLevelClear : TerminalTexts.LevelCleared)
   }
   
-  function OnLevelLost(_levelNumber : any) {
+  function OnLevelLost(/*levelNumber : number*/) {
     
   }
 
-  function OnLevelStarted(_levelNumber : any) {
+  function OnLevelStarted(/*levelNumber : number*/) {
     setTerminalText(TerminalTexts.LevelStarted)
   }
 
-  function OnPauseToggled(paused : any) {
+  function OnPauseToggled(paused : boolean) {
     setTerminalText(paused ? TerminalTexts.Paused : TerminalTexts.Unpaused)
   }
 
-  function OnLevelProgressChanged(levelNumber : any) {
+  function OnLevelProgressChanged(levelNumber : number) {
     setLevelProgress(levelNumber)
   }
 
-  function OnSceneChanged(sceneName : any) {
+  function OnSceneChanged(sceneName : string) {
     if (sceneName === MENU_SCENES.levelSelect) {
       setTerminalText(TerminalTexts.LevelSelect)
     } else if (sceneName === MENU_SCENES.mainMenu) {
@@ -51,7 +51,7 @@ const Hero = () => {
       handler: OnLevelStarted
     }, {
       gameEventName: "PolygonTD-level-lost",
-      handler: (e : any) => OnLevelLost
+      handler: OnLevelLost
     }, {
       gameEventName: "PolygonTD-level-cleared",
       handler: OnLevelCleared

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import 'react-vertical-timeline-component/style.min.css'
 import {styles} from '../../style'
 import { experiences, preTitle, title, subDescription, type Experience } from '../../constants/components/page/experience'
-import { SectionWrapper } from '../../hoc'
+import { SectionWrapper } from '../hoc'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 
 const DESCRIPTION_TRANSITION_DELAY = 0.25

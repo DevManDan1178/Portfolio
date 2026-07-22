@@ -4,7 +4,7 @@ import SEO, { type SEOInfo } from "../../../components/misc/SEO";
 import GodotGame from "../../../components/games/GodotGame";
 import { echoArena } from "../../../assets";
 import type { GameEventLinkers } from "../../../../types/exhibits/games";
-import SubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
+import useSubmittableLeaderboard from "../../../components/globalLists/SubmittableLeaderboard";
 import { formatTime } from "../../../../../shared/constants/util";
 import { maxNameLength } from "../../../../../shared/constants/api/globalBoards";
 
@@ -53,7 +53,7 @@ const seoInfo : SEOInfo = {
 }
 
 export default function EchoArenaGamePage() {
-  const [highscoreLeaderboard, highscoreAttemptSumbit] = SubmittableLeaderboard({
+  const [highscoreLeaderboard, highscoreAttemptSumbit] = useSubmittableLeaderboard({
     category: "EchoArena-highscore",
     title: "Highest scores",
     count: 20,
@@ -68,7 +68,7 @@ export default function EchoArenaGamePage() {
     maxNameLength,
   })
 
-  const [pacifistLeaderboard, pacifistAttemptSubmit] = SubmittableLeaderboard({
+  const [pacifistLeaderboard, pacifistAttemptSubmit] = useSubmittableLeaderboard({
     category: "EchoArena-pacifist",
     title: "LONGEST TIME WITHOUT KILLS",
     count: 20,

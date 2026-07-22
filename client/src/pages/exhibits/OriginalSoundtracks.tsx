@@ -58,7 +58,7 @@ export default function OriginalSoundtracksPage() {
                     ))}
                 </div>
             </div>
-            <Pages/>
+            {Pages()}
         </div>
     </>);
 }

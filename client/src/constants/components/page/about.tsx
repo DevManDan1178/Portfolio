@@ -19,7 +19,12 @@ export function SubDescription() {
     <br/><br/>
       <span className="text-[22px]">
         {showSmiley ?<span className="text-white items-center flex justify-center text-[20px]">	
-          <button onClick={() => {window.scrollTo(0, 0), setShowSmiley(false)}} className="border-2 border-white-100/20 rounded-lg">
+          <button onClick={() => {
+              window.scrollTo(0, 0) 
+              setShowSmiley(false)
+              }
+            } 
+            className="border-2 border-white-100/20 rounded-lg">
             &nbsp;⊂(◉‿◉)つ <span className="text-[10px]">Hey! My PC has a game on it. Check it out!</span> <span className="text-[20px]">↑</span> &nbsp;
           </button>
           </span> : <br/> }

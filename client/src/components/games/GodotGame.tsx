@@ -33,18 +33,14 @@ export default function GodotGame({
     gameEventLinkersRef.current.forEach(
       ({ gameEventName, handler }) => {
 
-        const fn = (arg: unknown) => {
-          handler(arg);
-        };
+        // @ts-expect-error dynamic
+        iframeWindow[gameEventName] = handler;
 
         // @ts-expect-error dynamic
-        iframeWindow[gameEventName] = fn;
+        iframeWindow.globalThis[gameEventName] = handler;
 
         // @ts-expect-error dynamic
-        iframeWindow.globalThis[gameEventName] = fn;
-
-        // @ts-expect-error dynamic
-        iframeWindow.self[gameEventName] = fn;
+        iframeWindow.self[gameEventName] = handler;
       }
     );
   };
@@ -60,7 +56,7 @@ export default function GodotGame({
     const interval = window.setInterval(() => {
 
       try {
-        // @ts-expect-error 
+        // @ts-expect-error javascript bridge should exist
         const bridge = iframeWindow.JavaScriptBridge;
 
         if (bridge) {

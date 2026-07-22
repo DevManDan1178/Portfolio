@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { styles } from '../style';
-import { staggerContainer } from '../utils/motion';
+import { styles } from '../../style';
+import { staggerContainer } from '../../utils/motion';
+import type { ReactElement } from 'react';
 
-const SectionWrapper = (Component : any, idName : string, paddingEnabled = true) => function HOC() {
+const SectionWrapper = (Component : () => ReactElement, idName : string, paddingEnabled = true) => function HOC() {
     return (
         <motion.section
             variants={staggerContainer()}

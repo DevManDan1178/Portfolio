@@ -1,12 +1,13 @@
 import { useState, useEffect, type ReactElement } from "react"
 import { type SubmitResult, type SubmitSectionTextsBase, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
-import { type LeaderboardProps, Leaderboard } from "./Leaderboard"
+import { type LeaderboardProps, useLeaderboard } from "./Leaderboard"
 import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists"
 import { getThemeStyles } from "../../style"
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input"
+import type { LeaderboardEntry } from "../../../../shared/types/api/globalBoards/leaderboard"
 
-export type SubmittableLeaderboardProps = LeaderboardProps & SubmittableGlobalBoardPropsBase &  {
+export type useSubmittableLeaderboardProps = Omit<LeaderboardProps, "entriesState"> & SubmittableGlobalBoardPropsBase &  {
     scoreFormatFunction? : (score : number | undefined) => string
     scoreStorageFactor? : number,
     scoreComparisonFunction? : (a : number, b : number) => boolean,
@@ -23,11 +24,10 @@ const defaultSubmitSectionTexts = {
     submitButtonText: "Submit Score",
 }
 
-export default function({
+export default function useSubmittableLeaderboard({
     category,
     title,
     boardSubTitles,
-    entriesState,
     count,
     theme = {},
     maxNameLength,
@@ -38,8 +38,9 @@ export default function({
     submitButtonCooldown = 1000,
     scoreComparisonFunction = (a : number, b : number) => a > b,
     
-} : SubmittableLeaderboardProps) : [ReactElement, (candidateScore : number) => void]{
+} : useSubmittableLeaderboardProps) : [ReactElement, (candidateScore : number) => void]{
     const { submitSectionTitle, placeholderName, submitButtonText } = {...defaultSubmitSectionTexts, ...submitSectionTexts}
+    const entriesState = useState<LeaderboardEntry[]>([])
     const [bestScore, setbestScore] = useState<number | undefined>(undefined)
     const [submitName, setSubmitName] = useState("")
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false)
@@ -57,7 +58,7 @@ export default function({
         }, submitButtonCooldown);
     
         return () => clearTimeout(timeout);
-    }, [submitButtonDisabled]);
+    }, [submitButtonDisabled, submitButtonCooldown]);
     
     function attemptSubmitScore(newScore : number) {
         if (bestScore == undefined || scoreComparisonFunction(newScore, bestScore)) {
@@ -74,7 +75,7 @@ export default function({
     }
 
     
-    const [leaderboard, submitScore] = Leaderboard({
+    const [leaderboard, submitScore] = useLeaderboard({
         title,
         category,
         boardSubTitles,

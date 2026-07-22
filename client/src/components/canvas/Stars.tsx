@@ -1,3 +1,5 @@
+/* eslint-disable */
+// Use of Math.random()
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { TextureLoader, Points } from 'three'
 import { useEffect, useMemo, useRef } from 'react'

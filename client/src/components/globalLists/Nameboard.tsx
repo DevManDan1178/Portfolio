@@ -21,7 +21,7 @@ export type NameboardProps = GlobalBoardPropsBase & {
     category: NameboardCategory,
     boardSubTitles?: GlobalBoardSubTitlePropsBase,
     queryOrder?: NameboardQueryOrder,
-    entriesState?: EntriesState<NameboardEntry>,
+    entriesState: EntriesState<NameboardEntry>,
     theme? : Theme
 }
 
@@ -30,13 +30,13 @@ const defaultSubtitles = {
     name: "Name",
     timestamp: "Achieved at"
 }
-export function Nameboard({
+export function useNameboard({
     title,
     category,
     count,
     boardSubTitles,
     queryOrder = defaultNameboardQueryOrder,
-    entriesState = useState<NameboardEntry[]>([]),
+    entriesState,
     theme = {}
 }: NameboardProps) : [ReactNode, (name : string) => Promise<number>] {
     const subTitles = {...defaultSubtitles, ...boardSubTitles}
@@ -123,7 +123,7 @@ export function Nameboard({
             loadingMoreRef.current = false;
             setLoadingMore(false);
         }
-    }, [category, count, queryOrder, setEntries]);
+    }, [category, count, queryOrder, setEntries, entries.length]);
 
     useEffect(() => {
         const el = scrollRef.current;

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { styles } from '../../style'
-import { SectionWrapper } from '../../hoc'
+import { SectionWrapper } from '../hoc'
 import { testimonials, preTitle, title, type Testimonial } from '../../constants/components/page/testimonials'
 
 const TestimonialCard = ({testimonial} : {testimonial : Testimonial}) => {

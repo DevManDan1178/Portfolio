@@ -15,11 +15,11 @@ export const MENU_SCENES = {
   mainMenu : "Main Menu",
   levelSelect : "Level Select"
 } 
-var _unityCanvas : HTMLCanvasElement
-var _unityInstance : any 
+let _unityCanvas : HTMLCanvasElement
+let _unityInstance : UnityInstance
 
 // Pure function that creates Unity canvas and returns a lambda to get it
-export default function PolygonTD(width: number, height: number, gameEventLinkers : GameEventLinkers, onUnityInstanceCreated : (unityInstance : any) => void): () => HTMLCanvasElement {
+export default function PolygonTD(width: number, height: number, gameEventLinkers : GameEventLinkers, onUnityInstanceCreated : (unityInstance : UnityInstance) => void): () => HTMLCanvasElement {
   if (_unityCanvas) {
     return () => _unityCanvas
   }
@@ -51,12 +51,12 @@ export default function PolygonTD(width: number, height: number, gameEventLinker
       
     }*/
 
-    // @ts-ignore
+    // @ts-expect-error createUnityInstance exists but not detected
     createUnityInstance(canvas, {
       dataUrl: `${GAME_PATH}/Build/${BUILD_NAME}.data`,
       frameworkUrl: `${GAME_PATH}/Build/${BUILD_NAME}.framework.js`,
       codeUrl: `${GAME_PATH}/Build/${BUILD_NAME}.wasm`,
-    }, /*onLoadingProgress*/).then((unityInstance: any) => {
+    }, /*onLoadingProgress*/).then((unityInstance: UnityInstance) => {
       _unityInstance = unityInstance
       onUnityInstanceCreated(unityInstance)
       // Mute audio
@@ -66,8 +66,11 @@ export default function PolygonTD(width: number, height: number, gameEventLinker
       
       gameEventLinkers.forEach((gameEventLinker) => {
         const {gameEventName, handler} = gameEventLinker;
-        window.addEventListener(gameEventName, (e : any) => {
+        
+        // @ts-expect-error Custom Unity event uses CustomEvent instead of DOM Event
+        window.addEventListener(gameEventName, (e : CustomEvent) => {
             const detail = e.detail
+             // @ts-expect-error detail should exist
             handler(detail)
         })
       })

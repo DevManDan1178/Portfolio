@@ -49,7 +49,7 @@ export type LeaderboardProps = GlobalBoardPropsBase & {
         score? : string,
         placement? : string
     },
-    entriesState?: EntriesState<LeaderboardEntry>,
+    entriesState: EntriesState<LeaderboardEntry>,
     scoreFormatFunction? : (score : number) => string,
     scoreStorageFactor? : number,
     theme? : Theme
@@ -62,12 +62,12 @@ const defaultSubtitles = {
     timestamp: "Achieved at"
 }
 
-export function Leaderboard({
+export function useLeaderboard({
     title,
     category,
     count,
     boardSubTitles,
-    entriesState = useState<LeaderboardEntry[]>([]),
+    entriesState,
     scoreFormatFunction = (score : number) => `${score}`,
     scoreStorageFactor = 1,
     theme = {}

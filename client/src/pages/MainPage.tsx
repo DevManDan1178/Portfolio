@@ -28,7 +28,7 @@ export default function MainPage() {
             <div id={navLinks.technologies.id}> <Technologies/></div>
             <div id={navLinks.experience.id}><Experience/></div>  
             <div id={navLinks.contact.id}><Contact/></div>
-            <Pages/>
+            {Pages()}
         </div>
     </>)
 }

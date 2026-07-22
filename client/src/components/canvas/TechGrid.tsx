@@ -2,7 +2,7 @@ import { Suspense, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Decal, OrbitControls, Preload, useTexture } from '@react-three/drei'
 import CanvasLoader from '../page/Loader'
-import { MOUSE, Vector3, Spherical} from 'three'
+import { MOUSE, Vector3, Spherical, type Mesh } from 'three'
 import { animated, useSpring } from '@react-spring/three'
 import type { NodeStatus, TechnologyNode } from '../page/Technologies'
 
@@ -18,38 +18,57 @@ const SOLVED_BALL_DECAL_SCALE = 1.25
 
 const Ball = ({ icon, position, rotationY, status, onClick } : {icon : string, position : Vector3, rotationY : number, status : NodeStatus, onClick : () => (void)}) => {
   const [decal] = useTexture([icon])
-  const meshRef = useRef<HTMLDivElement | null>(null)
-  
+
   const { flip }= useSpring({
     flip : (status.selected || status.solved) ? 1 : 0,
     config: {mass:1, tension: 180, friction: 20}
   })
   
-  const [solvedSpin, setSolvedSpin]  = useState(0)
-  const solvedSpinRateX = useRef(Math.random() > 0.5 ? 0.70710678118 : -0.70710678118)
-  const solvedSpinRateY = useRef(Math.random() > 0.5 ? 0.70710678118 : -0.70710678118)
+  const [solvedSpinRateX] = useState(
+    () => Math.random() > 0.5 ? 0.70710678118 : -0.70710678118
+  )
+
+  const [solvedSpinRateY] = useState(
+    () => Math.random() > 0.5 ? 0.70710678118 : -0.70710678118
+  )
+  const solvedSpin = useRef(0)
+
+  const meshRef = useRef<Mesh>(null)
 
   useFrame((_, delta) => {
+    if (!meshRef.current) return
+
+    const baseRotation = flip.get() * Math.PI + rotationY
+
     if (!status.solved) {
+      meshRef.current.rotation.y = baseRotation
+      meshRef.current.rotation.x = 0
       return
     }
-    setSolvedSpin(solvedSpin + delta * SOLVED_BALL_SPIN_SPEED) 
+
+    solvedSpin.current += delta * SOLVED_BALL_SPIN_SPEED
+
+    meshRef.current.rotation.y =
+      baseRotation +
+      solvedSpin.current * solvedSpinRateY
+
+    meshRef.current.rotation.x =
+      solvedSpin.current * solvedSpinRateX * flip.get()
   })
 
+  
   return (
     <group position={position}>
-        <animated.mesh 
-        castShadow 
-        receiveShadow
-        scale={status.solved ? SOLVED_BALL_SCALE : DEFAULT_BALL_SCALE}
-        ref={meshRef}
-        rotation-y={flip.to((f : number) => f * Math.PI + rotationY + (status.solved ? solvedSpin * solvedSpinRateY.current : 0))}
-        rotation-x={flip.to((f : number) => f * (status.solved ? solvedSpin * solvedSpinRateX.current : 0))}
-        onClick={(e) => {
-          e.stopPropagation()
-          onClick()
-        }}
-      >
+        <animated.mesh
+          castShadow
+          receiveShadow
+          scale={status.solved ? SOLVED_BALL_SCALE : DEFAULT_BALL_SCALE}
+          ref={meshRef}
+          onClick={(e) => {
+            e.stopPropagation()
+            onClick()
+          }}
+        >
         <boxGeometry args = {[1.5, 1.5, 1.5]}/>
         <meshStandardMaterial 
           color='#fff8eb'
@@ -91,22 +110,22 @@ const getBallPositions : (totalIndices : number) => Vector3[] = (totalIndices : 
   const midPointX = (sideRowBallCount - 1) * 0.5
   const midPointY = BALL_SIDE_ROWS
   //Top
-  for (var rowIdx = 0; rowIdx < BALL_SIDE_ROWS; rowIdx++) {  
+  for (let rowIdx = 0; rowIdx < BALL_SIDE_ROWS; rowIdx++) {  
     const rowY = rowIdx - midPointY
-    for (var ballIdx = 0; ballIdx < sideRowBallCount; ballIdx++) {
+    for (let ballIdx = 0; ballIdx < sideRowBallCount; ballIdx++) {
       const ballX = ballIdx - midPointX
       ballPositions[rowIdx * sideRowBallCount + ballIdx] = getPosition(ballX, rowY)
     }
   }
   //Middle
   const leftoverMidpointX = (middleRowBallCount - 1) * 0.5
-  for (var ballIdx = 0; ballIdx < middleRowBallCount; ballIdx++) {
+  for (let ballIdx = 0; ballIdx < middleRowBallCount; ballIdx++) {
     ballPositions[BALL_SIDE_ROWS * sideRowBallCount + ballIdx] = getPosition(ballIdx - leftoverMidpointX, 0)
   }
   //Bottom
-  for (var rowIdx = BALL_SIDE_ROWS; rowIdx < sideRowCount; rowIdx++) {  
+  for (let rowIdx = BALL_SIDE_ROWS; rowIdx < sideRowCount; rowIdx++) {  
     const rowY = rowIdx + 1 - midPointY
-    for (var ballIdx = 0; ballIdx < sideRowBallCount; ballIdx++) {
+    for (let ballIdx = 0; ballIdx < sideRowBallCount; ballIdx++) {
       const ballX = ballIdx - midPointX
       ballPositions[middleRowBallCount + rowIdx * sideRowBallCount + ballIdx] = getPosition(ballX, rowY)
     }

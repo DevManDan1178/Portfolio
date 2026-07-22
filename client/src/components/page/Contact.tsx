@@ -1,7 +1,8 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { SectionWrapper } from '../../hoc'
-import { emailDomain, emailUser, preTitle, title, subDescription, GetSocialLinkElement } from '../../constants/components/page/contact'
+import { SectionWrapper } from '../hoc'
+import { emailDomain, emailUser, preTitle, title, subDescription } from '../../constants/components/page/contact'
+import { GetSocialLinkElement } from '../elements/LinkElements'
 import { SocialLinks } from '../../constants/components/page/contact'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { type ScreenSizeType, GetScreenSizeType, styles } from '../../style'
@@ -67,7 +68,7 @@ const Contact = () => {
           Clicky Stuffs
         </span>
         <div className='flex items-center justify-center gap-10 mt-[10px]'>
-          {Object.entries(SocialLinks).map(([_platform, link], index : number) =>  (
+          {Object.values(SocialLinks).map((link, index : number) =>  (
             GetSocialLinkElement(link, index.toString(), true, styles.getLinkDisplayPixelSize(screenSizeType))
         ))}
       </div>
@@ -86,5 +87,4 @@ const Contact = () => {
     </div>
   )
 }
-
 export default SectionWrapper(Contact, "contact")

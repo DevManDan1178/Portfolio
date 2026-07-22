@@ -1,6 +1,20 @@
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import type { GameEventLinkers } from "../../../types/exhibits/games";
 
+declare global {
+  interface Window {
+    createUnityInstance?: (
+      canvas: HTMLCanvasElement,
+      config: UnityLoaderConfig,
+      onProgress?: (progress: number) => void
+    ) => Promise<unknown>;
+  }
+}
+
+export {};
+
+export {};
+
 type UnityGameProps = {
   config: UnityLoaderConfig;
   canvasDimensions: { x: number; y: number };
@@ -69,7 +83,7 @@ export default function UnityGame({
     }> = [];
 
     const startUnity = () => {
-      // @ts-ignore
+      // @ts-expect-error createUnityInstance exists but is not detected
       createUnityInstance(canvas, config, onLoadingProgress).then(
         (unityInstance: UnityInstance) => {
           if (cancelled) {
@@ -95,6 +109,7 @@ export default function UnityGame({
 
           gameEventLinkersRef.current.forEach(({ gameEventName, handler }) => {
             const listener: EventListener = (e) => {
+               // @ts-expect-error detail should exist
               handler((e as CustomEvent).detail);
             };
 
@@ -118,7 +133,7 @@ export default function UnityGame({
       script.addEventListener("load", startUnity);
       document.body.appendChild(script);
     } else {
-      if ((window as any).createUnityInstance) {
+      if (window.createUnityInstance) {
         startUnity();
       } else {
         script.addEventListener("load", startUnity);
@@ -234,7 +249,7 @@ export type UnityLoaderConfig = {
   productName?: string;
   productVersion?: string;
 
-  webglContextAttributes?: Record<string, any>;
+  webglContextAttributes?: Record<string, WebGLContextAttributes>;
   matchWebGLToCanvasSize?: boolean;
   devicePixelRatio?: number;
 };

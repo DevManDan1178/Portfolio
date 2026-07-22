@@ -4,8 +4,8 @@ import SEO, {type SEOInfo } from "../../../components/misc/SEO";
 import { type FileInfo } from "../../../components/games/UnityGame";
 import { styles } from "../../../style";
 import { maxNameLength } from "../../../../../shared/constants/api/globalBoards";
-import SubmittableNameboard from "../../../components/globalLists/SubmittableNameboard";
-import SubmittableScoreStreamBoard from "../../../components/globalLists/SubmittableScoreStreamBoard";
+import useSubmittableNameboard from "../../../components/globalLists/SubmittableNameboard";
+import useSubmittableScoreStreamBoard from "../../../components/globalLists/SubmittableScoreStreamBoard";
 
 const GAME_PATH = "/games/PolygonTD";
 const BUILD_NAME = "WebBuild_1.2.6";
@@ -17,7 +17,6 @@ const canvasDimensions = {
   y : 720,
 }
 
- // @ts-ignore
 const config : UnityLoaderConfig = {
     dataUrl: `${GAME_PATH}/Build/${BUILD_NAME}.data`,
     frameworkUrl: `${GAME_PATH}/Build/${BUILD_NAME}.framework.js`,
@@ -69,10 +68,10 @@ const seoInfo : SEOInfo = {
   `Defend waves of enemies by placing towers and platforms, or even by extending the track. `
 }
 
-export default function() {
+export default function PolygonTDGamePage() {
 
   const [globalBoardsToggled, setGlobalBoardsToggled] = useState(false)
-  const [completionistNameboard, clearersSetSubmittable] = SubmittableNameboard({
+  const [completionistNameboard, clearersSetSubmittable] = useSubmittableNameboard({
     category: "PolygonTD-completionist",
     title: "Completionists - Level 4 Victors",
     count: 20,
@@ -85,7 +84,7 @@ export default function() {
     maxNameLength
   })
 
-  const [clearsScoreStreamBoard, clearsSetSubmittable] = SubmittableScoreStreamBoard({
+  const [clearsScoreStreamBoard, clearsSetSubmittable] = useSubmittableScoreStreamBoard({
     category: "PolygonTD-clear",
     title: "Recent Level Clears",
     count: 20,

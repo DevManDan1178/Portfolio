@@ -13,7 +13,7 @@ export function ScrollToNavId(navId : string) {
 const Navbar = () => {
   const [toggle, setToggle] = useState<boolean>(false)
   const navbarLinks : NavLink[] =  Object.values(navLinks)
-  const [_surfingNavlinkIndex, setSurfingNavlinkIndex] = useState(0)
+  const [, setSurfingNavlinkIndex] = useState(0)
   const surfingNavlinkIndexRef = useRef(0)
   
   const setSurfingNavlinkIdx = (index : number) => { 
@@ -58,45 +58,46 @@ const Navbar = () => {
         }
       });
 
-    setSurfingNavlinkIdx(closestIndex);
-  };
+      setSurfingNavlinkIdx(closestIndex);
+    };
 
-  window.addEventListener("scroll", updateActive);
-  window.addEventListener("resize", updateActive);
-  function processKeyboardEvent(event: KeyboardEvent) {
-    const target = event.target as HTMLElement;
+    window.addEventListener("scroll", updateActive);
+    window.addEventListener("resize", updateActive);
+    
+    function processKeyboardEvent(event: KeyboardEvent) {
+      const target = event.target as HTMLElement;
 
-    if (
-      target.tagName === "INPUT" ||
-      target.tagName === "TEXTAREA" ||
-      target.isContentEditable
-    ) {
-      return;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (event.code === "Space") {
+        console.log(
+          (surfingNavlinkIndexRef.current + 1) % navbarLinks.length,
+          navbarLinks.length
+        );
+
+        scrollToNavIdx(
+          Math.min(surfingNavlinkIndexRef.current + 1, navbarLinks.length - 1)
+        );
+
+        event.preventDefault();
+      }
     }
 
-    if (event.code === "Space") {
-      console.log(
-        (surfingNavlinkIndexRef.current + 1) % navbarLinks.length,
-        navbarLinks.length
-      );
+    window.addEventListener("keydown", processKeyboardEvent);
 
-      scrollToNavIdx(
-        Math.min(surfingNavlinkIndexRef.current + 1, navbarLinks.length - 1)
-      );
+    updateActive(); 
 
-      event.preventDefault();
-    }
-  }
-
-  window.addEventListener("keydown", processKeyboardEvent);
-
-  updateActive(); 
-
-  return () => {
-    window.removeEventListener("scroll", updateActive);
-    window.removeEventListener("resize", updateActive);
-  };
-}, []);
+    return () => {
+      window.removeEventListener("scroll", updateActive);
+      window.removeEventListener("resize", updateActive);
+    };
+  });
 
   function scrollToNavIdx(navIdx : number) : void {
     const navId = navbarLinks[navIdx].id

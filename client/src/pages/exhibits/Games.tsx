@@ -50,7 +50,7 @@ export default function GamesPage() {
           ))}
         </div>
       </div>
-      <Pages/>
+      {Pages()}
     </div>
   </>);
 }

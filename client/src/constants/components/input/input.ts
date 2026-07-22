@@ -3,7 +3,13 @@ import type { KeyboardEventHandler } from "react";
 export function getOnKeyDownInputEventDuplicator(onValueChanged : (newValue : string) => void, validValueFilter : (value : string) => boolean = () => true, stopPropagation : boolean = true) : KeyboardEventHandler<HTMLInputElement> {
     return (e) => {
         const input = e.currentTarget;
-        const closeEventFunc = () => {stopPropagation ? e.stopPropagation() : e.preventDefault()};
+        const closeEventFunc = () => {
+          if (stopPropagation) {
+            e.stopPropagation();
+          } else {
+            e.preventDefault();
+          }
+        };
 
         if (e.key === "Escape") {
             input.blur();

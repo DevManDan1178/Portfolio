@@ -23,7 +23,7 @@ export type ScoreStreamBoardProps = GlobalBoardPropsBase & {
         score: string
     }
     queryOrder?: ScoreStreamQueryOrder,
-    entriesState?: EntriesState<ScoreStreamEntry>,
+    entriesState: EntriesState<ScoreStreamEntry>,
     scoreStorageFactor? : number,
     scoreFormatFunction?: (score: number) => string,
     theme? : Theme
@@ -35,14 +35,14 @@ const defaultSubtitles = {
     timestamp: "Achieved at"
 }
 
-export function ScoreStreamBoard({
+export function useScoreStreamBoard({
     title,
     category,
     count,
     boardSubTitles,
     scoreStorageFactor = 1,
     queryOrder = defaultScoreStreamQueryOrder,
-    entriesState = useState<ScoreStreamEntry[]>([]),
+    entriesState,
     scoreFormatFunction = (score: number) => `${score}`,
     theme = {}
 }: ScoreStreamBoardProps) : [ReactNode, (score : number, name : string) => Promise<number>] {
@@ -130,7 +130,7 @@ export function ScoreStreamBoard({
             loadingMoreRef.current = false;
             setLoadingMore(false);
         }
-    }, [category, count, queryOrder, setEntries]);
+    }, [category, count, queryOrder, setEntries, entries.length]);
 
     useEffect(() => {
         const el = scrollRef.current;

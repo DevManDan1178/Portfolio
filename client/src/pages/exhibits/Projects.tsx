@@ -27,6 +27,6 @@ export default function ProjectsPage() {
             }
             </div>
         </div>
-        <Pages/>
+        {Pages()}
     </>)
 }

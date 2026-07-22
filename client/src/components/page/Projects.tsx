@@ -1,11 +1,12 @@
 
 import { useState } from 'react' 
 import { styles } from '../../style';
-import { getDefaultLinkElement, type BulletPoint, type Project, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, defaultTagSymbol } from '../../constants/components/page/projects';
+import { type BulletPoint, type Project, SUBTAG_TEXT_SIZE_REDUCTION_BY_LAYER, defaultTagSymbol } from '../../constants/components/page/projects';
+import { getDefaultLinkElement } from '../elements/LinkElements';
 import { type Tag } from '../../constants/tags';
 import Tilt from 'react-parallax-tilt'
 import { motion } from 'framer-motion'
-import { SectionWrapper } from '../../hoc'
+import { SectionWrapper } from '../hoc'
 import { preTitle, title, subDescription, projects} from '../../constants/components/page/projects'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { pages } from '../../constants/pages/pages';
@@ -15,17 +16,15 @@ const PROJECT_APPEARANCE_DURATION = 0.5
 
 export const ProjectCard = ({project, disableMouseEvents = false} : {project : Project, disableMouseEvents? : boolean}) => {
   const [toggledBulletPoints, setToggledBulletPoints] = useState<boolean>(!!project.featured)
-  const {name, display, description, tags, links, visuals, bulletPoints} = project
+  const {name, display : Display, description, tags, links, visuals, bulletPoints} = project
   const [toggledSubtagIds, setShowingSubtagsIds] = useState<Record<string, boolean | undefined>>({}) //Bitmask
 
   const getToggleSubTagsCall : (subTag : string) => () => void = (subTag : string) => () => {
-        setShowingSubtagsIds({...toggledSubtagIds, [subTag] : !!!toggledSubtagIds[subTag]})
-      }
-  const Display = display
-  //@ts-ignore
+      setShowingSubtagsIds({...toggledSubtagIds, [subTag] : !toggledSubtagIds[subTag]})
+  }
+
   function getSubTagsDisplay(tagList : Tag[], parentKey : string, depth : number = 0) {
-    //@ts-ignore
-    return tagList.map((tag : Tag, index : number) => { 
+    return tagList.map((tag : Tag) => { 
       const key = `${parentKey}${tag.name}`
       const hasSubTags = tag.subTags && tag.subTags.length > 0
       const showingSubTags = !toggledSubtagIds[key] == !tag.hideSubTagsByDefault
@@ -133,8 +132,9 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
 }
 
 
-const Projects = () => {
+function Projects() {
   const shownProjects = Object.values(projects).filter((project) => !!project.featured)
+  const [showingProjects, setShowingProjects] = useState(shownProjects.map(() => false))
   return (
     <div>
         <div> 
@@ -162,8 +162,7 @@ const Projects = () => {
       </div>
       
       <div className='flex flex-wrap gap-16 items-start justify-center pt-[30px] w-full -z-10'>
-        {shownProjects.map((project, index) => {
-          const [showing, setShowing] = useState(false)
+        {shownProjects.map((project, index) => {        
           return <motion.div 
             key={`project-${index}`}
             variants={{
@@ -172,10 +171,15 @@ const Projects = () => {
                     }}
               className='sm:w-[320px] w-[200px]'
               onAnimationComplete={() => {
-                setShowing(true)
+                setShowingProjects((prev) => prev.map((_, idx) => {
+                  if (idx == index) {
+                    return true;
+                  }
+                  return prev[idx];
+                }))
               }}
           >
-            <ProjectCard project={project} disableMouseEvents={!showing}/>
+            <ProjectCard project={project} disableMouseEvents={!showingProjects[index]}/>
           </motion.div>
         })}
       </div>

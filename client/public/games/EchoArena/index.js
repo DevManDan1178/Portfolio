@@ -108,7 +108,7 @@ const Features = {
 	},
 };
 
-const Preloader = /** @constructor */ function () { // eslint-disable-line no-unused-vars
+const Preloader = /** @constructor */ function () {  
 	function getTrackedResponse(response, load_status) {
 		function onloadprogress(reader, controller) {
 			return reader.read().then(function (result) {
@@ -253,14 +253,14 @@ const Preloader = /** @constructor */ function () { // eslint-disable-line no-un
  *
  * @typedef {Object} EngineConfig
  */
-const EngineConfig = {}; // eslint-disable-line no-unused-vars
+const EngineConfig = {};  
 
 /**
  * @struct
  * @constructor
  * @ignore
  */
-const InternalConfig = function (initConfig) { // eslint-disable-line no-unused-vars
+const InternalConfig = function (initConfig) {  
 	const cfg = /** @lends {InternalConfig.prototype} */ {
 		/**
 		 * Whether to unload the engine automatically after the instance is initialized.
@@ -449,7 +449,7 @@ const InternalConfig = function (initConfig) { // eslint-disable-line no-unused-
 		 * @type {?function(...*)}
 		 */
 		onPrint: function () {
-			console.log.apply(console, Array.from(arguments)); // eslint-disable-line no-console
+			console.log.apply(console, Array.from(arguments));  
 		},
 		/**
 		 * A callback function for handling the standard error stream. This method should usually only be used in debug pages.
@@ -464,7 +464,7 @@ const InternalConfig = function (initConfig) { // eslint-disable-line no-unused-
 		 * @type {?function(...*)}
 		 */
 		onPrintError: function (var_args) {
-			console.error.apply(console, Array.from(arguments)); // eslint-disable-line no-console
+			console.error.apply(console, Array.from(arguments));  
 		},
 	};
 
@@ -649,7 +649,7 @@ const Engine = (function () {
 	 * @constructor
 	 * @param {EngineConfig} initConfig The initial config for this instance.
 	 */
-	function Engine(initConfig) { // eslint-disable-line no-shadow
+	function Engine(initConfig) {  
 		this.config = new InternalConfig(initConfig);
 		this.rtenv = null;
 	}

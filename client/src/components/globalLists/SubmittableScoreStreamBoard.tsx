@@ -1,12 +1,13 @@
 import { useState, useEffect, type ReactElement } from "react"
 import { type SubmitResult, type SubmitSectionTextsBase, type SubmittableGlobalBoardPropsBase } from "../../../types/api/globalBoards"
 import { styles } from "../../style"
-import { type ScoreStreamBoardProps, ScoreStreamBoard } from "./ScoreStreamBoard"
+import { type ScoreStreamBoardProps, useScoreStreamBoard } from "./ScoreStreamBoard"
 import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists"
 import { getThemeStyles } from "../../style"
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input"
+import { type ScoreStreamEntry } from "../../../../shared/types/api/globalBoards/scoreStreams"
 
-export type SubmittableScoreStreamBoardProps = ScoreStreamBoardProps & SubmittableGlobalBoardPropsBase & {
+export type useSubmittableScoreStreamBoardProps = Omit<ScoreStreamBoardProps, "entriesState"> & SubmittableGlobalBoardPropsBase & {
     scoreFormatFunction? : (score : number | undefined) => string
     scoreStorageFactor? : number,
     scoreComparisonFunction? : (a : number, b : number) => boolean,
@@ -23,11 +24,10 @@ const defaultSubmitSectionTexts = {
     submitButtonText: "Submit Score",
 }
 
-export default function({
+export default function useSubmittableScoreStreamBoard({
     category,
     title,
     boardSubTitles,
-    entriesState,
     count,
     theme = {},
     
@@ -37,8 +37,9 @@ export default function({
     scoreStorageFactor = 1,
     submitButtonCooldown = 1000,
 
-} : SubmittableScoreStreamBoardProps) : [ReactElement, (candidateScore : number) => void]{
+} : useSubmittableScoreStreamBoardProps) : [ReactElement, (candidateScore : number) => void]{
     const { submitSectionTitle, placeholderName, submitButtonText } = {...defaultSubmitSectionTexts, ...submitSectionTexts}
+    const entriesState = useState<ScoreStreamEntry[]>([])
     const [score, setScore] = useState<number | undefined>(undefined)
     const [submitName, setSubmitName] = useState("")
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false)
@@ -56,7 +57,7 @@ export default function({
         }, submitButtonCooldown);
     
         return () => clearTimeout(timeout);
-    }, [submitButtonDisabled]);
+    }, [submitButtonDisabled, submitButtonCooldown]);
 
     function attemptSubmitScore(newScore : number) {
         setScore(newScore)
@@ -70,7 +71,7 @@ export default function({
         return score != undefined && !submitButtonDisabled && submitName.trim() && !submitBlocked()
     }
 
-    const [scoreStream, submitScore] = ScoreStreamBoard({
+    const [scoreStream, submitScore] = useScoreStreamBoard({
         title,
         category,
         boardSubTitles,

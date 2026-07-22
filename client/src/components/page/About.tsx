@@ -2,9 +2,10 @@
 import { motion } from 'framer-motion'
 import { styles, GetScreenSizeType, type ScreenSizeType } from '../../style'
 import { preTitle, title, SubDescription} from '../../constants/components/page/about'
-import { GetSocialLinkElement, CoreSocialLinks as SocialLinks } from '../../constants/components/page/contact'
+import { CoreSocialLinks as SocialLinks } from '../../constants/components/page/contact'
+import { GetSocialLinkElement } from '../elements/LinkElements'
 import "../../index.css"
-import { SectionWrapper } from '../../hoc'
+import { SectionWrapper } from '../hoc'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { useEffect, useState } from 'react'
 
@@ -79,7 +80,7 @@ const About = () => {
               ease: "easeOut",
             },}}}
       >
-        {Object.entries(SocialLinks).map(([_platform, link], index : number) =>  (
+        {Object.values(SocialLinks).map((link, index : number) =>  (
           GetSocialLinkElement(link, index.toString(), true, styles.getLinkDisplayPixelSize(screenSizeType))
         ))}
       </motion.div>
