@@ -1,6 +1,7 @@
 import { reverseOrderQueryParameter } from "../../../shared/constants/api/globalBoards";
 import { type LeaderboardCategory, type LeaderboardInputEntry } from "../../../shared/types/api/globalBoards/leaderboard";
 import { leaderboardApiURLPath } from "../../../shared/constants/api/globalBoards";
+
 export async function getLeaderboardEntries(
     category: LeaderboardCategory,
     start: number,
@@ -33,10 +34,6 @@ export async function submitLeaderboardScore(category : LeaderboardCategory, ent
             score: entry.score
         })
     })
-
-    if (!response.ok) {
-        throw new Error("Failed to post to leaderboard");
-    }
 
     return response.json();
 }

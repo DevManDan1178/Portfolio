@@ -34,9 +34,5 @@ export async function submitNameboardEntry(category : NameboardCategory, entry :
         })
     })
 
-    if (!response.ok) {
-        throw new Error("Failed to post to nameboard");
-    }
-
     return response.json();
 }

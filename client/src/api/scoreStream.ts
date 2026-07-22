@@ -35,9 +35,5 @@ export async function submitScoreStreamScore(category : ScoreStreamCategory, ent
         })
     })
 
-    if (!response.ok) {
-        throw new Error("Failed to post to score stream");
-    }
-
     return response.json();
 }
