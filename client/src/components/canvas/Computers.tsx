@@ -157,8 +157,7 @@ function waitForUnityFirstFrame( canvas: HTMLCanvasElement, cb: () => void) {
 
 const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport: boolean; unityCanvas: HTMLCanvasElement | null; updateFrames: boolean; }) => {
   const computer = useGLTF("/desktop_pc/scene.gltf");
-  const [unityTexture, setUnityTexture] =
-    useState<CanvasTexture | null>(null);
+  const [unityTexture, setUnityTexture] = useState<CanvasTexture | null>(null);
 
   useEffect(() => {
     if (!unityCanvas) return;
@@ -187,8 +186,15 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
   }, [unityTexture, computer]);
 
   useFrame(() => {
-    if (!updateFrames || !unityTexture || !unityCanvas) return;
-    unityTexture.needsUpdate = true;
+    if (!updateFrames || !unityTexture || !unityCanvas) {
+      return;
+    }
+    setUnityTexture((prev) => {
+      if (prev) {
+        prev.needsUpdate = true;
+      }
+      return prev;
+    })
   });
 
   return (
@@ -266,7 +272,7 @@ const ComputerCanvas = ({ gameEventLinkers, unityControllerRef }: {gameEventLink
       canvas?.remove();
       setUnityCanvas(null);
     };
-  }, [unityReady]);
+  }, [unityReady, gameEventLinkers]);
 
   /* ---------------- FOCUS ---------------- */
 
