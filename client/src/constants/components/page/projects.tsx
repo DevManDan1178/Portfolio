@@ -128,7 +128,19 @@ export const projects : Record<string, Project> = {
   },
   portfolioSite : {
     name : "Interactive Portfolio Experience",
-    display : WebsiteDisplay, 
+    display : GetImageDisplay(portfolioSite, "Interactive Portfolio Experience"),
+    links: {
+      mainLink: {
+        url: "https://github.com/DevManDan1178/Portfolio",
+        linkIcon: github
+      },
+      allLinks: [
+        {
+          url: "https://github.com/DevManDan1178/Portfolio",
+          linkIcon: github
+        }
+      ],
+    },
     description : "What more can I say? Look around.",
     featured : true,
     tags : [Tags.React, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Git],
@@ -186,7 +198,7 @@ function GetImageDisplay(image : string, name : string) : ProjectDisplay {
     return <div className="group"><img
       src={image}
       alt={name}
-      className='peer items-end justify-end flex opacity-70 group-hover/image:opacity-90 w-full h-full object-cover rounded-2xl brightness-[75%] group-hover/image:brightness-[100%] transition-[filter] duration-300 ease-in-out'   
+      className='peer items-end justify-end flex opacity-70 group-hover/image:opacity-90 w-full h-full object-cover rounded-2xl brightness-75 group-hover/image:brightness-100 transition-[filter] duration-300 ease-in-out'   
     />
       <div className="absolute inset-0 flex justify-end gap-0">
         {LinkElements}
@@ -212,65 +224,6 @@ function GetPlayableTag(routePath : string, tagName : string = "Click to Play") 
     baseTextSizeModifier : 4,
     overrideTagSymbol : overrideTagSymbol
   }
-}
-
-const LINK_TEXT_HIDE_DELAY_DURATION = 2.5
-const LINK_PRESS_DISABLE_DURATION = 0.75
-
-
-function WebsiteDisplay() {
-  const [linkPressCount, setLinkPressCount] = useState<number>(0)
-  const [linkPressDisabled, setLinkPressDisabled] = useState<boolean>(false)
-  
-  const linkPressTexts = [
-    "You're already here.",
-    "You're already here!",
-    "Stop clicking!"
-  ]
-  const onLinkClicked = () => {
-    if (linkPressDisabled || linkPressCount > linkPressTexts.length) {
-      return
-    }
-    if (linkPressCount == linkPressTexts.length) {
-      window.open("/SecretRealPortfolio", '_blank')
-    }
-    setLinkPressCount((value) => value + 1)
-    setLinkPressDisabled(true)
-  }
-
-  const linkElement = getLinkElement(onLinkClicked, undefined, "group")
-  useEffect(() => {
-    setTimeout(() => {
-      setLinkPressDisabled(false)
-    }, LINK_PRESS_DISABLE_DURATION * 1000)
-  }, [linkPressDisabled])
-  
-  useEffect(() => {
-    if (linkPressCount == 0) return;
-
-    const timer = setTimeout(() => {
-      setLinkPressCount(0)
-    }, LINK_TEXT_HIDE_DELAY_DURATION * 1000);
-
-    return () => clearTimeout(timer);
-  }, [linkPressCount]);
-
-
-  return (
-    <div
-      className="w-full h-full relative"
-    >
-      {GetImageDisplay(portfolioSite, "Portfolio Site")({LinkElements : [linkElement]})}
-      {linkPressCount > 0 &&
-        <>
-          <h3 className="w-full absolute inset-0 flex items-center justify-center text-center text-[30px] bg-black/50 ">
-            {linkPressTexts[Math.min(linkPressCount, linkPressTexts.length) - 1]}
-          </h3>
-          {linkElement}
-        </>
-      }
-    </div>
-  )
 }
 
 export function getDefaultLinkElement(link? : Link, hoverMode? : HoverMode) {
