@@ -1,6 +1,7 @@
 import { addScoreStreamEntry, getScoreStreamEntries, } from "../src/routes/scoreStream";
 import { defaultScoreStreamQueryOrder, ScoreStreamQueryOrder, type ScoreStreamCategory } from "../../shared/types/api/globalBoards/scoreStreams";
-import { reverseOrderQueryParameter } from "../../shared/constants/api/globalBoards";
+import { nameRefusalEror, reverseOrderQueryParameter } from "../../shared/constants/api/globalBoards";
+import nameFilter from "../src/security/nameFilter";
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);
@@ -32,7 +33,14 @@ export default async function handler(request: Request) {
 
         if (request.method === "POST") {
             const body = await request.json();
-
+            const name = body.name;
+            
+            if (!nameFilter(name)) {
+              return Response.json(
+                { error: nameRefusalEror },
+                { status: 400 }
+              )
+            }
             const queryOrder = String(url.searchParams.get(reverseOrderQueryParameter) ?? defaultScoreStreamQueryOrder);
             
             const result = await addScoreStreamEntry(
