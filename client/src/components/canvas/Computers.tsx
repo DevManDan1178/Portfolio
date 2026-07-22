@@ -9,6 +9,7 @@ import {
 } from "three";
 import {
   Suspense,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -35,7 +36,7 @@ const FOCUS_DROPPING_UI_EVENTS: (keyof DocumentEventMap)[] = [
 
 export type UnityController = {
   start: () => void;
-  started? : boolean,
+  started : boolean,
 };
 
 
@@ -60,7 +61,7 @@ const UnityClickForwarder = ({screenMeshName, unityCanvas, unityInstanceRef, onB
         document.removeEventListener(ev, handleUIEvent)
       );
     };
-  }, []);
+  }, [gl, onBlur]);
 
   useEffect(() => {
     const raycaster = new Raycaster();
@@ -69,7 +70,6 @@ const UnityClickForwarder = ({screenMeshName, unityCanvas, unityInstanceRef, onB
       (messageFunction: string, affectsFocus: boolean) => (event: MouseEvent) => {
         if (!unityCanvas && !!unityControllerRef.current && !unityControllerRef.current.started && affectsFocus) {
           unityControllerRef.current.start()
-          unityControllerRef.current.started = true
           return
         }
         if (!unityCanvas || event.button !== 0) {
@@ -123,14 +123,19 @@ const UnityClickForwarder = ({screenMeshName, unityCanvas, unityInstanceRef, onB
       gl.domElement.removeEventListener("mousemove", mouseMove);
       gl.domElement.removeEventListener("mousedown", pointerDown);
     };
-  }, [camera, scene, gl, screenMeshName, unityCanvas]);
+  }, [camera, scene, gl, screenMeshName, unityCanvas, onFocus, unityControllerRef, unityInstanceRef]);
 
   return null;
 };
 
 
 function waitForUnityFirstFrame( canvas: HTMLCanvasElement, cb: () => void) {
+  let stopped = false;
+
   const check = () => {
+    if (stopped) {
+      return;
+    }
     const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
 
     if (!gl) return requestAnimationFrame(check);
@@ -143,6 +148,10 @@ function waitForUnityFirstFrame( canvas: HTMLCanvasElement, cb: () => void) {
   };
 
   requestAnimationFrame(check);
+
+  return () => {
+    stopped = true;
+  };
 }
 
 
@@ -154,7 +163,7 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
   useEffect(() => {
     if (!unityCanvas) return;
 
-    waitForUnityFirstFrame(unityCanvas, () => {
+    const cleanup = waitForUnityFirstFrame(unityCanvas, () => {
       const texture = new CanvasTexture(unityCanvas);
 
       texture.colorSpace = SRGBColorSpace;
@@ -164,6 +173,7 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
 
       setUnityTexture(texture);
     });
+    return cleanup
   }, [unityCanvas]);
 
   useLayoutEffect(() => {
@@ -193,44 +203,44 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
 
 
 const ComputerCanvas = ({ gameEventLinkers, unityControllerRef }: {gameEventLinkers: RefObject<GameEventLinkers>; unityControllerRef: RefObject<UnityController | null>; }) => {
-  const [isSmallViewport, setIsSmallViewport] = useState(false);
-  const [unityCanvas, setUnityCanvas] =
-  useState<HTMLCanvasElement | null>(null);
+  const [isSmallViewport, setIsSmallViewport] = useState(window.matchMedia("(max-width: 750px)").matches);
+  const [unityCanvas, setUnityCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const unityInstanceRef = useRef<UnityInstance | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [updateFrames, setUpdateFrames] = useState(false);
-  const [unityReady, setUnityReady] = useState(!!unityControllerRef.current ? (unityControllerRef.current?.started) : false);
+  const [unityReady, setUnityReady] = useState(false);
   const unityFocused = useRef(false);
 
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 750px)");
-    setIsSmallViewport(mq.matches);
 
-    const handler = (e: MediaQueryListEvent) =>
-      setIsSmallViewport(e.matches);
+    const handler = (e: MediaQueryListEvent) => {setIsSmallViewport(e.matches)};
 
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
 
   useEffect(() => {
-    if (!unityControllerRef) {
-      return;
-    }
-
     unityControllerRef.current = {
-      start: () => 
-        setUnityReady(true),
-        started: false
+      started: false,
+      start: () => {
+        if (!unityControllerRef.current) {
+          return;
+        }
+        unityControllerRef.current.started = true;
+        setUnityReady(true);
+      }
     };
-  }, []);
+  }, [unityControllerRef]);
 
 
   useEffect(() => {
-    if (!unityReady) return;
+    if (!unityReady || !gameEventLinkers.current) {
+      return;
+    }
 
     let canvas: HTMLCanvasElement | null = null;
 
@@ -251,14 +261,16 @@ const ComputerCanvas = ({ gameEventLinkers, unityControllerRef }: {gameEventLink
     setUnityCanvas(canvas);
 
     return () => {
-      canvas?.remove();
+      unityInstanceRef.current?.Quit?.();
       unityInstanceRef.current = null;
+      canvas?.remove();
+      setUnityCanvas(null);
     };
   }, [unityReady]);
 
   /* ---------------- FOCUS ---------------- */
 
-  const onUnityFocus = () => {
+  const onUnityFocus = useCallback(() => {
     if (unityFocused.current) return;
 
     unityInstanceRef.current?.SendMessage(
@@ -270,9 +282,9 @@ const ComputerCanvas = ({ gameEventLinkers, unityControllerRef }: {gameEventLink
     unityCanvas?.focus();
     setUpdateFrames(true);
     unityFocused.current = true;
-  };
+  }, [unityCanvas]);
 
-  const onUnityBlur = () => {
+  const onUnityBlur = useCallback(() => {
     if (!unityFocused.current) return;
 
     unityInstanceRef.current?.SendMessage(
@@ -289,7 +301,7 @@ const ComputerCanvas = ({ gameEventLinkers, unityControllerRef }: {gameEventLink
     unityCanvas?.blur();
     setUpdateFrames(false);
     unityFocused.current = false;
-  };
+  }, [unityCanvas]);
 
 
   return (
