@@ -7,4 +7,5 @@ export const leaderboardApiURLPath = "/api/leaderboard";
 export const nameboardApiURLPath = "/api/nameboard";
 export const scoreStreamApiURLPath = "/api/score-stream";
 
+export const nameRefusalEror = "Name not accepted";
 export const maxNameLength = 10;
