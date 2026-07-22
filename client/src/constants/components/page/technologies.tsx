@@ -15,8 +15,8 @@ export const solvedButtonText : string = "Play Again!"
 
 export const techStack: Record<string, Technology[]> = {
   "Front-end Web Development": [
-    { name: "HTML", icon: html }, ]
-   /* { name: "CSS", icon: css },
+    { name: "HTML", icon: html }, 
+    { name: "CSS", icon: css },
     { name: "React", icon: reactjs },
     { name: "Three JS", icon: threejs },
   ],
@@ -46,7 +46,7 @@ export const techStack: Record<string, Technology[]> = {
     { name: "VS Code", icon: vsCode },
     { name: "Git", icon: git },
     { name: "CMake", icon: cMake },
-  ],*/
+  ],
 }
 
 export const technologies : Technology[] = Object.values(techStack).flat()
