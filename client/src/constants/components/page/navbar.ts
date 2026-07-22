@@ -7,8 +7,8 @@ export type NavLink = {
 export const navLinks : Record<string, NavLink> = {
   hero : {
     id : "hero",
-    title : "Hero",
-    showInNavbar : false,
+    title : "Intro",
+    showInNavbar : true,
   },
   about : {
     id: "about",
@@ -22,7 +22,7 @@ export const navLinks : Record<string, NavLink> = {
   },
   technologies : {
     id : "technologies",
-    title: "Tech",
+    title: "Stack",
     showInNavbar : true,
   },
   experience : {

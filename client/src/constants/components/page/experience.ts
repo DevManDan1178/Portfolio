@@ -27,7 +27,7 @@ export const experiences : Experience[] = [
       background : "#ff9896",
       iconScale : 1.75
     },
-    date : "Fall 2024 - Winter 2026",
+    date : "" /* Fall 2024 - Winter 2026 */,
     points : [
       "Applied computer science fundamentals by building small-scale software projects using Java",
       "Implemented core data structures and algorithms through coursework and personal programming exercises",

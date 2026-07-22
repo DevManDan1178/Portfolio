@@ -55,7 +55,7 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
         tiltMaxAngleX={5}
         tiltMaxAngleY={5}
         transitionSpeed={1000}
-        className={`bg-gray-800/80 hover:bg-white/10 rounded-2xl w-full h-full relative items-center justify-center flex pointer-events-${disableMouseEvents ? "none" : "auto"}  border-[4px] rounded-b-lg rounded-t-lg border-white/5`}
+        className={`bg-gray-800/80 hover:bg-white/10 rounded-2xl w-full h-full relative items-center justify-center flex pointer-events-${disableMouseEvents ? "none" : "auto"}  border-4 rounded-b-lg rounded-t-lg border-white/5`}
       >
         <div className='w-[c  alc(100%-30px)] pt-[10px] pb-[10px] pl-[10px] pr-[10px] group/image'>
           <a 
@@ -161,7 +161,7 @@ const Projects = () => {
         </motion.p>
       </div>
       
-      <div className='flex flex-wrap gap-16 items-start justify-center pt-[30px] w-[100%] -z-10'>
+      <div className='flex flex-wrap gap-16 items-start justify-center pt-[30px] w-full -z-10'>
         {shownProjects.map((project, index) => {
           const [showing, setShowing] = useState(false)
           return <motion.div 

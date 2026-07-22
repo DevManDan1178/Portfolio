@@ -73,7 +73,7 @@ const Contact = () => {
       </div>
       <div  className={`pt-[25px] ${styles.copyEmailSizeStyle} flex items-center justify-center w-full`}>
           <button 
-            className=' bg-white/10 hover:bg-white/20 pl-2 pr-2 rounded-xl transition-all transition-duration[0.5s] border-white/30 border-[2px] hover:border-white/20 hover:scale-110'
+            className=' bg-white/10 hover:bg-white/20 pl-2 pr-2 rounded-xl transition-all transition-duration[0.5s] border-white/30 border-2 hover:border-white/20 hover:scale-110'
             onClick={onEmailCopy}
           >
             <span className='text-blue-100/60'>{showEmailCopied ? "Copied" : "Copy"}[</span> 
@@ -86,53 +86,5 @@ const Contact = () => {
     </div>
   )
 }
-/*
-<form
-        ref={formRef}
-        onSubmit={handleSubmit}
-        className='mt-12 flex flex-col gap-8'
-      >
-        <label className='flex flex-col'>
-          <span className='text-white font-medium mb-4'>Your Name</span>
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder='Insert Name Here'
-            className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
-          ></input>
-        </label>
 
-        <label className='flex flex-col'>
-          <span className='text-white font-medium mb-4'>Your Email</span>
-          <input
-            type="text"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder='Insert Email Here'
-            className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
-          ></input>
-        </label>
-
-        <label className='flex flex-col'>
-          <span className='text-white font-medium mb-4'>Your Message</span>
-          <textarea
-            rows={7}
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            placeholder='Insert cool block of text here'
-            className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
-          ></textarea>
-        </label>
-        <button
-          type='submit'
-          className='bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl'
-        >
-          {loading ? 'Sending...' : 'Send'}
-        </button>
-
-      </form>*/
 export default SectionWrapper(Contact, "contact")

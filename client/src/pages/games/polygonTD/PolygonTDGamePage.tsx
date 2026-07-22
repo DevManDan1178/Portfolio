@@ -152,7 +152,7 @@ export default function() {
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
               onClick={toggleFullscreen}
-              className="font-pixeloid mt-6 px-4 py-1 bg-white text-black/70 font-bold text-md rounded hover:bg-zinc-300 transition"
+              className="font-pixeloid mt-6 px-4 py-1 bg-white text-black/70 font-bold text-md rounded-sm hover:bg-zinc-300 transition"
             >
               FULLSCREEN
             </button>
@@ -160,7 +160,7 @@ export default function() {
 
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
-              className="font-pixeloid mt-6 px-4 py-1 bg-white text-black/70 font-bold text-md rounded hover:bg-zinc-300 transition"
+              className="font-pixeloid mt-6 px-4 py-1 bg-white text-black/70 font-bold text-md rounded-sm hover:bg-zinc-300 transition"
               onClick={() => setGlobalBoardsToggled(!globalBoardsToggled)}
             >
               GLOBAL VICTORS
@@ -175,13 +175,13 @@ export default function() {
             <div className="w-full items-center justify-center flex gap-10">
               <button
                 onClick={() => setSelectedGlobalBoard("clear")}
-                className={`mt-4 px-2 py-1 ${selectedGlobalBoard == "clear" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded  transition`}
+                className={`mt-4 px-2 py-1 ${selectedGlobalBoard == "clear" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded-sm  transition`}
               >
                 RECENT CLEARS
               </button>
 
               <button
-                className={`mt-4 px-2 py-1 ${selectedGlobalBoard == "completion" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded  transition`}
+                className={`mt-4 px-2 py-1 ${selectedGlobalBoard == "completion" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded-sm  transition`}
                 onClick={() => setSelectedGlobalBoard("completion")}
               >
                 COMPLETIONISTS

@@ -257,7 +257,7 @@ const Technologies = () => {
             Click to play! 
           </span>
         </span>
-        <div className='flex flex-row flex-wrap justify-center gap-10 w-full aspect-[3/1] mt-[10px] mb-[20px] border-2 border-white/40 rounded-2xl'>
+        <div className='flex flex-row flex-wrap justify-center gap-10 w-full aspect-3/1 mt-[10px] mb-[20px] border-2 border-white/40 rounded-2xl'>
             <TechGrid technologies={technologyNodes} getOnClick={getOnClick} />
         </div>
         <div className='w-full flex items-center justify-center pt-5 pb-10'>

@@ -55,7 +55,6 @@ export const CoreSocialLinks : LinkList = {
     }
 }
 
-
 export function GetSocialLinkElement(link : SocialLink, key : string | number, openInNewTab : boolean = true, pixelSize : number = 50) : ReactElement{
     const linkIcon =  <img
                     src={link.linkIcon}

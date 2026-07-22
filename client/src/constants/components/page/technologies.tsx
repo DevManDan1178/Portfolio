@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { javascript, typescript, html, reactjs, tailwind, nodejs, git, threejs, unity, godot, cSharp, lua, robloxStudio, java, vsCode, cMake, cpp, dotnet, } from "../../../assets";
+import { javascript, typescript, html, reactjs, tailwind, nodejs, git, threejs, unity, godot, cSharp, lua, robloxStudio, java, vsCode, cMake, cpp, dotnet, css, } from "../../../assets";
 
 export type Technology = {
   name : string,
@@ -15,11 +15,12 @@ export const solvedButtonText : string = "Play Again!"
 
 export const techStack: Record<string, Technology[]> = {
   "Front-end Web Development": [
-    { name: "HTML 5", icon: html },
+    { name: "HTML", icon: html }, ]
+   /* { name: "CSS", icon: css },
     { name: "React", icon: reactjs },
     { name: "Three JS", icon: threejs },
   ],
-  /*
+  
   "Game Development": [
     { name: "Unity", icon: unity },
     { name: "Godot", icon: godot },
@@ -45,8 +46,7 @@ export const techStack: Record<string, Technology[]> = {
     { name: "VS Code", icon: vsCode },
     { name: "Git", icon: git },
     { name: "CMake", icon: cMake },
-  ],
-  */
+  ],*/
 }
 
 export const technologies : Technology[] = Object.values(techStack).flat()

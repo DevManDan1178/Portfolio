@@ -59,7 +59,7 @@ export default function UnityGamePage({
           </div>
           <button
             onClick={toggleFullscreen}
-            className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
+            className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded-sm hover:bg-zinc-300 transition"
           >
             Fullscreen
           </button>

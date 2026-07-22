@@ -137,7 +137,7 @@ export default function() {
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
               onClick={toggleFullscreen}
-              className="mt-6 px-3 py-1 bg-white text-black/70 font-bold text-md rounded hover:bg-zinc-300 transition"
+              className="mt-6 px-3 py-1 bg-white text-black/70 font-bold text-md rounded-sm hover:bg-zinc-300 transition"
             >
               FULLSCREEN
             </button>
@@ -145,7 +145,7 @@ export default function() {
 
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
-              className="mt-6 px-3 py-1 bg-white text-black/70 font-bold text-md rounded hover:bg-zinc-300 transition"
+              className="mt-6 px-3 py-1 bg-white text-black/70 font-bold text-md rounded-sm hover:bg-zinc-300 transition"
               onClick={() => setLeaderboardToggled(!leaderboardToggled)}
             >
               LEADERBOARDS

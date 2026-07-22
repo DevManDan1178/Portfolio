@@ -110,7 +110,7 @@ const Navbar = () => {
       <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
         <Link 
           to="/" 
-          className='flex items-center gap-2'
+          className='flex items-center gap-2 focus:outline-none'
           onClick={() => {
             window.scrollTo(0, 0);
           }}
@@ -127,7 +127,10 @@ const Navbar = () => {
               key={link.id}
               className={`${surfingNavlinkIndexRef.current == index ? "text-white/90 hover:text-white" : "text-secondary hover:text-white/80 "} text-[18px] font-medium cursor-pointer`}
             >
-              <button onClick={() => scrollToNavIdx(index)}>
+              <button
+                className='focus:outline-none'
+                onClick={() => scrollToNavIdx(index)}
+                >
                 {link.title}
               </button>
             </li>

@@ -131,7 +131,7 @@ export default function EchoArenaGamePage() {
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
               onClick={toggleFullscreen}
-              className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded hover:bg-zinc-300 transition"
+              className="mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded-sm hover:bg-zinc-300 transition"
             >
               FULLSCREEN
             </button>
@@ -139,7 +139,7 @@ export default function EchoArenaGamePage() {
 
           <div className="w-[calc(15%+50px)] flex justify-center">
             <button
-              className={`${leaderboardsToggled && "border-black/40 border-2"}  mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded transition`}
+              className={`${leaderboardsToggled && "border-black/40 border-2"}  mt-4 px-6 py-2 bg-white text-black font-pixeloid text-sm rounded-sm transition`}
               onClick={() => setLeaderboardsToggled(!leaderboardsToggled)}
             >
               LEADERBOARDS
@@ -155,16 +155,16 @@ export default function EchoArenaGamePage() {
             <div className="w-full items-center justify-center flex gap-10">
               <button
                 onClick={() => setSelectedLeaderboard("highscore")}
-                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "highscore" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded  transition`}
+                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "highscore" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded-sm  transition`}
               >
-                HIGHSCORE
+                HIGHSCORES
               </button>
 
               <button
-                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "pacifist" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded  transition`}
+                className={`mt-4 px-2 py-1 ${selectedLeaderboard == "pacifist" ? "cursor-default border-black/40 border-2" : "hover:bg-white/80"} bg-white  text-black font-pixeloid text-sm rounded-sm  transition`}
                 onClick={() => setSelectedLeaderboard("pacifist")}
               >
-                PACIFIST
+                PACIFISTS
               </button>
             </div>
            

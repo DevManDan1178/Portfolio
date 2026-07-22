@@ -10,7 +10,7 @@ export default function MainPage() {
     const Pages = GetPagesExcept(pages.main)
 
     return  (<>
-        <SEO title="DevManDan" description="Welcome to my portfolio!"/>
+        <SEO title="DevManDan" description="Portfolio of DevManDan, aspiring game and software developper. Game development and software engineering projects, with playable games in browser."/>
         
         <div className="relative z-0 bg-primary">
             <div className="fixed inset-0 -z-20">
