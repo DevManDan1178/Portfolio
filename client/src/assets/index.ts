@@ -62,7 +62,11 @@ import vanierCollege from "./images/experience/VanierCollege.png"
 // Effects
 import star from "./images/effects/Star.png"
 
+// Misc
+import glungus from "./images/misc/Glungus.webp"
+
 export {
+  glungus,
   dotnet,
   cMake,
   cpp,
