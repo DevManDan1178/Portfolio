@@ -4,16 +4,16 @@ import { GetPagesExcept } from "../../components/page/Pages";
 import SEO from "../../components/misc/SEO";
 
 export default function GamesPage() {
-  const Pages = GetPagesExcept(pages.games, false)
+  const Pages = GetPagesExcept(pages.play, false)
 
   return (<>
     <SEO title="Games" description="A small library of games I made"/>
     <div>
       <div className="min-h-screen w-full flex flex-col items-center px-6 py-16 text-white">
-        <h1 className="text-4xl font-bold mb-4">Games</h1>
+        <h1 className="text-4xl font-bold mb-4">Play</h1>
 
         <p className="text-white/70 mb-10 text-center max-w-xl">
-          A collection of my small games
+          A collection of my small games playable in browser
         </p>
 
         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
