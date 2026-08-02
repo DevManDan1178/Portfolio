@@ -5,9 +5,9 @@ import { navLinks } from "../constants";
 import SEO from "../components/misc/SEO";
 
 
-export default function MainPage() {
+export default function PortfolioPage() {
     
-    const Pages = GetPagesExcept(pages.main)
+    const Pages = GetPagesExcept(pages.portfolio)
 
     return  (<>
         <SEO title="DevManDan" description="Portfolio of DevManDan, aspiring game and software developper. Game development and software engineering projects, with playable games in browser."/>
