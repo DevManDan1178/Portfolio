@@ -61,10 +61,6 @@ export const BaseTags : Record<string, Tag> = {
     name : "Game Development",
     color : "orange-text-gradient",
   },
-  WebDev : {
-    name : "Web Development",
-    color : "#c9fffa",
-  },
   Java : {
     name : "Java",
     color : "#fcc379",
@@ -89,7 +85,7 @@ export const Tags : Record<string, Tag> = {
   React : {
     name: "React",
     color: "light-blue-text-gradient",
-    subTags : [BaseTags.Javascript, BaseTags.Typescript, BaseTags.WebDev],
+    subTags : [BaseTags.Javascript, BaseTags.Typescript],
   },
   Tailwind : {
     name: "Tailwind",
