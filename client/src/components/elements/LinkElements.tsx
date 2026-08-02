@@ -6,6 +6,18 @@ import { type ReactElement } from "react"
 
 import { GetLinkDisplay } from "../page/Pages"
 
+export function GetEmptyDisplay() : ProjectDisplay {
+  return ({LinkElements}) => {
+    return (
+      <div className="peer items-end justify-end flex w-full h-full object-cover rounded-2xl transition-[filter] duration-300 ease-in-out pb-2">
+        <div className="absolute inset-0 flex justify-end gap-0">
+          {LinkElements}
+        </div>
+      </div>
+    )
+  }
+}
+
 export function GetImageDisplay(image : string, name : string) : ProjectDisplay {
   return ({LinkElements}) => {
     return <div className="group"><img
