@@ -1,5 +1,5 @@
 import { type ReactElement } from "react"
-import { GetPlayableTag, GetImageDisplay } from "../../../components/elements/LinkElements"
+import { GetPlayableTag, GetImageDisplay, GetEmptyDisplay } from "../../../components/elements/LinkElements"
 import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../../../assets"
 import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "../../tags"
 
@@ -148,6 +148,64 @@ export const projects : Record<string, Project> = {
       nameColor: "#e8e0ff"
     }
   },
+  keyboardWarriorLoL: {
+    name: "KeyboardWarriorLoL",
+    display: GetEmptyDisplay(),
+    links: {
+      mainLink: {
+        url: "https://github.com/DevManDan1178/KeyboardWarriorLoL",
+        linkIcon: github
+      },
+      allLinks: [
+        {
+          url: "https://github.com/DevManDan1178/KeyboardWarriorLoL",
+          linkIcon: github
+        }
+      ],
+    },
+    description: 
+      <p>
+        Companion application with League of Legends for efficient adaptive chat message sending using live in-game event detection.
+        <br/> <br/>
+        Built in C++ for windows, chosen for its minimal runtime overhead and high performance.
+        <br/> <br/>
+        More details and a download are available on the Github repository.
+      </p>
+    ,
+    tags : [BaseTags.CMake, BaseTags.Cpp, BaseTags.DearImgui],
+    visuals: {
+      nameColor: "#d5eef0",
+    }
+  },
+  simpleSoundboard: {
+    name: "Simple Soundboard",
+    display: GetEmptyDisplay(),
+    links: {
+      mainLink: {
+        url: "https://github.com/DevManDan1178/simple-soundboard",
+        linkIcon: github
+      },
+      allLinks: [
+        {
+          url: "https://github.com/DevManDan1178/simple-soundboard",
+          linkIcon: github
+        }
+      ],
+    },
+    description: 
+      <p>
+        A soundboard designed with the goal of being as easy to use as possible, with only two configurable hotkeys for all the required functionality.
+        <br/> <br/>
+        Built in C++ for windows, chosen for its minimal runtime overhead and high performance.
+        <br/> <br/>
+        More details and a download are available on the Github repository.
+      </p>
+    ,
+    tags : [BaseTags.CMake, BaseTags.Cpp, BaseTags.DearImgui],
+    visuals: {
+      nameColor: "#f5fce1"
+    }
+  },
   pendulumSimulator : {
     name : "Pendulum Simulator",
     description : "Physics simulator of a simple pendulum",
@@ -212,7 +270,7 @@ export type Link = {
 
 export type Project = {
   name : string,
-  description: string,
+  description: string | ReactElement,
   tags: Tag[],
   display : ProjectDisplay,
   featured? : boolean,
