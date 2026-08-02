@@ -21,6 +21,10 @@ export const MiscTags : Record<string, Tag> = {
 }
 
 export const BaseTags : Record<string, Tag> = {
+  DearImgui: {
+    name: "Dear Imgui",
+    color: "#d4e6ff",
+  },
   CMake: {
     name: "CMake",
     color: "#d6d6d6"
