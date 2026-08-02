@@ -7,7 +7,7 @@ import { type Tag } from '../../constants/tags';
 import Tilt from 'react-parallax-tilt'
 import { motion } from 'framer-motion'
 import { SectionWrapper } from '../hoc'
-import { preTitle, title, subDescription, projects} from '../../constants/components/page/projects'
+import { preTitle, title, subDescription, allProjects} from '../../constants/components/page/projects'
 import AnimatedTextAppearance from '../effects/AnimatedTextAppearance'
 import { pages } from '../../constants/pages/pages';
 
@@ -48,7 +48,6 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
         </span> 
     })
   }
-  
   return <div className='sm:w-[320px] w-[200px]'>
       <Tilt
         tiltMaxAngleX={5}
@@ -76,7 +75,7 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
             >
               {name}
             </h3>
-            <p className={`mt-2 ${styles.projectTextStyles.descriptionTextSizeStyle} ${visuals?.descriptionColor ?? ""}`}
+            <p className={`mt-4 ${styles.projectTextStyles.descriptionTextSizeStyle} ${visuals?.descriptionColor ?? ""}`}
               style={{ color: visuals?.descriptionColor ?? "white", opacity: 0.8 }}
             >
               {description}
@@ -133,8 +132,8 @@ export const ProjectCard = ({project, disableMouseEvents = false} : {project : P
 
 
 function Projects() {
-  const shownProjects = Object.values(projects).filter((project) => !!project.featured)
-  const [showingProjects, setShowingProjects] = useState(shownProjects.map(() => false))
+  const shownProjects : Project[] = Object.values(allProjects).filter((project) => !!project.featured)
+  const [showingProjects, setShowingProjects] = useState<boolean[]>(shownProjects.map(() => false))
   return (
     <div>
         <div> 
@@ -162,7 +161,7 @@ function Projects() {
       </div>
       
       <div className='flex flex-wrap gap-16 items-start justify-center pt-[30px] w-full -z-10'>
-        {shownProjects.map((project, index) => {        
+        {shownProjects.map((project, index) => {    
           return <motion.div 
             key={`project-${index}`}
             variants={{
