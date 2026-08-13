@@ -1,0 +1,33 @@
+# Use an official lightweight Ubuntu base image
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies, CMake, Git, and Boost
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    libboost-all-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the entire repository into the container
+COPY . .
+
+# Initialize and update git submodules
+RUN git submodule update --init --recursive
+
+# Navigate to API directory, create a build folder, compile
+RUN cd services/api && mkdir -p build && cd build \
+    && cmake .. \
+    && make
+
+# Render automatically assigns a PORT via environment variables
+ENV PORT=10000
+
+# Run 
+CMD ["./services/api/build/your_executable_name"]
