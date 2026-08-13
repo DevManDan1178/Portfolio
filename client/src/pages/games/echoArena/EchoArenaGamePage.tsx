@@ -119,7 +119,7 @@ export default function EchoArenaGamePage() {
         image={seoInfo.image}
         url={seoInfo.url}
       />
-      <div className="w-full h-screen flex flex-col bg-zinc-950 text-white">
+      <div className="w-full h-full flex flex-col bg-zinc-950 text-white">
         <div className="shrink-0 text-3xl font-semibold py-5 text-center font-pixeloid">
           {titleElement}
         </div>
