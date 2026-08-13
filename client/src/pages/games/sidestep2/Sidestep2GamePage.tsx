@@ -124,7 +124,7 @@ export default function Sidestep2GamePage() {
         url={seoInfo.url}
       />
 
-      <div className="w-full h-screen flex flex-col items-center p-10 bg-zinc-950 text-white">
+      <div className="w-full h-full flex flex-col items-center p-10 bg-zinc-950 text-white">
         <div className="text-3xl font-semibold">
           {titleElement}
         </div>
