@@ -18,8 +18,6 @@ WORKDIR /app
 # Copy the entire repository into the container
 COPY . .
 
-# Initialize and update git submodules
-RUN git submodule update --init --recursive
 
 # Navigate to API directory, create a build folder, compile
 RUN cd services/api && mkdir -p build && cd build \
