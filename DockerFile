@@ -15,11 +15,10 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the entire repository into the container
-COPY . .
+# Clone repository recursively (natively pulls all submodules and nested submodules)
+RUN git clone --recurse-submodules -b server-stuff https://github.com/DevManDan1178/Portfolio.git .
 
-
-# Navigate to API directory, create a build folder, compile
+# Navigate to your API directory, create a build folder, compile
 RUN cd services/api && mkdir -p build && cd build \
     && cmake .. \
     && make
@@ -27,5 +26,6 @@ RUN cd services/api && mkdir -p build && cd build \
 # Render automatically assigns a PORT via environment variables
 ENV PORT=10000
 
-# Run 
+# Run the compiled executable from its build path
+# (Update 'your_executable_name' to match your CMakeLists.txt)
 CMD ["./services/api/build/your_executable_name"]
