@@ -109,7 +109,7 @@ int main() {
         } catch (const std::exception& e) {
             std::cerr << "Final save failed: " << e.what() << "\n";
         }
-        server.stop();
+        server.try_stop();
     } catch (const std::exception& e) {
         stop_autosave_thread();
 
