@@ -384,7 +384,7 @@ class portfolio_server : public request_server_base {
             response.result(boost::beast::http::status::ok);
         }
 
-        virtual boost_http_response process_client_request(const std::string client_ip, const boost_http_request request) {
+        virtual boost_http_response process_client_request(const std::string& client_ip, const boost_http_request& request) {
             boost_http_response response;
               
             if (!check_api_key(request)) {
