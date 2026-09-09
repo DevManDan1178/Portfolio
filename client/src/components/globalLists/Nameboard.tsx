@@ -189,12 +189,13 @@ export function useNameboard({
     }
 
     return [(
-        <div className="w-full max-w-2xl mx-auto bg-transparent rounded-xl border border-neutral-800 shadow-xl overflow-hidden">
+        <div className="w-full max-w-2xl mx-auto bg-neutral-950/40 rounded-xl border border-neutral-800 shadow-xl overflow-hidden">
             <div className="px-5 py-4 border-b border-neutral-800 bg-neutral-950/60">
                 <h2 className={`text-lg font-bold text-neutral-100 tracking-wide uppercase ${getThemeStyles(theme)}`}>
                     {title}
                 </h2>
             </div>
+
             <div>
                 <div
                     ref={scrollRef}
@@ -215,7 +216,7 @@ export function useNameboard({
                             {entries.map((entry, index) => (
                                 <tr
                                     key={`${entry.name}-${entry.timestamp}-${index}`}
-                                    className={`border-t border-neutral-800 bg-neutral-800/40 hover:bg-neutral-500/10 transition-colors ${
+                                    className={`border-t border-neutral-800 bg-neutral-800/40 hover:bg-neutral-500/10 transition-colors rounded-sm ${
                                         index < 3
                                             ? "bg-neutral-800/20"
                                             : ""
@@ -227,7 +228,7 @@ export function useNameboard({
 
                                     <td className="px-5 py-3 text-neutral-300 text-sm text-center whitespace-nowrap">
                                         {(() => {
-                                            const {day, hour} = formatDate(new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR))
+                                            const { day, hour } = formatDate(new Date(entry.timestamp * DATE_ADJUSTMENT_FACTOR));
 
                                             return (
                                                 <div className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-300/70 text-sm text-right whitespace-nowrap`}>
@@ -247,20 +248,20 @@ export function useNameboard({
                         </tbody>
                     </table>
 
-                    {loading || loadingMore && (
-                        <p className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-500 text-xs text-center bg-neutral-950/40`}>
-                            Loading more...
+                    {loadingMore || loading && (
+                        <p className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-500 text-xs text-center rounded-sm`}>
+                            Loading...
                         </p>
                     )}
 
                     {!hasMore && (
-                        <p className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-700 text-xs text-center bg-neutral-950/40`}>
+                        <p className={`${getThemeStyles(theme)} px-5 py-3 text-neutral-400 text-xs text-center rounded-sm`}>
                             {entries.length > 0 ? NO_MORE_ENTRIES_TEXT : NO_ENTRIES_TEXT}
                         </p>
                     )}
 
                     {error && (
-                        <div className="px-5 py-6 text-center bg-neutral-950/40">
+                        <div className="px-5 py-6 text-center rounded-sm">
                             <p className={`${getThemeStyles(theme)} text-red-400/80 text-sm mb-3`}>
                                 {error}
                             </p>
