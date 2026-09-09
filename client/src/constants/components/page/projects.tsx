@@ -1,6 +1,6 @@
 import { type ReactElement } from "react"
 import { GetPlayableTag, GetImageDisplay, GetEmptyDisplay } from "../../../components/elements/LinkElements"
-import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2, shaderMD } from "../../../assets"
+import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, sidestep2, shaderMD } from "../../../assets"
 import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "../../tags"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
