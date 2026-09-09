@@ -167,7 +167,7 @@ export default function PolygonTDGamePage() {
             </button>
           </div>
         </div>
-         <div 
+        <div 
           className={globalBoardsToggled ? "block" : "hidden"}
           aria-hidden={!globalBoardsToggled}
         >
@@ -188,17 +188,20 @@ export default function PolygonTDGamePage() {
               </button>
             </div>
           
-            <div 
-              className={selectedGlobalBoard == "clear" ? "block" : "hidden"}
-              aria-hidden={selectedGlobalBoard != "clear"}
-            >
-              {clearsScoreStreamBoard}
-            </div>
-            <div 
-              className={selectedGlobalBoard == "completion" ? "block" : "hidden"}
-              aria-hidden={selectedGlobalBoard != "completion"}
-            >
-              {completionistNameboard}
+
+            <div className="w-full flex justify-center pb-10 font-pixeloid pt-10">
+              <div 
+                className={selectedGlobalBoard == "clear" ? "block" : "hidden"}
+                aria-hidden={selectedGlobalBoard != "clear"}
+              >
+                {clearsScoreStreamBoard}
+              </div>
+              <div 
+                className={selectedGlobalBoard == "completion" ? "block" : "hidden"}
+                aria-hidden={selectedGlobalBoard != "completion"}
+              >
+                {completionistNameboard}
+              </div>
             </div>
           </div>
         </div>
