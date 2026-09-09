@@ -39,6 +39,7 @@ import untitled2DShooter from "./images/projects/Untilted2DShooterThumbnail.png"
 import pendulumSimulator from "./images/projects/PendulumSimThumbnail.png"
 import portfolioSite from "./images/projects/PortfolioWebsiteThumbnail.png"
 import typingPracticeAssignment from "./images/projects/TypingPracticeAssignment.png"
+import shaderMD from "./images/projects/ShaderMD.webp"
 
 // Links
 import github from "./images/links/Github.png"
@@ -102,5 +103,6 @@ export {
   email,
   sidestep2,
   linkedInColored,
-  star
+  star,
+  shaderMD
 };
