@@ -34,10 +34,10 @@ export const techStack: Record<string, Technology[]> = {
   ],
 
   "Programming Languages": [
-    { name: "C#", icon: cSharp },
     { name: "C++", icon: cpp },
-    { name: "Java", icon: java },
+    { name: "C#", icon: cSharp },
     { name: "TypeScript", icon: typescript },
+    { name: "Java", icon: java },
     { name: "Lua", icon: lua },
     { name: "JavaScript", icon: javascript },
   ],
