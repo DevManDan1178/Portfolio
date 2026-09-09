@@ -287,13 +287,15 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
         ]
       },
       description:
-        <p>
-          A lightweight, header-only C++20 asynchronous networking library built for high-performance HTTP and WebSocket applications. 
-          <br/> <br/>
-          Bounded work queues, backpressure handling, and multithreaded worker pools to manage concurrency safely without heavy framework overhead.
-          <br/> <br/>
-          <em>Used for this site's leaderboards <br/>(coming soon).</em>
-        </p>
+      <p>
+        A lightweight, header-only C++20 server infrastructure library built with Boost.Asio and Boost.Beast for asynchronous HTTP and WebSocket applications.
+        <br/> <br/>
+        Provides bounded work queues, backpressure, rate limiting, multithreaded request processing, thread-safe data structures, persistent storage, and real-time WebSocket infrastructure.
+        <br/> <br/>
+        <em>Designed for building reliable concurrent services without the overhead of a large framework.</em>
+        <br/> <br/>
+        <em>Used for this site's leaderboards <br/>(coming soon).</em>
+      </p>
       ,
       tags: [BaseTags.CMake, BaseTags.Cpp],
       visuals: {
