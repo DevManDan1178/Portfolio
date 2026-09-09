@@ -130,10 +130,10 @@ export default function useSubmittableLeaderboard({
             }
         })();
         setSubmitResult(submitResult) 
-    }
+    } 
 
     return [(
-        <div className="flex flex-row gap-5">
+        <div className="flex flex-row justify-center gap-[clamp(1rem,5vw,10rem)]">
           <div className="w-[calc(15%+50px)] h-[70%] my-auto flex flex-col items-center justify-center">
             <p className={`text-white/80 text-center text-md sm:text-xl ${getThemeStyles(theme)}`}>
               {submitSectionTitle}
@@ -176,7 +176,9 @@ export default function useSubmittableLeaderboard({
               
             }
           </div>
-          {leaderboard}
+          <div>
+            {leaderboard}
+          </div>
         </div>
     ),
     attemptSubmitScore
