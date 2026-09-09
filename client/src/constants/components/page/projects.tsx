@@ -47,7 +47,7 @@ export type Project = {
   }
 }
 
-type ProjectType = "Games" | "Apps" | "Websites"
+type ProjectType = "Games" | "Applications" | "Websites"
 
 export const projects : Record<ProjectType, Record<string, Project>> = {
   Games: {
@@ -162,7 +162,7 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
       featured : true,
     },
   },
-  Apps: {
+  Applications: {
     keyboardWarriorLoL: {
       name: "KeyboardWarriorLoL",
       display: GetEmptyDisplay(),
