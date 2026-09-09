@@ -187,7 +187,7 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
           More details and a download are available on the Github repository.
         </p>
       ,
-      tags : [BaseTags.CMake, BaseTags.Cpp, BaseTags.DearImgui],
+      tags : [BaseTags.CMake, BaseTags.Cpp, BaseTags.DearImgui, BaseTags.Git],
       visuals: {
         nameColor: "#d5eef0",
       }
@@ -216,7 +216,7 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
           More details and a download are available on the Github repository.
         </p>
       ,
-      tags : [BaseTags.CMake, BaseTags.Cpp, BaseTags.DearImgui],
+      tags : [BaseTags.CMake, BaseTags.Cpp, BaseTags.DearImgui, BaseTags.Git],
       visuals: {
         nameColor: "#f5fce1"
       }
@@ -238,12 +238,12 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
       },
       description: 
         <p>
-          An application that applies GPU shader effects to markdown and HTML, exporting the result as a separate animated file, as <code>Gif</code>, <code>WebP</code>, or <code>APNG</code>.
+          An application that applies GPU shader effects to markdown and HTML, exporting the result in a separate animated file, as <code>Gif</code>, <code>WebP</code>, or <code>APNG</code>.
           <br/> <br/>
-          Built in C# with DotNet 8 and in Typescript.
+          Built in C# with DotNet 8 and Typescript.
         </p>
       ,
-      tags : [BaseTags.CSharp, BaseTags.DotNet],
+      tags : [BaseTags.CSharp, BaseTags.DotNet, BaseTags.Typescript, BaseTags.Git],
     },
     pendulumSimulator : {
       name : "Pendulum Simulator",
@@ -297,7 +297,7 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
         <em>Used for this site's leaderboards <br/>(coming soon).</em>
       </p>
       ,
-      tags: [BaseTags.CMake, BaseTags.Cpp],
+      tags: [BaseTags.CMake, BaseTags.Cpp, BaseTags.Git],
       visuals: {
         nameColor: "#edffde"
       },
@@ -321,7 +321,7 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
         ],
       },
       description : "What more can I say? Look around.",
-      tags : [BaseTags.Git, Tags.React, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Cpp, BaseTags.CMake],
+      tags : [Tags.React, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Cpp, BaseTags.CMake, BaseTags.Git],
       visuals: {
         nameColor: "#e8e0ff"
       }
