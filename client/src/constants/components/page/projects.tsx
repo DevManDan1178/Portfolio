@@ -1,6 +1,6 @@
 import { type ReactElement } from "react"
 import { GetPlayableTag, GetImageDisplay, GetEmptyDisplay } from "../../../components/elements/LinkElements"
-import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2 } from "../../../assets"
+import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, typingPracticeAssignment, sidestep2, shaderMD } from "../../../assets"
 import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "../../tags"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
@@ -47,7 +47,7 @@ export type Project = {
   }
 }
 
-type ProjectType = "Games" | "Applications" | "Websites"
+type ProjectType = "Games" | "Applications" | "Websites" | "Libraries"
 
 export const projects : Record<ProjectType, Record<string, Project>> = {
   Games: {
@@ -221,6 +221,30 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
         nameColor: "#f5fce1"
       }
     },
+    shaderMd: {
+      name: "Shader-md",
+      display: GetImageDisplay(shaderMD, "Shader-md"),
+      links: {
+        mainLink: {
+          url: "https://github.com/DevManDan1178/shader-md",
+          linkIcon: github
+        },
+        allLinks: [
+          {
+            url: "https://github.com/DevManDan1178/shader-md",
+            linkIcon: github
+          }
+        ],
+      },
+      description: 
+        <p>
+          An application to apply GPU shader effects to markdown and HTML.
+          <br/> <br/>
+          Built in C# with DotNet 8 and in Typescript.
+        </p>
+      ,
+      tags : [BaseTags.CSharp, BaseTags.DotNet],
+    },
     pendulumSimulator : {
       name : "Pendulum Simulator",
       description : "Physics simulator of a simple pendulum",
@@ -245,23 +269,37 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
         nameColor: "#e6fcea"
       }
     },
-    typingTutor : {
-      name : "Typing Tutor App",
-      description : "Small typing tutor app made in JavaFX.",
-      tags : [BaseTags.Git, BaseTags.Java, CategoryTags.Academic],
-      display : GetImageDisplay(typingPracticeAssignment, "Typing Practice"),
-      links : {
-        mainLink : {
-          url : "https://github.com/DevManDan1178/TypingPractice",
-          linkIcon : github,
+  },
+  Libraries: {
+    serverSimple: {
+      name: "Server-simple",
+      display: GetEmptyDisplay(),
+      links: {
+        mainLink: {
+          url: "https://github.com/DevManDan1178/server-simple",
+          linkIcon: github
+        },
+        allLinks: [
+          {
+            url: "https://github.com/DevManDan1178/server-simple",
+            linkIcon: github
+          }
+        ]
       },
-        allLinks :[{
-          url : "https://github.com/DevManDan1178/TypingPractice",
-          linkIcon : github,
-      }]},
-      visuals : {
-        nameColor : "#fcefe6"
-      }
+      description:
+        <p>
+          A lightweight, header-only C++20 asynchronous networking library built for high-performance HTTP and WebSocket applications. 
+          <br/> <br/>
+          Bounded work queues, backpressure handling, and multithreaded worker pools to manage concurrency safely without heavy framework overhead.
+          <br/> <br/>
+          <em>Used for this site's leaderboards <br/>(coming soon).</em>
+        </p>
+      ,
+      tags: [BaseTags.CMake, BaseTags.Cpp],
+      visuals: {
+        nameColor: "#edffde"
+      },
+      featured: true,
     }
   },
   Websites: {
@@ -281,7 +319,6 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
         ],
       },
       description : "What more can I say? Look around.",
-      featured : true,
       tags : [BaseTags.Git, Tags.React, Tags.Tailwind, BaseTags.ThreeJS, BaseTags.Cpp, BaseTags.CMake],
       visuals: {
         nameColor: "#e8e0ff"
