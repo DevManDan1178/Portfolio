@@ -26,7 +26,7 @@ export default function PortfolioPage() {
             <div id={navLinks.about.id}><About/></div>
             <div id={navLinks.projects.id}><Projects/></div>
             <div id={navLinks.technologies.id}> <Technologies/></div>
-            <div id={navLinks.experience.id}><Experience/></div>  
+            {/*<div id={navLinks.experience.id}><Experience/></div>*/}
             <div id={navLinks.contact.id}><Contact/></div>
             {Pages()}
         </div>
