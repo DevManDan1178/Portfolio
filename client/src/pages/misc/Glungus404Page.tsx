@@ -1,4 +1,4 @@
-import {   useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import SEO from "../../components/misc/SEO";
 import { styles } from "../../style";
 import { glungus } from "../../assets";
@@ -11,18 +11,27 @@ export default function Glungus404Page() {
     
     <div className={`items-center justify-center text-center ${styles.sectionHeadText} mt-10`}>
         <span className={"text-white md:text-[24px] sm:text-[20px] text-[16px] leading-tight md:pb-8 sm:pb-6 pb-4"}> 
-          404 NOT FOUND
+          Page not found.
         </span>
         <br/>
         <span className={styles.sectionSubText}> 
-          but we found this instead
+          so here's the next best thing
         </span>
     </div>
 
     <div className="items-center justify-center flex pt-2">
         <GlungusClicker/>
     </div>
-  
+    <div className="w-full items-center justify-center flex mt-10">
+      <button 
+        className="bg-white/10 hover:bg-white/20 w-[calc(15%+25px)] hover:w-[calc(15%+30px)] border-white/30 hover:border-white/50 border-2 aspect-[16/3] text-xl rounded-lg transition-[width,background-color,border-color] duration-300 ease-in-out"
+        onClick={() => window.open("/", '_self')}
+        >
+        <span className="font-semibold">
+          Back to home.
+        </span>
+      </button>
+    </div>
   </>);
 };
 
