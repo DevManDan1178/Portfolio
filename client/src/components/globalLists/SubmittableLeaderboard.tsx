@@ -6,6 +6,7 @@ import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorC
 import { getThemeStyles } from "../../style"
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input"
 import type { LeaderboardEntry } from "../../../../shared/types/api/globalBoards/leaderboard"
+import ComingSoonCover from "../hoc/ComingSoonCover"
 
 export type useSubmittableLeaderboardProps = Omit<LeaderboardProps, "entriesState"> & SubmittableGlobalBoardPropsBase &  {
     scoreFormatFunction? : (score : number | undefined) => string
@@ -132,7 +133,7 @@ export default function useSubmittableLeaderboard({
         setSubmitResult(submitResult) 
     } 
 
-    return [(
+    return [ComingSoonCover(
         <div className="flex flex-row justify-center gap-[clamp(1rem,5vw,10rem)]">
           <div className="w-[calc(15%+50px)] h-[70%] my-auto flex flex-col items-center justify-center">
             <p className={`text-white/80 text-center text-md sm:text-xl ${getThemeStyles(theme)}`}>

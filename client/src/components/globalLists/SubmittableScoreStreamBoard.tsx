@@ -6,6 +6,7 @@ import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorC
 import { getThemeStyles } from "../../style"
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input"
 import { type ScoreStreamEntry } from "../../../../shared/types/api/globalBoards/scoreStreams"
+import ComingSoonCover from "../hoc/ComingSoonCover"
 
 export type useSubmittableScoreStreamBoardProps = Omit<ScoreStreamBoardProps, "entriesState"> & SubmittableGlobalBoardPropsBase & {
     scoreFormatFunction? : (score : number | undefined) => string
@@ -134,7 +135,7 @@ export default function useSubmittableScoreStreamBoard({
         setSubmitResult(submitResult)
     }
 
-    return [(
+    return [ComingSoonCover(
         <div className="flex flex-row justify-center gap-[clamp(1rem,5vw,10rem)]">
             <div className="w-[calc(15%+50px)] h-[70%] my-auto flex flex-col items-center justify-center">
                 <p className={`text-white/80 text-center text-md sm:text-xl ${getThemeStyles(theme)}`}>

@@ -5,6 +5,7 @@ import { useNameboard, type NameboardProps } from "./Nameboard";
 import { nameRefusedErrorCode, postQueryNetworkErrorCode, postQueryRefusedErrorCode, queryErrorCode } from "../../constants/components/globalLists";
 import { getOnKeyDownInputEventDuplicator } from "../../constants/components/input/input";
 import { type NameboardEntry } from "../../../../shared/types/api/globalBoards/nameboard";
+import ComingSoonCover from "../hoc/ComingSoonCover";
 
 export type useSubmittableNameboardProps = Omit<NameboardProps, "entriesState"> & SubmittableGlobalBoardPropsBase;
 
@@ -114,7 +115,7 @@ export default function useSubmittableNameboard({
         setSubmitResult(submitResult);
     };
 
-    return [(
+    return [ComingSoonCover(
         <div className="flex flex-row justify-center gap-[clamp(1rem,5vw,10rem)]">
             <div className="w-[calc(15%+50px)] h-[70%] my-auto flex flex-col items-center justify-center">
                 <p
