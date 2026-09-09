@@ -292,7 +292,7 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
 
 
 export const allProjects: Record<string, Project> = Object.fromEntries(
-  Object.entries(projects).flatMap(([_, category]) =>
+  Object.entries(projects).flatMap(([, category]) =>
     Object.entries(category)
   )
 )
