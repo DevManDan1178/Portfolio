@@ -37,6 +37,10 @@ export const BaseTags : Record<string, Tag> = {
     name : "C#",
     color : "green-text-gradient",
   },
+  DotNet: {
+    name: "DotNet",
+    color: "#fffac8"
+  },
   GDScript : {
     name : "GDScript",
     color : "light-blue-text-gradient",
