@@ -21,7 +21,7 @@ function App() {
             <Route path="/OST" element={<OriginalSoundtracksPage/>}/>
             <Route path="/Play" element={<PlayPage/>} />
             <Route path="/Projects"  element= {<ProjectsPage/>}/>
-            <Route path="/404-not-found" element={<Glungus404/>}/>
+            <Route path="*" element={<Glungus404/>}/>
           </Routes>
         </BrowserRouter>
     </div>    
