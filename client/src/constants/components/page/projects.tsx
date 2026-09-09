@@ -238,7 +238,7 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
       },
       description: 
         <p>
-          An application to apply GPU shader effects to markdown and HTML.
+          An application that applies GPU shader effects to markdown and HTML, exporting the result as a separate animated file, as <code>Gif</code>, <code>WebP</code>, or <code>APNG</code>.
           <br/> <br/>
           Built in C# with DotNet 8 and in Typescript.
         </p>
