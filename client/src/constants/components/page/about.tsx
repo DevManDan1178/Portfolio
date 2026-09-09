@@ -8,12 +8,11 @@ export function SubDescription() {
   const [showSmiley, setShowSmiley] = useState(false)
 
   return <div className="cursor-default text-lg"> 
-    I'm a student developer who builds useful applications, interactive experiences and fun games. <br/>
+    I'm a student developer passionate about building useful applications, interactive experiences and fun games. <br/>
     <br/>
     <p className="text-xl font-bold mb-2">Stuff I build with:</p> 
-    <p>Game Dev: <span className="text-teal-100/80 font-semibold"> Unity, Roblox Studio, Godot</span>.</p>
-    <p>Web Dev: <span className="text-blue-100/80 font-semibold"> React, Tailwind CSS, Node.js</span>.</p>
-    <p>Code: <span className="text-amber-100/80 font-semibold">C#, C++, Typescript, Java, Lua</span> <span className="text-[6px]"> (JAVASCRIPT HATE CLUB) </span></p>
+    <p>Game Development: <span className="text-teal-100/80 font-semibold"> Unity, Roblox Studio, Godot</span>.</p>
+    <p>Programming: <span className="text-amber-100/80 font-semibold">C++, C#, Typescript, Java, Lua</span> <span className="text-[8px]"> (Javascript too I guess...) </span></p>
     <br/>
     Check out my projects below! I hope you enjoy exploring! <button className="text-yellow-200/90 cursor-pointer hover:text-yellow-100" onClick={() => setShowSmiley(!showSmiley)}>:D</button>
     <br/><br/>
