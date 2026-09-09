@@ -1,8 +1,8 @@
-import { experiences } from "./experience";
-import { testimonials } from "./testimonials";
-import { technologies } from "./technologies";
-import { projects } from "./projects";
-import { navLinks, type NavLink } from "./navbar";
+import { experiences } from "./components/page/experience";
+import { testimonials } from "./components/page/testimonials";
+import { technologies } from "./components/page/technologies";
+import { projects } from "./components/page/projects";
+import { navLinks, type NavLink } from "./components/page/navbar";
 
 export const portfolioHeroName : string = "[Name]"
 export const portfolioHeroHandle : string = "DevManDan"

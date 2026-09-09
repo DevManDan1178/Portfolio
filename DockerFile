@@ -1,0 +1,30 @@
+# Use an official lightweight Ubuntu base image
+FROM ubuntu:24.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies, CMake, Git, and Boost
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    libboost-all-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Clone repository recursively (natively pulls all submodules and nested submodules)
+RUN git clone --recurse-submodules -b server-stuff https://github.com/DevManDan1178/Portfolio.git .
+
+# Navigate to your API directory, create a build folder, compile
+RUN cd services/api && mkdir -p build && cd build \
+    && cmake .. \
+    && make
+
+# Render automatically assigns a PORT via environment variables
+ENV PORT=10000
+
+# Run the compiled executable from its build path
+CMD ["./services/api/build/api"]

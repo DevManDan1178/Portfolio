@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, useGLTF } from '@react-three/drei'
-import CanvasLoader from '../Loader'
+import CanvasLoader from '../page/Loader'
 import { MOUSE } from 'three'
 
 

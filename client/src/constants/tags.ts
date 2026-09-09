@@ -21,6 +21,18 @@ export const MiscTags : Record<string, Tag> = {
 }
 
 export const BaseTags : Record<string, Tag> = {
+  DearImgui: {
+    name: "Dear Imgui",
+    color: "#d4e6ff",
+  },
+  CMake: {
+    name: "CMake",
+    color: "#d6d6d6"
+  },
+  Cpp : {
+    name: "C++",
+    color: "#659AD2"
+  },
   CSharp : {
     name : "C#",
     color : "green-text-gradient",
@@ -49,10 +61,6 @@ export const BaseTags : Record<string, Tag> = {
     name : "Game Development",
     color : "orange-text-gradient",
   },
-  WebDev : {
-    name : "Web Development",
-    color : "#c9fffa",
-  },
   Java : {
     name : "Java",
     color : "#fcc379",
@@ -72,11 +80,12 @@ export const BaseTags : Record<string, Tag> = {
   } 
 }
 
+
 export const Tags : Record<string, Tag> = {
   React : {
     name: "React",
     color: "light-blue-text-gradient",
-    subTags : [BaseTags.Javascript, BaseTags.Typescript, BaseTags.WebDev],
+    subTags : [BaseTags.Javascript, BaseTags.Typescript],
   },
   Tailwind : {
     name: "Tailwind",
@@ -98,7 +107,6 @@ export const Tags : Record<string, Tag> = {
     subTags : [BaseTags.Lua, BaseTags.GameDev]
   }
 }
-
 
 export type Tag = {
   name : string,

@@ -1,14 +1,13 @@
 import { useState } from "react";
-import GetYoutubeEmbed from "../../components/effects/YoutubeEmbed";
-import SEO from "../../components/effects/SEO";
+import GetYoutubeEmbedComponent from "../../components/effects/YoutubeEmbed";
+import SEO from "../../components/misc/SEO";
 
 const VIDEO_ID = "NZzXzymUgEg";
 
 const Bruh = () => {
   const [showVideo, setShowVideo] = useState(false);
-
-  const VideoComponent = GetYoutubeEmbed(VIDEO_ID, true, 22);
-
+  const getVideoComponent = GetYoutubeEmbedComponent(VIDEO_ID, true, 22)
+  const video  = getVideoComponent();
   return (<>
     <SEO title="SECRET PORTFOLIO REAL" description="There's nothing to see here. Really."/>
     <div
@@ -26,7 +25,7 @@ const Bruh = () => {
           Click me?
         </button>
       ) : (
-        <VideoComponent />
+        video
       )}
     </div>
   </>);

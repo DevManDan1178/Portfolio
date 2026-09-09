@@ -1,6 +1,6 @@
-import type { ReactElement } from "react"
+import type { ReactNode } from "react"
 
-function GetYoutubeEmbed(videoId : string, autoplay = true, startTime = 0) : () => (ReactElement) {
+function GetYoutubeEmbedComponent(videoId : string, autoplay = true, startTime = 0) : () => (ReactNode) {
   const src = `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&start=${startTime}`
 
   return function VideoComponent() {
@@ -16,4 +16,4 @@ function GetYoutubeEmbed(videoId : string, autoplay = true, startTime = 0) : () 
   }
 }
 
-export default GetYoutubeEmbed;
+export default GetYoutubeEmbedComponent;

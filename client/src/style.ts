@@ -11,12 +11,18 @@ export function GetScreenSizeType() : ScreenSizeType{
       return ("lg")
 }
 
+export type Theme = {
+  font? : string
+}
 
+export function getThemeStyles(theme : Theme) : string {
+  return `${theme.font ?? ""}`
+}
 
 const styles = {
   paddingX: "sm:px-10 px-4",
   paddingY: "sm:py-10 py-4",
-  padding: "sm:px-[72px] px-[24px] sm:py-[120px] py-[96px]",
+  padding: "sm:px-[40.5px] px-[13.5px] sm:py-[67.5px] py-[54px]",
   sectionIdMarginY : "sm:-mt-[12px] -mt-[8px]",
   heroHeadText:
     "font-semibold text-white lg:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] leading-tight mt-1",
@@ -53,7 +59,7 @@ const styles = {
   techStackMatchStyle : {
     titleTextSizeStyle : "md:text-[22px] sm:text-[19px] text-[16px] leading-tight",
     subTitleTextSizeStyle : "md:text-[18px] sm:text-[16px] text-[14px] leading-tight",
-    buttonSizeStyle : "md:h-[50px] sm:text-[40px] h-[35px] w-[calc(15%+125px)]",
+    buttonHeightStyle : "md:h-[50px] h-[35px]",
     buttonTextSizeStyle : "md:text-[22px] sm:text-[18px] text-[16px] leading-tight",
   },
   techStackElementStyles:

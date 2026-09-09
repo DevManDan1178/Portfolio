@@ -7,15 +7,15 @@ export type PageInfo = {
 
 
 export const pages : Record<string, PageInfo> = { 
-    main : {
-        name : "Main Page",
-        iconElement : "↩",
+    portfolio : {
+        name : "Portfolio",
+        iconElement : "✦",
         url : "/"
     },
-    games : {
-        name : "/ Games",
+    play : {
+        name : "/ Play",
         iconElement : "▶",
-        url : "/Games"
+        url : "/Play"
     },
     projects : {
         name : "/ Projects",

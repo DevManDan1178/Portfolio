@@ -1,0 +1,17 @@
+{
+  "headers": [
+    {
+      "source": "/games/Sidestep2/Build/(.*)\\.unityweb",
+      "headers": [
+        {
+          "key": "Content-Encoding",
+          "value": "br"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/wasm"
+        }
+      ]
+    }
+  ]
+}

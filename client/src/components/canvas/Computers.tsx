@@ -9,6 +9,7 @@ import {
 } from "three";
 import {
   Suspense,
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -18,13 +19,13 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import { MOUSE, SRGBColorSpace } from "three";
-import CanvasLoader from "../Loader";
+import CanvasLoader from "../page/Loader";
 import PolygonTD, {
   RESOLUTION,
   RESOLUTION_SCALE,
-  type GameEventHandlers,
 } from "./PolygonTD";
-import { type UnityInstance } from "../../pages/games/UnityGamePage";
+import { type UnityInstance } from "../games/UnityGame"; 
+import type { GameEventLinkers } from "../../../types/exhibits/games";
 
 const SCREEN_MESH_NAME = "MY_SCREEN_MY_SCREEN_0";
 
@@ -35,7 +36,7 @@ const FOCUS_DROPPING_UI_EVENTS: (keyof DocumentEventMap)[] = [
 
 export type UnityController = {
   start: () => void;
-  started? : boolean,
+  started : boolean,
 };
 
 
@@ -60,7 +61,7 @@ const UnityClickForwarder = ({screenMeshName, unityCanvas, unityInstanceRef, onB
         document.removeEventListener(ev, handleUIEvent)
       );
     };
-  }, []);
+  }, [gl, onBlur]);
 
   useEffect(() => {
     const raycaster = new Raycaster();
@@ -69,7 +70,6 @@ const UnityClickForwarder = ({screenMeshName, unityCanvas, unityInstanceRef, onB
       (messageFunction: string, affectsFocus: boolean) => (event: MouseEvent) => {
         if (!unityCanvas && !!unityControllerRef.current && !unityControllerRef.current.started && affectsFocus) {
           unityControllerRef.current.start()
-          unityControllerRef.current.started = true
           return
         }
         if (!unityCanvas || event.button !== 0) {
@@ -123,14 +123,19 @@ const UnityClickForwarder = ({screenMeshName, unityCanvas, unityInstanceRef, onB
       gl.domElement.removeEventListener("mousemove", mouseMove);
       gl.domElement.removeEventListener("mousedown", pointerDown);
     };
-  }, [camera, scene, gl, screenMeshName, unityCanvas]);
+  }, [camera, scene, gl, screenMeshName, unityCanvas, onFocus, unityControllerRef, unityInstanceRef]);
 
   return null;
 };
 
 
 function waitForUnityFirstFrame( canvas: HTMLCanvasElement, cb: () => void) {
+  let stopped = false;
+
   const check = () => {
+    if (stopped) {
+      return;
+    }
     const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
 
     if (!gl) return requestAnimationFrame(check);
@@ -143,18 +148,21 @@ function waitForUnityFirstFrame( canvas: HTMLCanvasElement, cb: () => void) {
   };
 
   requestAnimationFrame(check);
+
+  return () => {
+    stopped = true;
+  };
 }
 
 
 const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport: boolean; unityCanvas: HTMLCanvasElement | null; updateFrames: boolean; }) => {
   const computer = useGLTF("/desktop_pc/scene.gltf");
-  const [unityTexture, setUnityTexture] =
-    useState<CanvasTexture | null>(null);
+  const [unityTexture, setUnityTexture] = useState<CanvasTexture | null>(null);
 
   useEffect(() => {
     if (!unityCanvas) return;
 
-    waitForUnityFirstFrame(unityCanvas, () => {
+    const cleanup = waitForUnityFirstFrame(unityCanvas, () => {
       const texture = new CanvasTexture(unityCanvas);
 
       texture.colorSpace = SRGBColorSpace;
@@ -164,6 +172,7 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
 
       setUnityTexture(texture);
     });
+    return cleanup
   }, [unityCanvas]);
 
   useLayoutEffect(() => {
@@ -177,8 +186,15 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
   }, [unityTexture, computer]);
 
   useFrame(() => {
-    if (!updateFrames || !unityTexture || !unityCanvas) return;
-    unityTexture.needsUpdate = true;
+    if (!updateFrames || !unityTexture || !unityCanvas) {
+      return;
+    }
+    setUnityTexture((prev) => {
+      if (prev) {
+        prev.needsUpdate = true;
+      }
+      return prev;
+    })
   });
 
   return (
@@ -192,45 +208,45 @@ const Computer = ({isSmallViewport, unityCanvas, updateFrames}: {isSmallViewport
 };
 
 
-const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHandlers: RefObject<GameEventHandlers>; unityControllerRef: RefObject<UnityController | null>; }) => {
-  const [isSmallViewport, setIsSmallViewport] = useState(false);
-  const [unityCanvas, setUnityCanvas] =
-  useState<HTMLCanvasElement | null>(null);
+const ComputerCanvas = ({ gameEventLinkers, unityControllerRef }: {gameEventLinkers: RefObject<GameEventLinkers>; unityControllerRef: RefObject<UnityController | null>; }) => {
+  const [isSmallViewport, setIsSmallViewport] = useState(window.matchMedia("(max-width: 750px)").matches);
+  const [unityCanvas, setUnityCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const unityInstanceRef = useRef<UnityInstance | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [updateFrames, setUpdateFrames] = useState(false);
-  const [unityReady, setUnityReady] = useState(!!unityControllerRef.current ? (unityControllerRef.current?.started) : false);
+  const [unityReady, setUnityReady] = useState(false);
   const unityFocused = useRef(false);
 
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 750px)");
-    setIsSmallViewport(mq.matches);
 
-    const handler = (e: MediaQueryListEvent) =>
-      setIsSmallViewport(e.matches);
+    const handler = (e: MediaQueryListEvent) => {setIsSmallViewport(e.matches)};
 
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
 
   useEffect(() => {
-    if (!unityControllerRef) {
-      return;
-    }
-
     unityControllerRef.current = {
-      start: () => 
-        setUnityReady(true),
-        started: false
+      started: false,
+      start: () => {
+        if (!unityControllerRef.current) {
+          return;
+        }
+        unityControllerRef.current.started = true;
+        setUnityReady(true);
+      }
     };
-  }, []);
+  }, [unityControllerRef]);
 
 
   useEffect(() => {
-    if (!unityReady) return;
+    if (!unityReady || !gameEventLinkers.current) {
+      return;
+    }
 
     let canvas: HTMLCanvasElement | null = null;
 
@@ -241,7 +257,7 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
     const getCanvas = PolygonTD(
       RESOLUTION.width * RESOLUTION_SCALE,
       RESOLUTION.height * RESOLUTION_SCALE,
-      gameEventHandlers.current,
+      gameEventLinkers.current,
       onUnityInstanceCreated
     );
 
@@ -251,14 +267,16 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
     setUnityCanvas(canvas);
 
     return () => {
-      canvas?.remove();
+      unityInstanceRef.current?.Quit?.();
       unityInstanceRef.current = null;
+      canvas?.remove();
+      setUnityCanvas(null);
     };
-  }, [unityReady]);
+  }, [unityReady, gameEventLinkers]);
 
   /* ---------------- FOCUS ---------------- */
 
-  const onUnityFocus = () => {
+  const onUnityFocus = useCallback(() => {
     if (unityFocused.current) return;
 
     unityInstanceRef.current?.SendMessage(
@@ -270,9 +288,9 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
     unityCanvas?.focus();
     setUpdateFrames(true);
     unityFocused.current = true;
-  };
+  }, [unityCanvas]);
 
-  const onUnityBlur = () => {
+  const onUnityBlur = useCallback(() => {
     if (!unityFocused.current) return;
 
     unityInstanceRef.current?.SendMessage(
@@ -289,7 +307,7 @@ const ComputerCanvas = ({ gameEventHandlers, unityControllerRef }: {gameEventHan
     unityCanvas?.blur();
     setUpdateFrames(false);
     unityFocused.current = false;
-  };
+  }, [unityCanvas]);
 
 
   return (
