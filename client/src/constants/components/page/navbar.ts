@@ -25,12 +25,13 @@ export const navLinks : Record<string, NavLink> = {
     title: "Stack",
     showInNavbar : true,
   },
+  /*
   experience : {
     id: "experience",
     title: "Experience",
     showInNavbar : true,
   },
-  /*
+  
   testimonials : {
     id : "testimonials",
     title : "Testimonials",
