@@ -90,6 +90,7 @@ export default function PolygonTDGamePage() {
     count: 20,
     submitSectionTexts: {
       submitButtonText: "Submit",
+      submitSectionTitle: "Cleared Level"
     },
     boardSubTitles: {
       score: "Cleared Level",
