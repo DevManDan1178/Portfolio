@@ -14,10 +14,10 @@ export const COMPUTER_CANVAS_APPEARANCE_DELAY : number = TERMINAL_APPEARANCE_DEL
 
 
 const headerIntro = "Hi, I'm "
-const description : string = "I build interactive experiences."
+const subHeader : string = "Welcome to my portfolio"
 
 const headerTimeBetweenLetters = ANIMATED_HEADER_APPEARANCE_DURATION/(headerIntro.length + portfolioHeroName.length)
-const descriptionTimeBetweenLetters = ANIMATED_DESCRIPTION_APPEARANCE_DURATION/(description.length)
+const descriptionTimeBetweenLetters = ANIMATED_DESCRIPTION_APPEARANCE_DURATION/(subHeader.length)
 
 export const headerIntroElement : ReactElement = <>
     <span className="text-white/95">
@@ -28,7 +28,7 @@ export const headerIntroElement : ReactElement = <>
     </span>
 </>
 
-export const descriptionElement : ReactElement = <AnimatedTextAppearance appearOnlyOnce text={description} timeBetweenLetters={descriptionTimeBetweenLetters} delay={DESCRIPTION_APPEARANCE_DELAY} startingState={{translateY: -20, translateX: -10}} style={{whiteSpace: "normal"}}/> 
+export const descriptionElement : ReactElement = <AnimatedTextAppearance appearOnlyOnce text={subHeader} timeBetweenLetters={descriptionTimeBetweenLetters} delay={DESCRIPTION_APPEARANCE_DELAY} startingState={{translateY: -20, translateX: -10}} style={{whiteSpace: "normal"}}/> 
 
 const TerminalText = "↓ More About Me ↓"
 
