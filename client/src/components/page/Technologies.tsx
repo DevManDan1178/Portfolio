@@ -302,12 +302,11 @@ const Technologies = () => {
           </div>
         </div>
         <div 
-          className={leaderboardToggled ? "block" : "hidden"}
+          className={`${leaderboardToggled ? "block" : "hidden"} items-center justify-center pt-[15px]`}
           aria-hidden={!leaderboardToggled}
         >
           {leaderboard}
         </div>
-        {/*leaderboardToggled && leaderboard*/}
       </div>  
     </div>
   )
