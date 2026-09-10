@@ -5,12 +5,14 @@ export type GodotGameProps = {
   gamePath: string;
   className?: string;
   gameEventLinkers?: GameEventLinkers;
+  enableLoadingScreenOverlay? : boolean;
 };
 
 export default function GodotGame({
   gamePath,
   className,
   gameEventLinkers = [],
+  enableLoadingScreenOverlay = true
 }: GodotGameProps): [ReactElement, () => void] {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -18,7 +20,7 @@ export default function GodotGame({
   const gameEventLinkersRef =
     useRef<GameEventLinkers>(gameEventLinkers);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(enableLoadingScreenOverlay);
   const [progress, setProgress] = useState(0);
 
 
@@ -88,7 +90,7 @@ export default function GodotGame({
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
-      if (!event.data) {
+      if (!event.data || !loading) {
         return;
       }
         
