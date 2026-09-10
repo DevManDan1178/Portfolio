@@ -6,7 +6,7 @@ export type SEOInfo = {
   image?: string;
   url?: string;
 };
-const siteName = "DevManDan";
+const siteName = "DanOLiu";
 
 export default function SEO({
   title,
