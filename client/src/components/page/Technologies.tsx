@@ -31,7 +31,7 @@ const TIMER_DIGITS_AFTER_ZERO : number = 2
 
 const Technologies = () => {
   const [playSelectSound] = useSound('/sounds/match2Minigame/BallFlip.wav', {volume: 0.3})
-  const [playMatchSound] = useSound('/sounds/match2Minigame/BallMatch.wav', {volume: .6})
+  const [playMatchSound] = useSound('/sounds/match2Minigame/BallMatch.opus', {volume: .6})
   const [playMatchFailSound] = useSound('/sounds/match2Minigame/BallMatchFail.wav', {volume: 0.3})
   const [playGameFlipSound] = useSound('/sounds/match2Minigame/BallMatchFail.wav', {volume: 0.25, playbackRate: 1.2})
 
