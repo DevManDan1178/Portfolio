@@ -13,6 +13,11 @@ export const CategoryTags : Record<string, Tag> = {
 }
 
 export const MiscTags : Record<string, Tag> = {
+  GMTKJam2025 : {
+    name : "GMTK Game Jam 2025",
+    color : "lime-text-gradient",
+    baseTextSizeModifier : 1
+  },
   GMTKJam2026 : {
     name : "GMTK Game Jam 2026",
     color : "lime-text-gradient",
