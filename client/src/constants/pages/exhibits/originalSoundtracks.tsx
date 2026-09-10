@@ -17,27 +17,27 @@ export const ostData: Category[] = [
     tracks: [
       {
         title : "Not Boss Music",
-        file : "/music/polygonTD/Level4.mp3",
+        file : "/music/polygonTD/Level4.opus",
         description: "[Level 4 music in Polygon Tower Defense]"
       },
       {
         title : "Keystorm",
-        file : "/music/polygonTD/Level3.mp3",
+        file : "/music/polygonTD/Level3.opus",
         description: "[Level 3 music in Polygon Tower Defense]"
       },
       {
         title : "New Beginnings",
-        file : "/music/polygonTD/Level2.mp3",
+        file : "/music/polygonTD/Level2.opus",
         description: "[Level 2 music in Polygon Tower Defense]"
       },
       {
         title : "8-Bit Crusade",
-        file : "/music/polygonTD/Level1.mp3",
+        file : "/music/polygonTD/Level1.opus",
         description: "[Level 1 music in Polygon Tower Defense]"
       },
       {
         title: "Just The Lobby",
-        file: "/music/polygonTD/Lobby.mp3",
+        file: "/music/polygonTD/Lobby.opus",
         description: "[Lobby music in Polygon Tower Defense]",
       },
     ],
@@ -53,7 +53,7 @@ export const ostData: Category[] = [
       },
       {
         title: "Endless",
-        file: "/music/sidestep2/EndlessExtended.mp3",
+        file: "/music/sidestep2/EndlessExtended.opus",
         description: "The looping music for endless mode of Sidestep² [extended version]",
       },
     ],
