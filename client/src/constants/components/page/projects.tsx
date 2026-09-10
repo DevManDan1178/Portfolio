@@ -1,6 +1,6 @@
 import { type ReactElement } from "react"
 import { GetPlayableTag, GetImageDisplay, GetEmptyDisplay } from "../../../components/elements/LinkElements"
-import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, sidestep2, shaderMD } from "../../../assets"
+import { echoArena, pendulumSimulator, polygonTD, untitled2DShooter, portfolioSite, github, roblox, itchIO, sidestep2, shaderMD, glungusClickerFinalBattle } from "../../../assets"
 import { type Tag, BaseTags, MiscTags, CategoryTags, Tags } from "../../tags"
 
 export const PROJECTS_TITLE_TEXT_SIZE = 24
@@ -82,10 +82,41 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
       },
       featured : true
     },
+    glungusClickerFinalBattle: {
+      name: "Glungus Clicker: Final Battle",
+      description: "A fast-paced five minute incremental-clicker-defense game against Glungus and his army of cats.",
+      display: GetImageDisplay(glungusClickerFinalBattle, "Glungus Clicker: Final Battle"),
+      tags: [Tags.Godot, MiscTags.GMTKJam2026, GetPlayableTag("/GlungusClicker", "Click to Play")],
+      links: {
+        mainLink: {
+          url: "/GlungusClicker",
+          linkIcon : "▶",
+          iconIsStr : true,
+        },
+        allLinks : [
+          {
+            url: "/GlungusClicker",
+            linkIcon : "▶",
+            iconIsStr : true,
+          },
+          {
+            url: "https://github.com/DevManDan1178/glungus-clicker-final-battle",
+            linkIcon : github
+          },
+          {
+            url: "https://devman-dan.itch.io/glungus-clicker-final-battle",
+            linkIcon : itchIO
+          },
+        ]
+      },
+      visuals: {
+        nameColor: "#d4fff6"
+      }
+    },
     echoArena :{
       name : "Echo Arena",
       description: "Simple arena shooter game where you must also evade your past movements",
-      tags : [Tags.Godot, MiscTags.GMTKJam2026, GetPlayableTag("/EchoArena", "Click to Play ‹PC›")],
+      tags : [Tags.Godot, MiscTags.GMTKJam2025, GetPlayableTag("/EchoArena", "Click to Play ‹PC›")],
       display : GetImageDisplay(echoArena, "Echo Arena"),
       links : {
         mainLink : {
@@ -93,7 +124,8 @@ export const projects : Record<ProjectType, Record<string, Project>> = {
           linkIcon : "▶",
           iconIsStr : true
         },
-        allLinks : [{
+        allLinks : [
+          {
             url: "/EchoArena",
             linkIcon : "▶",
             iconIsStr : true
