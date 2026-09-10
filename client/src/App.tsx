@@ -7,6 +7,7 @@ import OriginalSoundtracksPage from "./pages/exhibits/OriginalSoundtracks";
 import PlayPage from "./pages/exhibits/Play";
 import ProjectsPage from "./pages/exhibits/Projects";
 import Glungus404 from "./pages/misc/Glungus404Page";
+import GlungusClickerFinalBattleGamePage from "./pages/games/glungusClickerFinalBattle/GlungusClickerFinalBattlePage";
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/OST" element={<OriginalSoundtracksPage/>}/>
             <Route path="/Play" element={<PlayPage/>} />
             <Route path="/Projects"  element= {<ProjectsPage/>}/>
+            <Route path="/GlungusClicker" element={<GlungusClickerFinalBattleGamePage/>}/>
             <Route path="*" element={<Glungus404/>}/>
           </Routes>
         </BrowserRouter>
