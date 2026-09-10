@@ -33,13 +33,14 @@ import html from "./techStack/languages/html.png"
 
 // Projects
 import polygonTD from "./images/projects/PolygonTDThumbnail.png"
-import sidestep2 from "./images/projects/Sidestep2.png"
+import sidestep2 from "./images/projects/Sidestep2Thumbnail.png"
 import echoArena from "./images/projects/EchoArenaThumbnail.png"
 import untitled2DShooter from "./images/projects/Untilted2DShooterThumbnail.png"
 import pendulumSimulator from "./images/projects/PendulumSimThumbnail.png"
 import portfolioSite from "./images/projects/PortfolioWebsiteThumbnail.png"
 import typingPracticeAssignment from "./images/projects/TypingPracticeAssignment.png"
-import shaderMD from "./images/projects/ShaderMD.webp"
+import shaderMD from "./images/projects/ShaderMDThumbnail.webp"
+import glungusClickerFinalBattle from "./images/projects/GlungusClickerFinalBattleThumbnail.webp"
 
 // Links
 import github from "./images/links/Github.png"
@@ -104,5 +105,6 @@ export {
   sidestep2,
   linkedInColored,
   star,
-  shaderMD
+  shaderMD,
+  glungusClickerFinalBattle
 };
