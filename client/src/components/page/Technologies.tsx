@@ -27,7 +27,7 @@ const SOLVED_DISPLAY_DELAY : number = 0.5 * 1000
 const SCORE_STORAGE_FACTOR : number = 0.1 //Millisecond -> centiseconds
 
 const SUBMIT_BUTTON_COOLDOWN : number = 500
-const TIMER_DIGITS_AFTER_ZERO : number = 2
+const TIMER_DIGITS_AFTER_ZERO : number = 1
 
 const Technologies = () => {
   const [playSelectSound] = useSound('/sounds/match2Minigame/BallFlip.wav', {volume: 0.3})
