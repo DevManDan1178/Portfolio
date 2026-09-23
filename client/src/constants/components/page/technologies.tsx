@@ -18,7 +18,6 @@ export const techStack: Record<string, Technology[]> = {
     { name: "HTML", icon: html }, 
     { name: "CSS", icon: css },
     { name: "React", icon: reactjs },
-    { name: "Three JS", icon: threejs },
   ],
   
   "Game Development": [
