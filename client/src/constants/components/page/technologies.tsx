@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { javascript, typescript, html, reactjs, tailwind, nodejs, git, threejs, unity, godot, cSharp, lua, robloxStudio, java, vsCode, cMake, cpp, dotnet, css, } from "../../../assets";
+import { javascript, typescript, html, reactjs, tailwind, nodejs, git, unity, godot, cSharp, lua, robloxStudio, java, vsCode, cMake, cpp, dotnet, css, } from "../../../assets";
 
 export type Technology = {
   name : string,
