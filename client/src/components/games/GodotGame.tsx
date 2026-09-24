@@ -120,7 +120,7 @@ export default function GodotGame({
       window.removeEventListener("message", handler);
     };
 
-  }, []);
+  }, [loading]);
 
 
 
