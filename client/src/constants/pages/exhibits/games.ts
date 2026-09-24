@@ -1,4 +1,4 @@
-import { echoArena, polygonTD, sidestep2 } from "../../../assets";
+import { echoArena, glungusClickerFinalBattle, polygonTD, sidestep2 } from "../../../assets";
 
 export const gamesData = [
   {
@@ -12,6 +12,12 @@ export const gamesData = [
     description: "Survival arena shooter where you must avoid past versions of yourself",
     thumbnail: echoArena,
     url: "/EchoArena",
+  },
+  {
+    title: "Glungus Clicker: Final Battle",
+    description: "A fast-paced five minute incremental-clicker-defense game against Glungus and his army of cats.",
+    thumbnail: glungusClickerFinalBattle,
+    url: "/GlungusClicker"
   },
   {
     title: "Sidestep²",
